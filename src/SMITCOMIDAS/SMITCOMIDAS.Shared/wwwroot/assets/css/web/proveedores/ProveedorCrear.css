@@ -1,0 +1,294 @@
+﻿/* ProveedorForm.web.css - Actualizado con diseño de dos cards */
+
+/* Contenedor principal */
+.ProveedorForm_Container {
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+.ProveedorForm_Header {
+    margin-bottom: 20px;
+}
+
+    .ProveedorForm_Header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 20px;
+        font-weight: 600;
+        position: relative;
+        padding-left: 16px;
+    }
+
+        .ProveedorForm_Header h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 18px;
+            background-color: #51A121;
+            border-radius: 2px;
+        }
+
+/* Layout de dos cards */
+.ProveedorForm_CardsContainer {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .ProveedorForm_CardsContainer {
+        flex-direction: column;
+    }
+}
+
+.ProveedorForm_CardColumn {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+/* Sección de tarjeta */
+.ProveedorForm_CardSection {
+    padding: 20px 24px;
+}
+
+.ProveedorForm_CardSectionTitle {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #51A121;
+    position: relative;
+}
+
+/* Campos del formulario */
+.ProveedorForm_FormGroup {
+    margin-bottom: 16px;
+}
+
+    .ProveedorForm_FormGroup label {
+        display: block;
+        font-size: 14px;
+        color: #51A121;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+.ProveedorForm_FormLabel {
+    display: block;
+    font-size: 14px;
+    color: #51A121;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.ProveedorForm_InputField {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #2c3e50;
+    background-color: #f9fafb;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+    .ProveedorForm_InputField:focus {
+        border-color: #51A121;
+        box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.15);
+        outline: none;
+    }
+
+/* Campos en grid */
+.ProveedorForm_FormGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+    .ProveedorForm_FormGrid.single {
+        grid-template-columns: 1fr;
+    }
+
+/* Campo ancho completo */
+.ProveedorForm_FullWidth {
+    grid-column: 1 / -1;
+}
+
+/* Checkbox personalizado */
+.ProveedorForm_CheckboxContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.ProveedorForm_CheckboxSwitch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+    .ProveedorForm_CheckboxSwitch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.ProveedorForm_SwitchSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+    .ProveedorForm_SwitchSlider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+input:checked + .ProveedorForm_SwitchSlider {
+    background-color: #51A121;
+}
+
+input:focus + .ProveedorForm_SwitchSlider {
+    box-shadow: 0 0 1px #51A121;
+}
+
+input:checked + .ProveedorForm_SwitchSlider:before {
+    transform: translateX(26px);
+}
+
+.ProveedorForm_SwitchLabel {
+    font-size: 14px;
+    color: #2c3e50;
+    cursor: pointer;
+}
+
+/* Botones de acción */
+.ProveedorForm_Actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.ProveedorForm_BtnSecondary {
+    background: white;
+    color: #495057;
+    border: 1px solid #ced4da;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .ProveedorForm_BtnSecondary:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+    }
+
+.ProveedorForm_BtnPrimary {
+    background: #51A121;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(81, 161, 33, 0.2);
+}
+
+    .ProveedorForm_BtnPrimary:hover {
+        background: #429019;
+        box-shadow: 0 2px 6px rgba(81, 161, 33, 0.3);
+    }
+
+    .ProveedorForm_BtnPrimary:disabled {
+        background: #8bc34a;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+/* Errores de validación */
+.ProveedorForm_ValidationErrors {
+    margin-bottom: 20px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid #e74c3c;
+    padding: 15px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+    .ProveedorForm_ValidationErrors ul {
+        margin: 5px 0 0;
+        padding-left: 20px;
+        color: #c0392b;
+    }
+
+.ProveedorForm_ErrorMessage {
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid #e74c3c;
+    border-radius: 6px;
+    color: #c0392b;
+    font-size: 14px;
+}
+
+/* Campos de selección */
+.ProveedorForm_SelectField {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #2c3e50;
+    background-color: #f9fafb;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c3e50' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+    padding-right: 30px;
+}
+
+.ProveedorForm_SelectField:focus {
+    border-color: #51A121;
+    box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.15);
+    outline: none;
+}
+
+.ProveedorForm_MobileErrorMessage {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid #e74c3c;
+    border-radius: 8px;
+    color: #c0392b;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-line; /* Preservar saltos de línea para mostrar múltiples errores */
+}

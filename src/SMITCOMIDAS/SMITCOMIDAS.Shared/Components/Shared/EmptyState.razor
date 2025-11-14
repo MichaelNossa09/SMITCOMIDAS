@@ -1,0 +1,70 @@
+﻿<div class="EmptyState">
+    <div class="EmptyState_icon">📋</div>
+    <h3>@Title</h3>
+    <p>@Message</p>
+    @if (!string.IsNullOrEmpty(ButtonText))
+    {
+            <button class="EmptyState_button" @onclick="OnButtonClick">
+            @ButtonText
+            </button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "No hay datos";
+
+    [Parameter]
+    public string Message { get; set; } = "";
+
+    [Parameter]
+    public string? ButtonText { get; set; }
+
+    [Parameter]
+    public EventCallback OnButtonClick { get; set; }
+}
+<style>
+    .EmptyState {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .EmptyState_icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+    }
+
+    .EmptyState h3 {
+        font-size: 22px;
+        color: #1e293b;
+        margin: 0 0 10px 0;
+    }
+
+    .EmptyState p {
+        font-size: 16px;
+        color: #64748b;
+        margin: 0 0 25px 0;
+    }
+
+    .EmptyState_button {
+        padding: 12px 24px;
+        background-color: rgb(81, 161, 33);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .EmptyState_button:hover {
+        background-color: rgb(65, 130, 25);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(81, 161, 33, 0.3);
+    }
+</style>

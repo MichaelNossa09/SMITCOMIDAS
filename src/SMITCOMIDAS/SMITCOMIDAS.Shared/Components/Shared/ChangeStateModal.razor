@@ -1,0 +1,353 @@
+﻿@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Models.DTOs
+@if (IsVisible)
+{
+    <div class="ChangeStateModal_overlay">
+        <div class="ChangeStateModal_content">
+            <div class="ChangeStateModal_header">
+                <h3>Cambiar estado del pedido</h3>
+                <button class="ChangeStateModal_closeButton" @onclick="OnCancel">×</button>
+            </div>
+
+            <div class="ChangeStateModal_body">
+                <p>Pedido #@Pedido?.Id - Estado actual: <strong>@Pedido?.Estado</strong></p>
+
+                <div class="ChangeStateModal_formGroup">
+                    <label class="ChangeStateModal_formLabel">Nuevo estado:</label>
+                    <select class="ChangeStateModal_formSelect"
+                            value="@NuevoEstado"
+                            @onchange="@((e) => OnEstadoChanged.InvokeAsync((EstadoPedido)Enum.Parse(typeof(EstadoPedido), e.Value.ToString())))">
+                        @foreach (var estado in EstadosSiguientes)
+                        {
+                            <option value="@estado">@estado</option>
+                        }
+                    </select>
+                </div>
+
+                @if (NuevoEstado == EstadoPedido.Devuelto)
+                {
+                    <div class="ChangeStateModal_formGroup">
+                        <label class="ChangeStateModal_formLabel">Motivo de devolución: *</label>
+                        <textarea class="ChangeStateModal_formTextarea"
+                                  value="@MotivoDevolucion"
+                                  @oninput="@((e) => OnMotivoChanged.InvokeAsync(e.Value.ToString()))"
+                                  placeholder="Describa el motivo de la devolución..."
+                                  rows="4"></textarea>
+                        @if (string.IsNullOrWhiteSpace(MotivoDevolucion))
+                        {
+                            <small style="color: #dc2626; font-size: 12px; margin-top: 4px; display: block;">
+                                El motivo de devolución es obligatorio
+                            </small>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="ChangeStateModal_actions">
+                <button class="ChangeStateModal_secondaryButton"
+                        @onclick="OnCancel"
+                        disabled="@IsProcessing">
+                    Cancelar
+                </button>
+                <button class="ChangeStateModal_primaryButton"
+                        @onclick="OnConfirm"
+                        disabled="@(IsProcessing || (NuevoEstado == EstadoPedido.Devuelto && string.IsNullOrWhiteSpace(MotivoDevolucion)))">
+                    @(IsProcessing ? "Procesando..." : "Guardar Cambios")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public Pedido? Pedido { get; set; }
+    [Parameter] public EstadoPedido NuevoEstado { get; set; }
+    [Parameter] public string? MotivoDevolucion { get; set; }
+    [Parameter] public bool IsProcessing { get; set; }
+    [Parameter] public List<EstadoPedido> EstadosSiguientes { get; set; } = new();
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback<EstadoPedido> OnEstadoChanged { get; set; }
+    [Parameter] public EventCallback<string> OnMotivoChanged { get; set; }
+}
+
+ <style>
+    .ChangeStateModal_overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+
+    .ChangeStateModal_content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        animation: ChangeStateModal_slideIn 0.2s ease-out;
+    }
+
+    @@keyframes ChangeStateModal_slideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .ChangeStateModal_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .ChangeStateModal_header h3 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .ChangeStateModal_closeButton {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .ChangeStateModal_closeButton:hover {
+        background-color: #f1f5f9;
+        color: #64748b;
+    }
+
+    .ChangeStateModal_body {
+        padding: 25px;
+    }
+
+    .ChangeStateModal_body > p {
+        margin: 0 0 20px 0;
+        color: #475569;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .ChangeStateModal_body > p strong {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .ChangeStateModal_formGroup {
+        margin-bottom: 20px;
+    }
+
+    .ChangeStateModal_formGroup:last-child {
+        margin-bottom: 0;
+    }
+
+    .ChangeStateModal_formLabel {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .ChangeStateModal_formSelect {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #1e293b;
+        background-color: white;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .ChangeStateModal_formSelect:hover {
+        border-color: #94a3b8;
+    }
+
+    .ChangeStateModal_formSelect:focus {
+        outline: none;
+        border-color: rgb(81, 161, 33);
+        box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.1);
+    }
+
+    .ChangeStateModal_formTextarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #1e293b;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 100px;
+        transition: all 0.2s;
+    }
+
+    .ChangeStateModal_formTextarea:hover {
+        border-color: #94a3b8;
+    }
+
+    .ChangeStateModal_formTextarea:focus {
+        outline: none;
+        border-color: rgb(81, 161, 33);
+        box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.1);
+    }
+
+    .ChangeStateModal_formTextarea::placeholder {
+        color: #94a3b8;
+    }
+
+    .ChangeStateModal_actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 20px 25px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .ChangeStateModal_secondaryButton,
+    .ChangeStateModal_primaryButton {
+        padding: 11px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .ChangeStateModal_secondaryButton {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    .ChangeStateModal_secondaryButton:hover:not(:disabled) {
+        background-color: #e2e8f0;
+    }
+
+    .ChangeStateModal_secondaryButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .ChangeStateModal_primaryButton {
+        background-color: rgb(81, 161, 33);
+        color: white;
+    }
+
+    .ChangeStateModal_primaryButton:hover:not(:disabled) {
+        background-color: rgb(65, 130, 25);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(81, 161, 33, 0.3);
+    }
+
+    .ChangeStateModal_primaryButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Responsive para móvil */
+    @@media (max-width: 640px) {
+        .ChangeStateModal_overlay
+
+    {
+        align-items: flex-end;
+    }
+
+    .ChangeStateModal_content {
+        border-radius: 16px 16px 0 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .ChangeStateModal_header {
+        padding: 15px 18px;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 1;
+    }
+
+    .ChangeStateModal_header h3 {
+        font-size: 16px;
+    }
+
+    .ChangeStateModal_closeButton {
+        font-size: 26px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .ChangeStateModal_body {
+        padding: 18px;
+    }
+
+    .ChangeStateModal_body > p {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .ChangeStateModal_formGroup {
+        margin-bottom: 15px;
+    }
+
+    .ChangeStateModal_formLabel {
+        font-size: 13px;
+    }
+
+    .ChangeStateModal_formSelect,
+    .ChangeStateModal_formTextarea {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .ChangeStateModal_actions {
+        padding: 12px 18px;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .ChangeStateModal_secondaryButton,
+    .ChangeStateModal_primaryButton {
+        width: 100%;
+        padding: 12px;
+    }
+
+    }
+ </style>

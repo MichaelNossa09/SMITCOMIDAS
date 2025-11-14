@@ -1,0 +1,56 @@
+﻿/* Variables globales y estilos comunes */
+:root {
+    --corporate-green: rgb(81,161,33);
+    --corporate-light-green: #eaeace;
+    --corporate-gray: rgb(86,69,60);
+    --primary-color: var(--corporate-green);
+    --secondary-color: #468a84;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --success-color: #28a745;
+    --light-bg: #f8f9fa;
+    --border-color: #dee2e6;
+    --text-color: #333;
+    --text-muted: #6c757d;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
+    --border-radius: 8px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+}
+
+/* Estilos de animación compartidos */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Estilos comunes de impresión */
+@media print {
+    .Perfil_EditButton,
+    .Perfil_DeleteButton,
+    .Perfil_AddButton,
+    .Perfil_ModalBackdrop,
+    .Perfil_Modal {
+        display: none !important;
+    }
+}

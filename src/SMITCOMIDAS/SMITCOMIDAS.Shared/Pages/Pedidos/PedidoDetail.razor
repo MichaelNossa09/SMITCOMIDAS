@@ -1,0 +1,632 @@
+﻿@page "/pedidos/detalle/{Id:int}"
+@using System.Globalization
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@inject IPedidoService PedidoService
+@inject IAuthService AuthService
+@inject IMenuService MenuService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IPlatformService Platform
+
+<PageTitle>Detalle del Pedido</PageTitle>
+
+<div class="@(Platform.IsMobile ? "PedidoDetalle_containerMobile" : "PedidoDetalle_container")">
+    @if (isLoading)
+    {
+        <div class="PedidoDetalle_loadingContainer">
+            <div class="PedidoDetalle_loader"></div>
+            <p>Cargando detalle del pedido...</p>
+        </div>
+    }
+    else if (pedido == null)
+    {
+        <div class="PedidoDetalle_errorContainer">
+            <div class="PedidoDetalle_errorIcon">⚠️</div>
+            <h3>Pedido no encontrado</h3>
+            <p>No se pudo cargar la información del pedido.</p>
+            <button class="PedidoDetalle_errorButton" @onclick="@(() => Navigation.NavigateTo("/pedidos"))">
+                Volver a pedidos
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="PedidoDetalle_header">
+            <div class="PedidoDetalle_titleContainer">
+                <div class="PedidoDetalle_backButton" @onclick="@(() => Navigation.NavigateTo("/pedidos"))">
+                    <span>←</span>
+                </div>
+                <h1 class="PedidoDetalle_title">Pedido #@pedido.Id</h1>
+            </div>
+            <span class="PedidoDetalle_estado PedidoDetalle_estado@(pedido.Estado)">
+                @pedido.Estado
+            </span>
+        </div>
+
+        <div class="@(Platform.IsMobile ? "PedidoDetalle_contentMobile" : "PedidoDetalle_content")">
+            <!-- Información General -->
+            <div class="PedidoDetalle_card">
+                <h3 class="PedidoDetalle_cardTitle">Información General</h3>
+                <div class="PedidoDetalle_infoGrid">
+                    <div class="PedidoDetalle_infoItem">
+                        <span class="PedidoDetalle_infoLabel">Fecha de Pedido:</span>
+                        <span class="PedidoDetalle_infoValue">@pedido.FechaPedido.ToString("dd 'de' MMMM 'del' yyyy 'a las' HH:mm", new CultureInfo("es-ES"))</span>
+                    </div>
+                    <div class="PedidoDetalle_infoItem">
+                        <span class="PedidoDetalle_infoLabel">Fecha de Entrega:</span>
+                        <span class="PedidoDetalle_infoValue">@pedido.FechaEntrega.ToString("dd 'de' MMMM 'del' yyyy", new CultureInfo("es-ES"))</span>
+                    </div>
+                    @if (IsAdmin() || IsProveedor())
+                    {
+                        <div class="PedidoDetalle_infoItem">
+                            <span class="PedidoDetalle_infoLabel">Usuario:</span>
+                            <span class="PedidoDetalle_infoValue">@pedido.Usuario?.FullName</span>
+                        </div>
+                        <div class="PedidoDetalle_infoItem">
+                            <span class="PedidoDetalle_infoLabel">Centro de Costo:</span>
+                            <span class="PedidoDetalle_infoValue">@pedido.CentroCosto?.Nombre</span>
+                        </div>
+                        <div class="PedidoDetalle_infoItem">
+                            <span class="PedidoDetalle_infoLabel">Total:</span>
+                            <span class="PedidoDetalle_infoValue PedidoDetalle_totalValue">@pedido.Total.ToString("C")</span>
+                        </div>
+                    }
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(pedido.Comentarios))
+                {
+                    <div class="PedidoDetalle_comentarios">
+                        <span class="PedidoDetalle_infoLabel">Comentarios:</span>
+                        <p class="PedidoDetalle_comentariosText">@pedido.Comentarios</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Elementos del Pedido -->
+            <div class="PedidoDetalle_card">
+                <h3 class="PedidoDetalle_cardTitle">Elementos del Pedido</h3>
+                @if (Platform.IsMobile)
+                {
+                    <div class="PedidoDetalle_elementosList">
+                        @foreach (var detalle in pedido.Detalles)
+                        {
+                            <div class="PedidoDetalle_elementoCard">
+                                <div class="PedidoDetalle_elementoHeader">
+                                    <h4 class="PedidoDetalle_elementoNombre">@detalle.ElementoMenu.Nombre</h4>
+                                    @if (MostrarPrecios())
+                                    {
+                                        <span class="PedidoDetalle_elementoPrecio">@detalle.PrecioUnitario.ToString("C")</span>
+                                    }
+                                </div>
+                                <div class="PedidoDetalle_elementoInfo">
+                                    <span class="PedidoDetalle_elementoCantidad">Cantidad: @detalle.Cantidad</span>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(detalle.Observaciones))
+                                {
+                                    <div class="PedidoDetalle_elementoObservaciones">
+                                        <span class="PedidoDetalle_observacionesLabel">Observaciones:</span>
+                                        <p>@detalle.Observaciones</p>
+                                    </div>
+                                }
+                                @if (MostrarPrecios())
+                                {
+                                    <div class="PedidoDetalle_elementoSubtotal">
+                                        Subtotal: <strong>@((detalle.PrecioUnitario * detalle.Cantidad).ToString("C"))</strong>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="PedidoDetalle_tableContainer">
+                        <table class="PedidoDetalle_table">
+                            <thead>
+                                <tr>
+                                    <th>Elemento</th>
+                                    <th class="PedidoDetalle_textCenter">Cantidad</th>
+                                    @if (MostrarPrecios())
+                                    {
+                                        <th class="PedidoDetalle_textCenter">Precio Unitario</th>
+                                        <th class="PedidoDetalle_textCenter">Subtotal</th>
+                                    }
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detalle in pedido.Detalles)
+                                {
+                                    <tr>
+                                        <td>@detalle.ElementoMenu.Nombre</td>
+                                        <td class="PedidoDetalle_textCenter">@detalle.Cantidad</td>
+                                        @if (MostrarPrecios())
+                                        {
+                                            <td class="PedidoDetalle_textCenter">@detalle.PrecioUnitario.ToString("C")</td>
+                                            <td class="PedidoDetalle_textCenter">@((detalle.PrecioUnitario * detalle.Cantidad).ToString("C"))</td>
+                                        }
+                                        <td>@(detalle.Observaciones ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            @if (MostrarPrecios())
+                            {
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="PedidoDetalle_textRight">Total:</td>
+                                        <td class="PedidoDetalle_textRight">@pedido.Total.ToString("C")</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            }
+                        </table>
+                    </div>
+                }
+            </div>
+
+            <!-- Acciones -->
+            <div class="PedidoDetalle_actions">
+                @if (PuedeCancelarPedido())
+                {
+                    <button class="PedidoDetalle_cancelButton"
+                            @onclick="MostrarConfirmacionCancelar"
+                            disabled="@isProcessing">
+                        @(isProcessing ? "Procesando..." : "Cancelar Pedido")
+                    </button>
+                }
+
+                @if (PuedeCambiarEstado())
+                {
+                    <button class="PedidoDetalle_statusButton"
+                            @onclick="MostrarCambioEstado"
+                            disabled="@isProcessing">
+                        Cambiar Estado
+                    </button>
+                }
+            </div>
+        </div>
+    }
+
+    @* Modal de confirmación de cancelación *@
+    @if (mostrarConfirmacion)
+    {
+        <div class="PedidoDetalle_modalOverlay">
+            <div class="PedidoDetalle_modalContent">
+                <div class="PedidoDetalle_modalHeader">
+                    <h3>Confirmar cancelación</h3>
+                    <button class="PedidoDetalle_modalCloseButton" @onclick="OcultarConfirmacion">×</button>
+                </div>
+                <div class="PedidoDetalle_modalBody">
+                    <p>¿Está seguro que desea cancelar este pedido?</p>
+                    <p class="PedidoDetalle_modalWarning">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="PedidoDetalle_modalActions">
+                    <button class="PedidoDetalle_modalSecondaryButton"
+                            @onclick="OcultarConfirmacion"
+                            disabled="@isProcessing">
+                        No, mantener
+                    </button>
+                    <button class="PedidoDetalle_modalDangerButton"
+                            @onclick="ConfirmarCancelacion"
+                            disabled="@isProcessing">
+                        @(isProcessing ? "Cancelando..." : "Sí, cancelar")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Modal de cambio de estado *@
+    @if (mostrarCambioEstadoModal)
+    {
+        <div class="PedidoDetalle_modalOverlay">
+            <div class="PedidoDetalle_modalContent">
+                <div class="PedidoDetalle_modalHeader">
+                    <h3>Cambiar estado del pedido</h3>
+                    <button class="PedidoDetalle_modalCloseButton" @onclick="OcultarCambioEstado">×</button>
+                </div>
+
+                <div class="PedidoDetalle_modalBody">
+                    <p>Estado actual: <strong>@pedido?.Estado</strong></p>
+
+                    <div class="PedidoDetalle_formGroup">
+                        <label class="PedidoDetalle_formLabel">Nuevo estado:</label>
+                        <select class="PedidoDetalle_formSelect" @bind="nuevoEstado">
+                            @foreach (var estado in GetEstadosSiguientes())
+                            {
+                                <option value="@estado">@estado</option>
+                            }
+                        </select>
+                    </div>
+
+                    @if (nuevoEstado == EstadoPedido.Devuelto)
+                    {
+                        <div class="PedidoDetalle_formGroup">
+                            <label class="PedidoDetalle_formLabel">Motivo de devolución: *</label>
+                            <textarea class="PedidoDetalle_formTextarea"
+                                      @bind="motivoDevolucion"
+                                      placeholder="Describa el motivo de la devolución..."
+                                      rows="4"></textarea>
+                            @if (string.IsNullOrWhiteSpace(motivoDevolucion))
+                            {
+                                <small style="color: #dc2626; font-size: 12px; margin-top: 4px; display: block;">
+                                    El motivo de devolución es obligatorio
+                                </small>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="PedidoDetalle_modalActions">
+                    <button class="PedidoDetalle_modalSecondaryButton"
+                            @onclick="OcultarCambioEstado" disabled="@isProcessing">
+                        Cancelar
+                    </button>
+                    <button class="PedidoDetalle_modalPrimaryButton"
+                            @onclick="ConfirmarCambioEstado"
+                            disabled="@(isProcessing || (nuevoEstado == EstadoPedido.Devuelto && string.IsNullOrWhiteSpace(motivoDevolucion)))">
+                        @(isProcessing ? "Procesando..." : "Guardar Cambios")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private bool isLoading = true;
+    private bool isProcessing = false;
+    private bool initialized = false;
+    private Pedido? pedido;
+    private string userRole = "";
+    private string userId = "";
+    private int proveedorId = 0;
+    private bool MostrarPrecios() => userRole == "Admin" || userRole == "Proveedor";
+    private bool mostrarConfirmacion = false;
+    private bool mostrarCambioEstadoModal = false;
+    private EstadoPedido nuevoEstado = EstadoPedido.Pendiente;
+    private string motivoDevolucion = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            try
+            {
+                await InvokeAsync(async () =>
+                {
+                    userRole = await AuthService.GetUserRoleAsync();
+                    userId = await AuthService.GetUserIdAsync();
+
+                    if (userRole == "Proveedor")
+                    {
+                        var proveedor = await PedidoService.GetProveedorByUsuarioIdAsync(userId);
+                        if (proveedor != null)
+                        {
+                            proveedorId = proveedor.Id;
+                        }
+                    }
+
+                    await CargarPedido();
+                    StateHasChanged();
+                });
+            }
+            catch (Exception ex)
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add($"Error al inicializar: {ex.Message}", Severity.Error);
+                    isLoading = false;
+                    StateHasChanged();
+                });
+            }
+        }
+    }
+
+    private async Task CargarPedido()
+    {
+        try
+        {
+            isLoading = true;
+            pedido = await PedidoService.GetPedidoByIdAsync(Id);
+
+            // Verificar permisos
+            if (!await TienePermisoAsync())
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("No tiene permisos para ver este pedido.", Severity.Error);
+                });
+                Navigation.NavigateTo("/pedidos");
+                return;
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add("No tiene permisos para ver este pedido.", Severity.Error);
+            });
+            Navigation.NavigateTo("/pedidos");
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al cargar el pedido: Pedido no encontrado", Severity.Error);
+            });
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task<bool> TienePermisoAsync()
+    {
+        if (pedido == null) return false;
+        if (IsAdmin()) return true;
+        if (pedido.UsuarioId == userId) return true;
+
+        if (IsProveedor())
+        {
+            // Validar que al menos un elemento pertenece al proveedor
+            foreach (var detalle in pedido.Detalles)
+            {
+                if (detalle.ElementoMenuId > 0)
+                {
+                    var tienePermiso = await MenuService.ValidarProveedorTieneElementoAsync(proveedorId, detalle.ElementoMenuId);
+                    if (tienePermiso) return true;
+                }
+            }
+            return false;
+        }
+
+        return false;
+    }
+    private bool PuedeCancelarPedido()
+    {
+        if (pedido == null) return false;
+
+        if (IsAdmin())
+        {
+            return pedido.Estado == EstadoPedido.Pendiente || pedido.Estado == EstadoPedido.Confirmado;
+        }
+
+        if (!IsProveedor() && pedido.UsuarioId == userId)
+        {
+            return (pedido.Estado == EstadoPedido.Pendiente || pedido.Estado == EstadoPedido.Confirmado) &&
+                   pedido.FechaEntrega > DateTime.Now.AddHours(2);
+        }
+
+        return false;
+    }
+
+    private bool PuedeCambiarEstado()
+    {
+        if (pedido == null) return false;
+
+        if (IsAdmin() || IsProveedor())
+        {
+            return pedido.Estado != EstadoPedido.Cancelado &&
+                   pedido.Estado != EstadoPedido.Recibido &&
+                   pedido.Estado != EstadoPedido.Devuelto;
+        }
+
+        if (userRole == "Administrativo" || userRole == "Operativo")
+        {
+            return pedido.Estado == EstadoPedido.Entregado;
+        }
+
+        return false;
+    }
+
+    private List<EstadoPedido> GetEstadosSiguientes()
+    {
+        if (pedido == null) return new List<EstadoPedido>();
+
+        var estados = new List<EstadoPedido>();
+
+        if (IsAdmin())
+        {
+            // Admin puede cambiar a cualquier estado siguiente
+            switch (pedido.Estado)
+            {
+                case EstadoPedido.Pendiente:
+                    estados.Add(EstadoPedido.Confirmado);
+                    estados.Add(EstadoPedido.EnPreparacion);
+                    estados.Add(EstadoPedido.Listo);
+                    estados.Add(EstadoPedido.Entregado);
+
+                    break;
+                case EstadoPedido.Confirmado:
+                    estados.Add(EstadoPedido.EnPreparacion);
+                    estados.Add(EstadoPedido.Listo);
+                    estados.Add(EstadoPedido.Entregado);
+                    break;
+                case EstadoPedido.EnPreparacion:
+                    estados.Add(EstadoPedido.Listo);
+                    estados.Add(EstadoPedido.Entregado);
+                    break;
+                case EstadoPedido.Listo:
+                    estados.Add(EstadoPedido.Entregado);
+                    break;
+                case EstadoPedido.Entregado:
+                    estados.Add(EstadoPedido.Recibido);
+                    estados.Add(EstadoPedido.Devuelto);
+                    break;
+            }
+        }
+        else if (IsProveedor())
+        {
+            // Proveedor puede avanzar hasta Entregado
+            switch (pedido.Estado)
+            {
+                case EstadoPedido.Pendiente:
+                    estados.Add(EstadoPedido.Confirmado);
+                    break;
+                case EstadoPedido.Confirmado:
+                    estados.Add(EstadoPedido.EnPreparacion);
+                    break;
+                case EstadoPedido.EnPreparacion:
+                    estados.Add(EstadoPedido.Listo);
+                    break;
+                case EstadoPedido.Listo:
+                    estados.Add(EstadoPedido.Entregado);
+                    break;
+            }
+        }
+        else if (userRole == "Administrativo" || userRole == "Operativo")
+        {
+            // Administrativo/Operativo solo puede marcar como Recibido o Devuelto
+            if (pedido.Estado == EstadoPedido.Entregado)
+            {
+                estados.Add(EstadoPedido.Recibido);
+                estados.Add(EstadoPedido.Devuelto);
+            }
+        }
+
+        return estados;
+    }
+
+    private async Task MostrarConfirmacionCancelar()
+    {
+        await InvokeAsync(() =>
+        {
+            mostrarConfirmacion = true;
+            StateHasChanged();
+        });
+    }
+
+    private async Task OcultarConfirmacion()
+    {
+        await InvokeAsync(() =>
+        {
+            mostrarConfirmacion = false;
+            StateHasChanged();
+        });
+    }
+
+    private async Task ConfirmarCancelacion()
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            var resultado = await PedidoService.CancelarPedidoAsync(Id);
+
+            if (resultado)
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Pedido cancelado con éxito.", Severity.Success);
+                });
+                Navigation.NavigateTo("/pedidos");
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al cancelar el pedido: {ex.Message}", Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                mostrarConfirmacion = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private async Task MostrarCambioEstado()
+    {
+        await InvokeAsync(() =>
+        {
+            var estadosDisponibles = GetEstadosSiguientes();
+            if (estadosDisponibles.Any())
+            {
+                nuevoEstado = estadosDisponibles.First();
+                motivoDevolucion = "";
+                mostrarCambioEstadoModal = true;
+            }
+            mostrarCambioEstadoModal = true;
+            StateHasChanged();
+        });
+    }
+
+    private async Task OcultarCambioEstado()
+    {
+        await InvokeAsync(() =>
+        {
+            mostrarCambioEstadoModal = false;
+            motivoDevolucion = "";
+            StateHasChanged();
+        });
+    }
+
+    private async Task ConfirmarCambioEstado()
+    {
+        if (nuevoEstado == EstadoPedido.Devuelto && string.IsNullOrWhiteSpace(motivoDevolucion))
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add("Debe proporcionar un motivo de devolución", Severity.Warning);
+            });
+            return;
+        }
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            var resultado = await PedidoService.ActualizarEstadoPedidoAsync(pedido.Id, nuevoEstado, motivoDevolucion);
+
+            if (resultado)
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add($"Estado cambiado a {nuevoEstado} correctamente", Severity.Success);
+                    mostrarCambioEstadoModal = false;
+                    motivoDevolucion = "";
+                });
+                await CargarPedido();
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al actualizar el estado: {ex.Message}", Severity.Error);
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private bool IsAdmin() => userRole == "Admin";
+    private bool IsProveedor() => userRole == "Proveedor";
+}

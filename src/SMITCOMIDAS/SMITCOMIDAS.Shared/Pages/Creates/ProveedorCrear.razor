@@ -1,0 +1,781 @@
+﻿@page "/proveedores/crear"
+@page "/proveedores/editar/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Models.RegistroRequest
+@using SMITCOMIDAS.Shared.Services
+@using System.Text.Json
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+@inject IProveedoresService ProveedoresService
+@inject IPlatformService Platform
+
+<PageTitle>@(Id.HasValue ? "Proveedor - Editar" : "Proveedor - Crear")</PageTitle>
+
+@if (isChecking)
+{
+    <div class="loading-container">
+        <p>Verificando permisos...</p>
+    </div>
+}
+else if (!isAuthorized)
+{
+    <div class="unauthorized-container">
+        <div class="unauthorized-icon">🔒</div>
+        <h2>Acceso Denegado</h2>
+        <p>No tienes permisos suficientes para acceder a esta página.</p>
+        <button class="btn-back" @onclick="GoBack">Volver</button>
+    </div>
+}
+else
+{
+    @if (Platform.IsMobile)
+    {
+        <!-- Vista Móvil -->
+        <div class="ProveedorForm_MobileContainer">
+            <div class="ProveedorForm_MobileHeader">
+                <h2>@(Id.HasValue ? "Editar Proveedor" : "Registrar Proveedor")</h2>
+            </div>
+
+            <EditForm Model="@currentModel" OnValidSubmit="Guardar">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="ProveedorForm_MobileValidationErrors" />
+
+                @if (!Id.HasValue)
+                {
+                    <!-- Datos de Acceso solo al crear -->
+                    <div class="ProveedorForm_MobileCard">
+                        <h3>Datos de Acceso</h3>
+
+                        <div class="ProveedorForm_MobileGroup">
+                            <label>Email / Usuario *</label>
+                            <InputText @bind-Value="registroRequest.Email" class="ProveedorForm_MobileInputField" placeholder="proveedor@empresa.com" />
+                        </div>
+
+                        <div class="ProveedorForm_MobileGroup">
+                            <label>Contraseña *</label>
+                            <InputText @bind-Value="registroRequest.Password" type="password" class="ProveedorForm_MobileInputField" />
+                        </div>
+
+                        <div class="ProveedorForm_MobileGroup">
+                            <label>Confirmar Contraseña *</label>
+                            <InputText @bind-Value="registroRequest.ConfirmPassword" type="password" class="ProveedorForm_MobileInputField" />
+                        </div>
+                    </div>
+                }
+
+                @if (Id.HasValue)
+                {
+                    <!-- Cambiar contraseña al editar -->
+                    <div class="ProveedorForm_MobileCard">
+                        <h3>Cambiar Contraseña</h3>
+
+                        <div class="ProveedorForm_MobileGroup">
+                            <label class="ProveedorForm_MobileCheckboxLabel">
+                                <input type="checkbox" @bind="cambiarPassword" />
+                                <span>Cambiar contraseña</span>
+                            </label>
+                        </div>
+
+                        @if (cambiarPassword)
+                        {
+                            <div class="ProveedorForm_MobileGroup">
+                                <label>Nueva Contraseña *</label>
+                                <InputText @bind-Value="nuevaPassword" type="password" class="ProveedorForm_MobileInputField" />
+                            </div>
+
+                            <div class="ProveedorForm_MobileGroup">
+                                <label>Confirmar Nueva Contraseña *</label>
+                                <InputText @bind-Value="confirmarPassword" type="password" class="ProveedorForm_MobileInputField" />
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Datos del Proveedor -->
+                <div class="ProveedorForm_MobileCard">
+                    <h3>Información del Proveedor</h3>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>NIT *</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.NIT" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.NIT" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Razón Social *</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.RazonSocial" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.RazonSocial" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Nombre Comercial *</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.NombreComercial" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.NombreComercial" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Teléfono *</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.Telefono" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Telefono" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Teléfono Adicional</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.TelefonoAdicional" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.TelefonoAdicional" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Email Adicional</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.EmailAdicional" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.EmailAdicional" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Dirección *</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.Direccion" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Direccion" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Ciudad</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.Ciudad" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Ciudad" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Departamento</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.Departamento" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Departamento" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>País</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.Pais" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Pais" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Contacto</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.Contacto" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Contacto" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+
+                    <div class="ProveedorForm_MobileGroup">
+                        <label>Teléfono Contacto</label>
+                        @if (Id.HasValue)
+                        {
+                            <InputText @bind-Value="proveedor.TelefonoContacto" class="ProveedorForm_MobileInputField" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.TelefonoContacto" class="ProveedorForm_MobileInputField" />
+                        }
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="ProveedorForm_MobileErrorMessage">@errorMessage</div>
+                }
+
+                <div class="ProveedorForm_MobileActions">
+                    <button type="button" class="ProveedorForm_MobileBtnSecondary" @onclick="Cancelar">Cancelar</button>
+                    <button type="submit" class="ProveedorForm_MobileBtnPrimary" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="ProveedorForm_MobileSpinner"></span>
+                            <span>Guardando...</span>
+                        }
+                        else
+                        {
+                            <span>Guardar</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else
+    {
+        <!-- Vista Desktop -->
+        <div class="ProveedorForm_Container">
+            <div class="ProveedorForm_Header">
+                <h2>@(Id.HasValue ? "Editar Proveedor" : "Registrar Proveedor")</h2>
+            </div>
+
+            <EditForm Model="@currentModel" OnValidSubmit="Guardar">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="ProveedorForm_ValidationErrors" />
+
+            <div class="ProveedorForm_CardsContainer">
+                <!-- Columna izquierda -->
+                <div class="ProveedorForm_CardColumn">
+                    @if (!Id.HasValue)
+                    {
+                        <!-- Datos de Acceso solo al crear -->
+                        <div class="ProveedorForm_CardSection">
+                            <h3 class="ProveedorForm_CardSectionTitle">Datos de Acceso</h3>
+
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Email / Usuario *</label>
+                                <InputText @bind-Value="registroRequest.Email" class="ProveedorForm_InputField" placeholder="proveedor@empresa.com" />
+                            </div>
+
+                            <div class="ProveedorForm_FormGrid">
+                                <div class="ProveedorForm_FormGroup">
+                                    <label class="ProveedorForm_FormLabel">Contraseña *</label>
+                                    <InputText @bind-Value="registroRequest.Password" type="password" class="ProveedorForm_InputField" />
+                                </div>
+
+                                <div class="ProveedorForm_FormGroup">
+                                    <label class="ProveedorForm_FormLabel">Confirmar Contraseña *</label>
+                                    <InputText @bind-Value="registroRequest.ConfirmPassword" type="password" class="ProveedorForm_InputField" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Id.HasValue)
+                    {
+                        <!-- Cambiar contraseña al editar -->
+                        <div class="ProveedorForm_CardSection">
+                            <h3 class="ProveedorForm_CardSectionTitle">Cambiar Contraseña</h3>
+
+                            <div class="ProveedorForm_CheckboxContainer">
+                                <label class="ProveedorForm_CheckboxSwitch">
+                                    <InputCheckbox @bind-Value="cambiarPassword" />
+                                    <span class="ProveedorForm_SwitchSlider"></span>
+                                </label>
+                                <span class="ProveedorForm_SwitchLabel">Cambiar contraseña</span>
+                            </div>
+
+                            @if (cambiarPassword)
+                            {
+                                <div class="ProveedorForm_FormGrid">
+                                    <div class="ProveedorForm_FormGroup">
+                                        <label class="ProveedorForm_FormLabel">Nueva Contraseña *</label>
+                                        <InputText @bind-Value="nuevaPassword" type="password" class="ProveedorForm_InputField" />
+                                    </div>
+
+                                    <div class="ProveedorForm_FormGroup">
+                                        <label class="ProveedorForm_FormLabel">Confirmar Nueva Contraseña *</label>
+                                        <InputText @bind-Value="confirmarPassword" type="password" class="ProveedorForm_InputField" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <!-- Información básica del proveedor -->
+                    <div class="ProveedorForm_CardSection">
+                        <h3 class="ProveedorForm_CardSectionTitle">Información Básica</h3>
+                        
+                        <div class="ProveedorForm_FormGrid">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">NIT *</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.NIT" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.NIT" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Razón Social *</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.RazonSocial" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.RazonSocial" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="ProveedorForm_FormGrid single">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Nombre Comercial *</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.NombreComercial" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.NombreComercial" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="ProveedorForm_FormGrid">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Teléfono *</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.Telefono" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Telefono" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Teléfono Adicional</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.TelefonoAdicional" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.TelefonoAdicional" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="ProveedorForm_FormGrid single">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Email Adicional</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.EmailAdicional" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.EmailAdicional" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha -->
+                <div class="ProveedorForm_CardColumn">
+                    <div class="ProveedorForm_CardSection">
+                        <h3 class="ProveedorForm_CardSectionTitle">Ubicación</h3>
+
+                        <div class="ProveedorForm_FormGrid single">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Dirección *</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.Direccion" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Direccion" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="ProveedorForm_FormGrid">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Ciudad</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.Ciudad" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Ciudad" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Departamento</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.Departamento" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Departamento" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="ProveedorForm_FormGrid single">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">País</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.Pais" class="ProveedorForm_InputField"/>
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Pais" class="ProveedorForm_InputField"/>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ProveedorForm_CardSection">
+                        <h3 class="ProveedorForm_CardSectionTitle">Contacto</h3>
+
+                        <div class="ProveedorForm_FormGrid">
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Contacto</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.Contacto" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Contacto" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+
+                            <div class="ProveedorForm_FormGroup">
+                                <label class="ProveedorForm_FormLabel">Teléfono Contacto</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputText @bind-Value="proveedor.TelefonoContacto" class="ProveedorForm_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.TelefonoContacto" class="ProveedorForm_InputField" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="ProveedorForm_ErrorMessage">@errorMessage</div>
+            }
+
+            <div class="ProveedorForm_Actions">
+                <button type="button" class="ProveedorForm_BtnSecondary" @onclick="Cancelar">Cancelar</button>
+                <button type="submit" class="ProveedorForm_BtnPrimary" disabled="@isLoading">
+                    @(isLoading ? "Guardando..." : "Guardar")
+                </button>
+            </div>
+        </EditForm>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private Proveedor proveedor = new() { Activo = true, FechaRegistro = DateTime.Now, Pais = "Colombia" };
+    private RegistroProveedorRequest registroRequest = new() { Pais = "Colombia" };
+    private string errorMessage = "";
+    private bool isLoading = false;
+    private bool isChecking = true;
+    private bool isAuthorized = false;
+    private bool cambiarPassword = false;
+    private string nuevaPassword = "";
+    private string confirmarPassword = "";
+    private bool initialized = false;
+    private bool isAdmin = false;
+    private bool isProveedor = false;
+
+    private object currentModel => Id.HasValue ? (object)proveedor : registroRequest;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+
+            try
+            {
+                var role = await AuthService.GetUserRoleAsync();
+                var userId = await AuthService.GetUserIdAsync();
+                isAdmin = role == "Admin";
+                isProveedor = role == "Proveedor";
+                
+                if (Id.HasValue)
+                {
+                    proveedor = await ProveedoresService.GetProveedorAsync(Id.Value);
+
+                    if (isAdmin)
+                    {
+                        isAuthorized = true;
+                    }
+                    else if (isProveedor)
+                    {
+                        isAuthorized = proveedor != null && proveedor.UserId == userId;
+                    }
+                    else
+                    {
+                        isAuthorized = false;
+                    }
+                }
+                else
+                {
+                    isAuthorized = isAdmin;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Error al inicializar: " + ex.Message;
+                isAuthorized = false;
+            }
+            finally
+            {
+                isChecking = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task Guardar()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = "";
+            StateHasChanged();
+
+            if (Id.HasValue)
+            {
+                // Actualizar proveedor existente
+                await ProveedoresService.UpdateProveedorAsync(proveedor);
+
+                // Cambiar contraseña si se solicitó
+                if (cambiarPassword)
+                {
+                    if (nuevaPassword != confirmarPassword)
+                    {
+                        errorMessage = "Las contraseñas no coinciden";
+                        isLoading = false;
+                        StateHasChanged();
+                        return;
+                    }
+
+                    if (!string.IsNullOrEmpty(nuevaPassword))
+                    {
+                        await ProveedoresService.CambiarPasswordAsync(proveedor.UserId, nuevaPassword);
+                    }
+                }
+            }
+            else
+            {
+                // Crear usuario + proveedor completo
+                await ProveedoresService.RegistroCompletoAsync(registroRequest);
+            }
+            var role = await AuthService.GetUserRoleAsync();
+
+            if (role == "Admin")
+            {
+                Navigation.NavigateTo("/proveedores");
+            }
+            else
+            {
+                Navigation.NavigateTo("/perfil");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Procesar el mensaje de error
+            errorMessage = ProcessApiErrorMessage(ex.Message);
+            isLoading = false;
+            StateHasChanged();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void Cancelar()
+    {
+        var role = await AuthService.GetUserRoleAsync();
+
+        if (role == "Admin")
+        {
+            Navigation.NavigateTo("/proveedores");
+        }
+        else
+        {
+            Navigation.NavigateTo("/perfil");
+        }
+    }
+
+    private async void GoBack()
+    {
+        var role = await AuthService.GetUserRoleAsync();
+
+        if (role == "Admin")
+        {
+            Navigation.NavigateTo("/proveedores");
+        }
+        else
+        {
+            Navigation.NavigateTo("/perfil");
+        }
+    }
+
+    private string ProcessApiErrorMessage(string errorMessage)
+    {
+        // Si el mensaje contiene JSON, intentamos extraer información útil
+        if (errorMessage.Contains("{") && errorMessage.Contains("}"))
+        {
+            try
+            {
+                // Extraer solo la parte JSON del mensaje de error
+                int startIndex = errorMessage.IndexOf('{');
+                int endIndex = errorMessage.LastIndexOf('}') + 1;
+                string jsonPart = errorMessage.Substring(startIndex, endIndex - startIndex);
+
+                // Deserializar el JSON
+                using (JsonDocument doc = JsonDocument.Parse(jsonPart))
+                {
+                    // Verificar si hay errores de validación
+                    if (doc.RootElement.TryGetProperty("errors", out JsonElement errorsElement))
+                    {
+                        var formattedErrors = new List<string>();
+
+                        // Recorrer cada error de validación
+                        foreach (var property in errorsElement.EnumerateObject())
+                        {
+                            string fieldName = property.Name;
+                            var errorMessages = property.Value.EnumerateArray().Select(e => e.GetString()).ToList();
+
+                            // Traducir el nombre del campo
+                            string displayName = TranslateFieldName(fieldName);
+
+                            // Formatear cada mensaje de error
+                            foreach (var message in errorMessages)
+                            {
+                                string friendlyMessage = FormatErrorMessage(fieldName, message);
+                                formattedErrors.Add(friendlyMessage);
+                            }
+                        }
+
+                        // Unir todos los errores en un solo mensaje
+                        return string.Join("\n• ", formattedErrors.Select(e => e.StartsWith("•") ? e : "• " + e));
+                    }
+                }
+            }
+            catch
+            {
+                // Si hay un error al procesar el JSON, mostrar un mensaje genérico
+                return "Error al procesar el formulario. Por favor, verifica todos los campos.";
+            }
+        }
+
+        // Si no es JSON o no pudimos procesar los errores específicos, mostrar el mensaje original
+        return errorMessage;
+    }
+
+    private string TranslateFieldName(string fieldName)
+    {
+        // Diccionario de traducción de nombres de campos
+        var translations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Direccion", "Dirección" },
+        { "NIT", "NIT" },
+        { "RazonSocial", "Razón Social" },
+        { "NombreComercial", "Nombre Comercial" },
+        { "Telefono", "Teléfono" },
+        { "Email", "Correo Electrónico" },
+        { "Password", "Contraseña" },
+        { "ConfirmPassword", "Confirmación de Contraseña" },
+        // Añadir más traducciones según sea necesario
+    };
+
+        return translations.ContainsKey(fieldName) ? translations[fieldName] : fieldName;
+    }
+
+    private string FormatErrorMessage(string fieldName, string message)
+    {
+        // Traducir los mensajes de error comunes
+        string displayName = TranslateFieldName(fieldName);
+
+        if (message.Contains("required"))
+        {
+            return $"El campo '{displayName}' es obligatorio";
+        }
+        else if (message.Contains("maximum length"))
+        {
+            return $"El campo '{displayName}' excede la longitud máxima permitida";
+        }
+        else if (message.Contains("valid email"))
+        {
+            return $"Por favor, ingresa un correo electrónico válido en '{displayName}'";
+        }
+        else
+        {
+            // Si no podemos traducir el mensaje específico, mostrarlo con el nombre del campo traducido
+            return $"{displayName}: {message}";
+        }
+    }
+}

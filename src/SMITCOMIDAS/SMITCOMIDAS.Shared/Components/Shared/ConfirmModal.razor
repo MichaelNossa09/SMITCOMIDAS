@@ -1,0 +1,246 @@
+﻿@if (IsVisible)
+{
+    <div class="ConfirmModal_overlay">
+        <div class="ConfirmModal_content">
+            <div class="ConfirmModal_header">
+                <h3>@Title</h3>
+                <button class="ConfirmModal_closeButton" @onclick="OnCancel">×</button>
+            </div>
+            <div class="ConfirmModal_body">
+                <p>@Message</p>
+                @if (!string.IsNullOrEmpty(WarningMessage))
+                {
+                    <p class="ConfirmModal_warning">@WarningMessage</p>
+                }
+            </div>
+            <div class="ConfirmModal_actions">
+                <button class="ConfirmModal_secondaryButton"
+                        @onclick="OnCancel"
+                        disabled="@IsProcessing">
+                    Cancelar
+                </button>
+                <button class="ConfirmModal_dangerButton"
+                        @onclick="OnConfirm"
+                        disabled="@IsProcessing">
+                    @(IsProcessing ? "Procesando..." : (string.IsNullOrEmpty(ConfirmButtonText) ? "Eliminar" : ConfirmButtonText))
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string Title { get; set; } = "Confirmar";
+    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public string? WarningMessage { get; set; }
+    [Parameter] public string? ConfirmButtonText { get; set; }
+    [Parameter] public bool IsProcessing { get; set; }
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+}
+
+<style>
+
+    .ConfirmModal_overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+
+    .ConfirmModal_content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        animation: ConfirmModal_slideIn 0.2s ease-out;
+    }
+
+    @@keyframes ConfirmModal_slideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .ConfirmModal_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .ConfirmModal_header h3 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .ConfirmModal_closeButton {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .ConfirmModal_closeButton:hover {
+        background-color: #f1f5f9;
+        color: #64748b;
+    }
+
+    .ConfirmModal_body {
+        padding: 25px;
+    }
+
+    .ConfirmModal_body p {
+        margin: 0 0 10px 0;
+        color: #475569;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .ConfirmModal_body p:last-child {
+        margin-bottom: 0;
+    }
+
+    .ConfirmModal_warning {
+        color: #dc2626 !important;
+        font-weight: 500;
+    }
+
+    .ConfirmModal_actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 20px 25px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .ConfirmModal_secondaryButton,
+    .ConfirmModal_dangerButton {
+        padding: 11px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .ConfirmModal_secondaryButton {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    .ConfirmModal_secondaryButton:hover:not(:disabled) {
+        background-color: #e2e8f0;
+    }
+
+    .ConfirmModal_secondaryButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .ConfirmModal_dangerButton {
+        background-color: #dc2626;
+        color: white;
+    }
+
+    .ConfirmModal_dangerButton:hover:not(:disabled) {
+        background-color: #b91c1c;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    }
+
+    .ConfirmModal_dangerButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Responsive para móvil */
+    @@media (max-width: 640px) {
+        .ConfirmModal_overlay
+
+    {
+        align-items: flex-end;
+    }
+
+    .ConfirmModal_content {
+        border-radius: 16px 16px 0 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .ConfirmModal_header {
+        padding: 15px 18px;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 1;
+    }
+
+    .ConfirmModal_header h3 {
+        font-size: 16px;
+    }
+
+    .ConfirmModal_closeButton {
+        font-size: 26px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .ConfirmModal_body {
+        padding: 18px;
+    }
+
+    .ConfirmModal_body p {
+        font-size: 14px;
+    }
+
+    .ConfirmModal_actions {
+        padding: 12px 18px;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .ConfirmModal_secondaryButton,
+    .ConfirmModal_dangerButton {
+        width: 100%;
+        padding: 12px;
+    }
+
+    }
+</style>

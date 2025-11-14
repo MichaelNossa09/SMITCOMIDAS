@@ -1,0 +1,181 @@
+﻿/* Estilos para la versión web */
+.AppLayoutWeb_Container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.AppLayoutWeb_Sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+}
+
+.AppLayoutWeb_LogoContainer {
+    padding: 20px 20px;
+    background: linear-gradient(135deg, var(--corporate-green) 0%, #429019 100%);
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+    .AppLayoutWeb_LogoContainer h2 {
+        padding: 2px;
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+.AppLayoutWeb_NavMenu {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+.AppLayoutWeb_NavItem {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    color: #ECF0F1;
+    text-decoration: none;
+    transition: all 0.3s;
+    margin: 4px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+    .AppLayoutWeb_NavItem:hover {
+        background: rgba(81, 161, 33, 0.15);
+        color: white;
+        transform: translateX(4px);
+    }
+
+    .AppLayoutWeb_NavItem .icon {
+        font-size: 22px;
+        margin-right: 14px;
+        width: 28px;
+        opacity: 0.9;
+    }
+
+.AppLayoutWeb_SidebarFooter {
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.AppLayoutWeb_LogoutButton {
+    width: 100%;
+    padding: 14px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: black;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+    .AppLayoutWeb_LogoutButton:hover {
+        background: var(--dark-blue);
+        color: white;
+        border-color: white;
+    }
+
+.AppLayoutWeb_MainContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--light-bg);
+    overflow: hidden;
+}
+
+.AppLayoutWeb_Topbar {
+    background: white;
+    padding: 10px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    min-height: 70px;
+}
+
+    .AppLayoutWeb_Topbar h1 {
+        margin: 0;
+        color: #468a84;
+        font-size: 23px;
+        font-weight: 700;
+        font-style: italic;
+    }
+
+.AppLayoutWeb_UserSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #7F8C8D;
+    font-weight: 500;
+    padding: 8px 16px;
+    background: #F8F9FA;
+    border-radius: 20px;
+}
+
+    .AppLayoutWeb_UserSection::before {
+        content: "Usuario:";
+        color: var(--corporate-green);
+        font-weight: bold;
+        letter-spacing: 2px;
+        font-size: 14px;
+    }
+
+.AppLayoutWeb_ContentArea {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Responsive Web */
+@media (max-width: 1024px) {
+    .AppLayoutWeb_Sidebar {
+        width: 220px;
+    }
+
+    .AppLayoutWeb_NavItem {
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+
+        .AppLayoutWeb_NavItem .icon {
+            font-size: 20px;
+            width: 24px;
+        }
+
+    .AppLayoutWeb_Topbar h1 {
+        font-size: 22px;
+    }
+
+    .AppLayoutWeb_ContentArea {
+        padding: 20px;
+    }
+}
+
+/* Pantallas grandes */
+@media (min-width: 1440px) {
+    .AppLayoutWeb_Sidebar {
+        width: 280px;
+    }
+
+    .AppLayoutWeb_ContentArea {
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .AppLayoutWeb_Topbar h1 {
+        font-size: 20px;
+    }
+}

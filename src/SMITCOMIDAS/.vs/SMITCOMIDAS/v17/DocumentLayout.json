@@ -1,0 +1,103 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|c:\\proyectos michael\\proyectocomidas\\src\\smitcomidas\\smitcomidas.shared\\components\\shared\\changestatemodal.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|solutionrelative:smitcomidas.shared\\components\\shared\\changestatemodal.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|c:\\proyectos michael\\proyectocomidas\\src\\smitcomidas\\smitcomidas.shared\\pages\\pedidos\\pedidos.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|solutionrelative:smitcomidas.shared\\pages\\pedidos\\pedidos.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|c:\\proyectos michael\\proyectocomidas\\src\\smitcomidas\\smitcomidas.shared\\wwwroot\\assets\\css\\mobile\\pedidos\\pedidomobile.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|solutionrelative:smitcomidas.shared\\wwwroot\\assets\\css\\mobile\\pedidos\\pedidomobile.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|c:\\proyectos michael\\proyectocomidas\\src\\smitcomidas\\smitcomidas.shared\\wwwroot\\assets\\css\\web\\proveedores\\proveedorcrear.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|solutionrelative:smitcomidas.shared\\wwwroot\\assets\\css\\web\\proveedores\\proveedorcrear.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|c:\\proyectos michael\\proyectocomidas\\src\\smitcomidas\\smitcomidas.shared\\wwwroot\\assets\\css\\web\\proveedores\\proveedores.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{2E02D3A0-4B91-4446-9256-9B3A8563A3B6}|SMITCOMIDAS.Shared\\SMITCOMIDAS.Shared.csproj|solutionrelative:smitcomidas.shared\\wwwroot\\assets\\css\\web\\proveedores\\proveedores.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ChangeStateModal.razor",
+              "DocumentMoniker": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\Components\\Shared\\ChangeStateModal.razor",
+              "RelativeDocumentMoniker": "SMITCOMIDAS.Shared\\Components\\Shared\\ChangeStateModal.razor",
+              "ToolTip": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\Components\\Shared\\ChangeStateModal.razor",
+              "RelativeToolTip": "SMITCOMIDAS.Shared\\Components\\Shared\\ChangeStateModal.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-14T14:00:30.71Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ProveedorCrear.css",
+              "DocumentMoniker": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\ProveedorCrear.css",
+              "RelativeDocumentMoniker": "SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\ProveedorCrear.css",
+              "ToolTip": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\ProveedorCrear.css",
+              "RelativeToolTip": "SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\ProveedorCrear.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-11-13T23:02:21.398Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Proveedores.css",
+              "DocumentMoniker": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\Proveedores.css",
+              "RelativeDocumentMoniker": "SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\Proveedores.css",
+              "ToolTip": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\Proveedores.css",
+              "RelativeToolTip": "SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\Proveedores.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-11-13T23:02:19.255Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PedidoMobile.css",
+              "DocumentMoniker": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\pedidos\\PedidoMobile.css",
+              "RelativeDocumentMoniker": "SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\pedidos\\PedidoMobile.css",
+              "ToolTip": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\pedidos\\PedidoMobile.css",
+              "RelativeToolTip": "SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\pedidos\\PedidoMobile.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-11-13T22:54:10.777Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Pedidos.razor",
+              "DocumentMoniker": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\Pages\\Pedidos\\Pedidos.razor",
+              "RelativeDocumentMoniker": "SMITCOMIDAS.Shared\\Pages\\Pedidos\\Pedidos.razor",
+              "ToolTip": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\Pages\\Pedidos\\Pedidos.razor",
+              "RelativeToolTip": "SMITCOMIDAS.Shared\\Pages\\Pedidos\\Pedidos.razor",
+              "ViewState": "AgIAABYAAAAAAAAAAAASwDQAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-13T21:00:56.342Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

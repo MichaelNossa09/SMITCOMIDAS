@@ -1,0 +1,4 @@
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS\wwwroot\app.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS\wwwroot\index.html
+wwwroot\app.css
+wwwroot\index.html

@@ -1,0 +1,544 @@
+﻿/* Container */
+.PedidoDetalle_containerMobile {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.PedidoDetalle_header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 10px;
+    background: white;
+}
+
+.PedidoDetalle_titleContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.PedidoDetalle_backButton {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background-color: #f1f5f9;
+    position: relative;
+    font-size: 16px;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.PedidoDetalle_backButton span {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -45%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.PedidoDetalle_title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Estados */
+.PedidoDetalle_estado {
+    padding: 5px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.1);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.PedidoDetalle_estadoPendiente {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.PedidoDetalle_estadoConfirmado {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.PedidoDetalle_estadoEnPreparacion {
+    background-color: #e0e7ff;
+    color: #4338ca;
+}
+
+.PedidoDetalle_estadoListo {
+    background-color: #ddd6fe;
+    color: #6d28d9;
+}
+
+.PedidoDetalle_estadoEntregado {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.PedidoDetalle_estadoRecibido {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.PedidoDetalle_estadoDevueltos {
+    background-color: #fed7aa;
+    color: #9a3412;
+}
+
+.PedidoDetalle_estadoCancelado {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Content */
+.PedidoDetalle_contentMobile {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Card */
+.PedidoDetalle_card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.PedidoDetalle_cardTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgb(81, 161, 33);
+}
+
+/* Info Grid */
+.PedidoDetalle_infoGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.PedidoDetalle_infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.PedidoDetalle_infoLabel {
+    font-size: 10px;
+    font-weight: 600;
+    color: #468a84;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.PedidoDetalle_infoValue {
+    font-size: 11px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.PedidoDetalle_totalValue {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgb(81, 161, 33);
+}
+
+/* Comentarios */
+.PedidoDetalle_comentarios {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.PedidoDetalle_comentariosText {
+    margin: 8px 0 0 0;
+    padding: 10px;
+    background-color: #f8fafc;
+    border-radius: 6px;
+    color: #475569;
+    line-height: 1.5;
+    font-size: 13px;
+    border-left: 3px solid rgb(81, 161, 33);
+}
+
+/* Elementos List */
+.PedidoDetalle_elementosList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.PedidoDetalle_elementoCard {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.PedidoDetalle_elementoHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.PedidoDetalle_elementoNombre {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    flex: 1;
+}
+
+.PedidoDetalle_elementoPrecio {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgb(81, 161, 33);
+    margin-left: 10px;
+}
+
+.PedidoDetalle_elementoInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+
+.PedidoDetalle_elementoCantidad {
+    font-size: 10px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.PedidoDetalle_elementoObservaciones {
+    margin: 8px 0;
+    padding: 8px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.PedidoDetalle_observacionesLabel {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.PedidoDetalle_elementoObservaciones p {
+    margin: 0;
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.4;
+}
+
+.PedidoDetalle_elementoSubtotal {
+    text-align: right;
+    font-size: 11px;
+    color: #475569;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.PedidoDetalle_elementoSubtotal strong {
+    color: rgb(81, 161, 33);
+    font-size: 11px;
+}
+
+.PedidoDetalle_elementosTotal {
+    background-color: rgb(232, 232, 206);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.PedidoDetalle_elementosTotalLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgb(86, 69, 60);
+}
+
+.PedidoDetalle_elementosTotalValue {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgb(81, 161, 33);
+}
+
+/* Actions */
+.PedidoDetalle_actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+}
+
+.PedidoDetalle_cancelButton,
+.PedidoDetalle_statusButton {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.PedidoDetalle_cancelButton {
+    background-color: #dc2626;
+    color: white;
+}
+
+    .PedidoDetalle_cancelButton:disabled {
+        opacity: 0.5;
+    }
+
+.PedidoDetalle_statusButton {
+    background-color: rgb(81, 161, 33);
+    color: white;
+}
+
+.PedidoDetalle_statusButton:disabled {
+    opacity: 0.5;
+}
+
+/* Loading */
+.PedidoDetalle_loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 15px;
+}
+
+.PedidoDetalle_loader {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f1f5f9;
+    border-top-color: rgb(81, 161, 33);
+    border-radius: 50%;
+    animation: PedidoDetalle_spin 0.8s linear infinite;
+}
+
+@keyframes PedidoDetalle_spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error */
+.PedidoDetalle_errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 12px;
+    text-align: center;
+    padding: 20px;
+}
+
+.PedidoDetalle_errorIcon {
+    font-size: 45px;
+}
+
+.PedidoDetalle_errorContainer h3 {
+    font-size: 18px;
+    color: #1e293b;
+    margin: 0;
+}
+
+.PedidoDetalle_errorContainer p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+.PedidoDetalle_errorContainer .PedidoDetalle_backButton {
+    margin-top: 10px;
+    padding: 12px 24px;
+    background-color: rgb(81, 161, 33);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    width: auto;
+    height: auto;
+}
+
+/* Modal */
+.PedidoDetalle_modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 1000;
+    padding: 0;
+}
+
+.PedidoDetalle_modalContent {
+    background: white;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.PedidoDetalle_modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 18px;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
+
+    .PedidoDetalle_modalHeader h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+.PedidoDetalle_modalCloseButton {
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.PedidoDetalle_modalBody {
+    padding: 18px;
+}
+
+    .PedidoDetalle_modalBody p {
+        margin: 0 0 10px 0;
+        color: #475569;
+        line-height: 1.5;
+        font-size: 14px;
+    }
+
+.PedidoDetalle_modalWarning {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.PedidoDetalle_formGroup {
+    margin-top: 15px;
+}
+
+.PedidoDetalle_formLabel {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.PedidoDetalle_formSelect,
+.PedidoDetalle_formTextarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1e293b;
+    background-color: white;
+    font-family: inherit;
+}
+
+.PedidoDetalle_formTextarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.PedidoDetalle_modalActions {
+    display: flex;
+    gap: 10px;
+    padding: 12px 18px;
+    border-top: 1px solid #e2e8f0;
+    position: sticky;
+    bottom: 0;
+    background: white;
+}
+
+.PedidoDetalle_modalSecondaryButton,
+.PedidoDetalle_modalPrimaryButton,
+.PedidoDetalle_modalDangerButton {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.PedidoDetalle_modalSecondaryButton {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+    .PedidoDetalle_modalSecondaryButton:disabled {
+        opacity: 0.5;
+    }
+
+.PedidoDetalle_modalPrimaryButton {
+    background-color: rgb(81, 161, 33);
+    color: white;
+}
+
+    .PedidoDetalle_modalPrimaryButton:disabled {
+        opacity: 0.5;
+    }
+
+.PedidoDetalle_modalDangerButton {
+    background-color: #dc2626;
+    color: white;
+}
+
+    .PedidoDetalle_modalDangerButton:disabled {
+        opacity: 0.5;
+    }

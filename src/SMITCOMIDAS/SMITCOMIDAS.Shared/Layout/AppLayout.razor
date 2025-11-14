@@ -1,0 +1,266 @@
+﻿@inherits LayoutComponentBase
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Pages.SnackBar
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject IPlatformService Platform
+
+@if (Platform.IsWeb)
+{
+    <div class="AppLayoutWeb_Container">
+        <div class="AppLayoutWeb_Sidebar">
+            <div class="AppLayoutWeb_LogoContainer">
+                <h2>SMITCOMIDAS</h2>
+            </div>
+            <nav class="AppLayoutWeb_NavMenu">
+                <a href="/home" class="AppLayoutWeb_NavItem">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                @if (isAdmin)
+                {
+                    <a href="/proveedores" class="AppLayoutWeb_NavItem">
+                        <span class="icon">🚚</span>
+                        Proveedores
+                    </a>
+                    <a href="/centroscosto" class="AppLayoutWeb_NavItem">
+                        <span class="icon">💼</span>
+                        Centros de Costo
+                    </a>
+                }
+                @if (isProveedor)
+                {
+                    <a href="/menus" class="AppLayoutWeb_NavItem">
+                        <span class="icon">🥘</span>
+                        Menus
+                    </a>
+                }
+                <a href="/pedidos" class="AppLayoutWeb_NavItem">
+                    <span class="icon">🥘</span>
+                    Pedidos
+                </a>
+                <a href="/perfil" class="AppLayoutWeb_NavItem">
+                    <span class="icon">👨‍💼</span>
+                    Mi Perfil
+                </a>
+            </nav>
+            <div class="AppLayoutWeb_SidebarFooter">
+                <button class="AppLayoutWeb_LogoutButton" @onclick="Logout">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <div class="AppLayoutWeb_MainContent">
+            <div class="AppLayoutWeb_Topbar">
+                <h1>@GetPageTitle()</h1>
+                <div class="AppLayoutWeb_UserSection">
+                    <span>@userName</span>
+                </div>
+            </div>
+            <div class="AppLayoutWeb_ContentArea">
+                @Body
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="AppLayoutMobile_Container">
+        <div class="AppLayoutMobile_Header">
+            <button class="AppLayoutMobile_MenuToggle" @onclick="ToggleSidebar">
+                <span class="AppLayoutMobile_HamburgerIcon">☰</span>
+            </button>
+            <h1>SMITCOMIDAS</h1>
+            <div class="AppLayoutMobile_ProfileIcon" @onclick="ToggleMenu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Sidebar móvil -->
+        @if (showSidebar)
+        {
+            <div class="AppLayoutMobile_SidebarOverlay" @onclick="CloseSidebar"></div>
+            <div class="AppLayoutMobile_Sidebar @(showSidebar ? "active" : "")">
+                <div class="AppLayoutMobile_SidebarHeader">
+                    <h2>SMITCOMIDAS</h2>
+                    <button class="AppLayoutMobile_CloseSidebarBtn" @onclick="CloseSidebar">✕</button>
+                </div>
+
+                <div class="AppLayoutMobile_UserInfo">
+                    <div class="AppLayoutMobile_UserAvatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                    </div>
+                    <div class="AppLayoutMobile_UserDetails">
+                        <p class="AppLayoutMobile_UserName">@userName</p>
+                        <p class="AppLayoutMobile_UserRole">@userRole</p>
+                    </div>
+                </div>
+
+                <nav class="AppLayoutMobile_NavMenu">
+                    <a href="/home" class="AppLayoutMobile_NavItem" @onclick="CloseSidebar">
+                        <span class="icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    @if (isAdmin)
+                    {
+                        <a href="/proveedores" class="AppLayoutMobile_NavItem" @onclick="CloseSidebar">
+                            <span class="icon">🏢</span>
+                            <span>Proveedores</span>
+                        </a>
+                        <a href="/centroscosto" class="AppLayoutMobile_NavItem" @onclick="CloseSidebar">
+                            <span class="icon">💼</span>
+                            <span>Centros de Costo</span>
+                        </a>
+                    }
+                    @if (isProveedor)
+                    {
+                        <a href="/menus" class="AppLayoutMobile_NavItem" @onclick="CloseSidebar">
+                            <span class="icon">🥘</span>
+                            <span>Menus</span>
+                        </a>
+                    }
+                  
+                    <a href="/pedidos" class="AppLayoutMobile_NavItem" @onclick="CloseSidebar">
+                        <span class="icon">🥘</span>
+                        Pedidos
+                    </a>
+                    
+                    <a href="/perfil" class="AppLayoutMobile_NavItem" @onclick="CloseSidebar">
+                        <span class="icon">👨‍💼</span>
+                        <span>Mi Perfil</span>
+                    </a>
+                </nav>
+
+                <div class="AppLayoutMobile_SidebarFooter">
+                    <button class="AppLayoutMobile_LogoutButton" @onclick="Logout">
+                        <span>Cerrar Sesión</span>
+                    </button>
+                </div>
+            </div>
+        }
+
+        <!-- Menú perfil (dropdown superior) -->
+        @if (showMenu)
+        {
+            <div class="AppLayoutMobile_MenuOverlaySmall" @onclick="CloseMenu"></div>
+            <div class="AppLayoutMobile_DropdownMenu">
+                <div class="AppLayoutMobile_MenuItem" @onclick="ViewProfile" @onclick:stopPropagation="true">
+                    <span>📋</span> Mi Perfil
+                </div>
+                <div class="AppLayoutMobile_MenuItem" @onclick="Logout" @onclick:stopPropagation="true">
+                    <span>🚪</span> Cerrar Sesión
+                </div>
+            </div>
+        }
+
+        <div class="AppLayoutMobile_ContentArea">
+            @Body
+        </div>
+    </div>
+}
+<Snackbar />
+
+@code {
+    private bool showSidebar = false;
+    private bool showMenu = false;
+    private string userName = "";
+    private string userRole = "";
+    private bool initialized = false;
+    private bool isAdmin = false;
+    private bool isProveedor = false;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (Platform.IsMobile)
+    //     {
+    //         await CargarUsuario();
+    //     }
+    // }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            await CargarUsuario();
+            StateHasChanged();
+        }
+    }
+
+    private async Task CargarUsuario()
+    {
+        try
+        {
+            userName = await AuthService.GetUserNameAsync();
+            userRole = await AuthService.GetUserRoleAsync();
+            isAdmin = userRole == "Admin";
+            isProveedor = userRole == "Admin" || userRole == "Proveedor";
+        }
+        catch { }
+    }
+
+    private string GetPageTitle()
+    {
+        var uri = Navigation.Uri;
+
+        if (uri.Contains("/centroscosto/crear")) return "Crear Centro de Costo";
+        if (uri.Contains("/centroscosto/editar")) return "Editar Centro de Costo";
+        if (uri.Contains("/centroscosto")) return "Centros de Costo";
+        if (uri.Contains("/perfil/crear")) return "Registrar Persona";
+        if (uri.Contains("/perfil/editar")) return "Editar Persona";
+        if (uri.Contains("/perfil")) return "Mi Perfil";
+        if (uri.Contains("/home")) return "Dashboard";
+        if (uri.Contains("/companias/crear")) return "Crear Compañía";
+        if (uri.Contains("/companias/editar")) return "Editar Compañía";
+        if (uri.Contains("/companias")) return "Compañías";
+        if (uri.Contains("/proveedores/crear")) return "Crear Proveedor";
+        if (uri.Contains("/proveedores/editar")) return "Editar Proveedor";
+        if (uri.Contains("/proveedores")) return "Proveedores";
+        if (uri.Contains("/menus/crear")) return "Crear Menú";
+        if (uri.Contains("/menus/{id}")) return "Editar Menú";
+        if (uri.Contains("/menus")) return "Menús";
+        return "SMITCOMIDAS";
+    }
+
+    private void ToggleMenu()
+    {
+        showMenu = !showMenu;
+        showSidebar = false; 
+    }
+
+    private void CloseSidebar()
+    {
+        showSidebar = false;
+    }
+
+
+    private void ToggleSidebar()
+    {
+        showSidebar = !showSidebar;
+        showMenu = false;
+    }
+
+    private void CloseMenu()
+    {
+        showMenu = false;
+    }
+
+    private void ViewProfile()
+    {
+        showMenu = false;
+        Navigation.NavigateTo("/perfil", forceLoad: true);
+    }
+
+    private async Task Logout()
+    {
+        showMenu = false;
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}
+

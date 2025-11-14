@@ -1,0 +1,78 @@
+﻿
+<div class="AdminPageHeader">
+    <h2>@Title</h2>
+    @if (!string.IsNullOrEmpty(ButtonText))
+    {
+        <button class="AdminPageHeader_addButton" @onclick="OnButtonClick">
+            <span class="AdminPageHeader_Icon">➕</span> @ButtonText
+        </button>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public string? ButtonText { get; set; }
+
+    [Parameter]
+    public EventCallback OnButtonClick { get; set; }
+}
+
+<style>
+    .AdminPageHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 24px;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(to right, rgba(81, 161, 33, 0.03), rgba(81, 161, 33, 0.06));
+    }
+
+    .AdminPageHeader h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 20px;
+        font-weight: 600;
+        position: relative;
+        padding-left: 16px;
+    }
+
+    .AdminPageHeader h2::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 18px;
+        background-color: #51A121;
+        border-radius: 2px;
+    }
+    .AdminPageHeader_addButton {
+        background: #51A121;
+        color: white;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s;
+        box-shadow: 0 2px 4px rgba(81, 161, 33, 0.2);
+    }
+
+    .AdminPageHeader_addButton:hover {
+        background: #429019;
+        box-shadow: 0 2px 6px rgba(81, 161, 33, 0.3);
+    }
+
+    .AdminPageHeader_Icon {
+        font-size: 14px;
+    }
+</style>

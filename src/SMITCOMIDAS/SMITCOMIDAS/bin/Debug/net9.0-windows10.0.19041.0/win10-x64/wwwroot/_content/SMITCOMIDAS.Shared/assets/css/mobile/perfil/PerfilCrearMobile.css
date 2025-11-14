@@ -1,0 +1,408 @@
+﻿/* PerfilCrear.mobile.css */
+
+/* Contenedor principal */
+.PerfilCrear_MobileContainer {
+    padding: 12px;
+    background-color: #f8f9fa;
+    min-height: 100%;
+    font-family: 'Interstate', sans-serif;
+}
+
+/* Encabezado */
+.PerfilCrear_MobileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: white;
+    padding: 14px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+    .PerfilCrear_MobileHeader h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+        position: relative;
+        padding-left: 12px;
+    }
+
+        .PerfilCrear_MobileHeader h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 16px;
+            background-color: #51A121;
+            border-radius: 2px;
+        }
+
+/* Tarjetas */
+.PerfilCrear_MobileCard {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+    padding: 16px;
+}
+
+.PerfilCrear_MobileCardTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.PerfilCrear_MobileCardIcon {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.PerfilCrear_MobileCardTitle h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Campos de formulario */
+.PerfilCrear_MobileFormField {
+    margin-bottom: 14px;
+}
+
+    .PerfilCrear_MobileFormField label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #51A121;
+        margin-bottom: 6px;
+    }
+
+.PerfilCrear_MobileInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #f9fafb;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+    .PerfilCrear_MobileInput:focus {
+        border-color: #51A121;
+        box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.15);
+        outline: none;
+    }
+
+/* Campo de contraseña */
+.PerfilCrear_MobilePasswordContainer {
+    position: relative;
+}
+
+.PerfilCrear_MobileEyeButton {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: #6c757d;
+    padding: 4px;
+    cursor: pointer;
+}
+
+/* Toggle para cambiar contraseña */
+.PerfilCrear_MobileToggleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    margin-bottom: 16px;
+    cursor: pointer; /* Asegurar que todo el contenedor es clickeable */
+    position: relative; /* Para extender el área interactiva */
+}
+
+.PerfilCrear_MobileToggleContainer::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    z-index: 1; /* Asegurar que está sobre otros elementos */
+}
+.PerfilCrear_MobileToggleLabel {
+    position: relative;
+    z-index: 2; /* Por encima del área extendida */
+}
+.PerfilCrear_MobileToggleLabel h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.PerfilCrear_MobileSwitch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+    z-index: 2; /* Por encima del área extendida */
+}
+
+    .PerfilCrear_MobileSwitch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.PerfilCrear_MobileSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 22px;
+}
+
+    .PerfilCrear_MobileSlider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .3s;
+        border-radius: 50%;
+    }
+
+input:checked + .PerfilCrear_MobileSlider {
+    background-color: #51A121;
+}
+
+    input:checked + .PerfilCrear_MobileSlider:before {
+        transform: translateX(22px);
+    }
+
+/* Sección de contraseña visible cuando está activa */
+.PerfilCrear_MobilePasswordSection {
+    background: rgba(81, 161, 33, 0.05);
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+/* Medidor de seguridad de contraseña */
+.PerfilCrear_MobilePasswordStrength {
+    margin-top: 10px;
+}
+
+.PerfilCrear_MobileMeter {
+    width: 100%;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.PerfilCrear_MobileMeterBar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.PerfilCrear_MobilePasswordWeak {
+    background-color: #e74c3c;
+}
+
+.PerfilCrear_MobilePasswordMedium {
+    background-color: #f39c12;
+}
+
+.PerfilCrear_MobilePasswordStrong {
+    background-color: #51A121;
+}
+
+.PerfilCrear_MobileMeterText {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Errores de validación */
+.PerfilCrear_MobileValidationErrors {
+    padding: 10px;
+    margin-bottom: 16px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 3px solid #e74c3c;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+    .PerfilCrear_MobileValidationErrors ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #e74c3c;
+    }
+
+.PerfilCrear_MobileError {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 3px solid #e74c3c;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.PerfilCrear_MobileErrorIcon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.PerfilCrear_MobileErrorText {
+    font-size: 13px;
+    color: #c0392b;
+}
+
+/* Botones */
+.PerfilCrear_MobileButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.PerfilCrear_MobileBtnCancel {
+    flex: 1;
+    background: white;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 12px 0;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .PerfilCrear_MobileBtnCancel:active {
+        background: #f8f9fa;
+    }
+
+.PerfilCrear_MobileBtnSave {
+    flex: 1;
+    background: #51A121;
+    color: white;
+    border: none;
+    padding: 12px 0;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+    .PerfilCrear_MobileBtnSave:active {
+        background: #429019;
+    }
+
+.PerfilCrear_MobileBtnSpinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading state */
+.PerfilCrear_MobileLoading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+.PerfilCrear_MobileSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(81, 161, 33, 0.2);
+    border-top-color: #51A121;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+.PerfilCrear_MobileLoading span {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+
+
+
+
+
+.PerfilCrear_MobileFieldHint {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.PerfilCrear_MobileInfoBox {
+    margin-top: 15px;
+    padding: 18px;
+    background-color: #f8fafc;
+    border-radius: 10px;
+    border-left: 4px solid rgb(81, 161, 33);
+}
+
+.PerfilCrear_MobileInfoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.PerfilCrear_MobileInfoRow:not(:last-child) {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.PerfilCrear_MobileInfoLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.PerfilCrear_MobileInfoValue {
+    font-size: 16px;
+    font-weight: 700;
+    color: rgb(81, 161, 33);
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "Web&App",
+    "Projects": [
+      {
+        "Path": "SMITCOMIDAS.Web\\SMITCOMIDAS.Web.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "SMITCOMIDAS\\SMITCOMIDAS.csproj",
+        "Action": "Start",
+        "DebugTarget": "pixel_5_-_api_34 (Android 14.0 - API 34)"
+      }
+    ]
+  }
+]

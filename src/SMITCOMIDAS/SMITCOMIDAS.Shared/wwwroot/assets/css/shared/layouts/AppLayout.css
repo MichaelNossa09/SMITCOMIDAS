@@ -1,0 +1,70 @@
+﻿/* Variables globales */
+:root {
+    --corporate-green: rgb(81,161,33);
+    --corporate-gray: rgb(86,69,60);
+    --corporate-light-green: rgb(232,232,206);
+    --white: #FFFFFF;
+    --light-bg: #ECF0F1;
+    --dark-blue: #2C3E50;
+    --medium-blue: #34495E;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* Estilos base */
+* {
+    box-sizing: border-box;
+    font-family: 'Interstate', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Scrollbar personalizado común */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(0,0,0,0.3);
+    }
+
+/* Estilos de impresión generales */
+@media print {
+    .AppLayoutWeb_Sidebar,
+    .AppLayoutMobile_Sidebar,
+    .AppLayoutMobile_Header,
+    .AppLayoutWeb_Topbar,
+    .AppLayoutWeb_LogoutButton,
+    .AppLayoutMobile_LogoutButton {
+        display: none !important;
+    }
+
+    .AppLayoutWeb_ContentArea,
+    .AppLayoutMobile_ContentArea {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+
+    .AppLayoutWeb_Container,
+    .AppLayoutMobile_Container {
+        display: block !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+}

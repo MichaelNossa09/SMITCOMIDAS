@@ -1,0 +1,434 @@
+﻿/* Estilos refinados para la versión móvil del Perfil */
+.Perfil_MobileContainer {
+    padding: 12px;
+    background-color: #f8f9fa;
+    min-height: 100%;
+    font-family: 'Interstate', sans-serif;
+}
+
+/* Header más compacto y elegante */
+.Perfil_MobileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.Perfil_MobileHeader h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.Perfil_MobileAddBtn, .Perfil_MobileEditBtn {
+    width: 32px;
+    height: 32px;
+    background: #51A121;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(81, 161, 33, 0.2);
+    cursor: pointer;
+}
+
+.Perfil_MobileAddBtn:active {
+    background: #429019;
+}
+
+.Perfil_MobileAddIcon {
+    font-size: 18px;
+    line-height: 0;
+}
+
+/* Tarjetas más compactas y modernas */
+.Perfil_MobileCard {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+}
+
+.Perfil_MobileCardContent {
+    padding: 14px 16px;
+}
+
+.Perfil_MobileCardName {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: #2c3e50;
+}
+
+.Perfil_MobileCardId {
+    color: #7f8c8d;
+    font-size: 13px;
+    margin: 0 0 12px 0;
+}
+
+/* Sección de detalles más compacta */
+.Perfil_MobileCardDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 10px;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+    .Perfil_MobileCardDetails::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #51A121;
+        border-radius: 3px;
+    }
+
+.Perfil_MobileDetailItem {
+    display: flex;
+    font-size: 13px;
+}
+
+.Perfil_MobileDetailLabel {
+    font-weight: 600;
+    min-width: 60px;
+    color: #51A121;
+}
+
+.Perfil_MobileDetailValue {
+    flex: 1;
+    color: #34495e;
+}
+
+/* Badge tipo tag compacto */
+.Perfil_MobileCardStatus {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.Perfil_MobileBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    height: 22px;
+}
+
+    .Perfil_MobileBadge::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 4px;
+    }
+
+.Perfil_MobileBadgeActive {
+    background-color: rgba(81, 161, 33, 0.1);
+    color: #51A121;
+}
+
+    .Perfil_MobileBadgeActive::before {
+        background-color: #51A121;
+    }
+
+.Perfil_MobileBadgeInactive {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+}
+
+    .Perfil_MobileBadgeInactive::before {
+        background-color: #6c757d;
+    }
+
+/* Botones más modernos */
+.Perfil_MobileCardActions {
+    display: flex;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.Perfil_MobileActionBtn {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: transparent;
+    color: #51A121;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+    .Perfil_MobileActionBtn:active {
+        background: rgba(81, 161, 33, 0.05);
+    }
+
+.Perfil_MobileDeleteBtn {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    border-left: 1px solid rgba(0,0,0,0.05);
+    background: transparent;
+    color: #e74c3c;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+    .Perfil_MobileDeleteBtn:active {
+        background: rgba(231, 76, 60, 0.05);
+    }
+
+/* Perfil de usuario más compacto */
+.Perfil_MobileProfileCard {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+}
+
+.Perfil_MobileProfileHeader {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(81, 161, 33, 0.05);
+}
+
+.Perfil_MobileAvatar {
+    width: 48px;
+    height: 48px;
+    background: #51A121;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.Perfil_MobileName {
+    flex: 1;
+}
+
+    .Perfil_MobileName h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+/* Secciones de información más compactas */
+.Perfil_MobileInfoSection {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+    .Perfil_MobileInfoSection:last-child {
+        border-bottom: none;
+    }
+
+    .Perfil_MobileInfoSection h4 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: #51A121;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+        .Perfil_MobileInfoSection h4::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #51A121;
+            margin-right: 8px;
+            border-radius: 2px;
+            transform: rotate(45deg);
+        }
+
+.Perfil_MobileInfoItem {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+    .Perfil_MobileInfoItem:last-child {
+        margin-bottom: 0;
+    }
+
+.Perfil_MobileInfoLabel {
+    font-weight: 600;
+    min-width: 100px;
+    color: #7f8c8d;
+    font-size: 13px;
+}
+
+.Perfil_MobileInfoValue {
+    flex: 1;
+    font-size: 13px;
+    color: #34495e;
+}
+
+.Perfil_MobileActions {
+    padding: 12px 16px;
+    background: #f8f9fa;
+}
+
+.Perfil_MobileEditButton {
+    background: #51A121;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .Perfil_MobileEditButton:active {
+        background: #429019;
+    }
+
+/* Modal móvil más compacto y estilizado */
+.Perfil_MobileModalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    animation: fadeIn 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Perfil_MobileModal {
+    width: 85%;
+    max-width: 300px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 1001;
+    animation: fadeInScale 0.25s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative; /* Asegurar que esté por encima */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.Perfil_MobileModalContent {
+    padding: 20px;
+}
+
+.Perfil_MobileModalTitle {
+    margin: 0 0 16px 0;
+    color: #e74c3c;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.Perfil_MobileModalText {
+    margin: 0 0 16px 0;
+    color: #2c3e50;
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.Perfil_MobileModalWarning {
+    color: #e74c3c;
+    font-size: 12px;
+    text-align: center;
+    margin: 0 0 16px 0;
+    font-weight: 500;
+    padding: 8px;
+    background: rgba(231, 76, 60, 0.08);
+    border-radius: 6px;
+}
+
+.Perfil_MobileModalButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.Perfil_MobileModalCancel {
+    flex: 1;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 10px 0;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.Perfil_MobileModalCancel:active {
+    background: #e9ecef;
+}
+
+.Perfil_MobileModalDelete {
+    flex: 1;
+    background: #e74c3c;
+    border: none;
+    color: white;
+    padding: 10px 0;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.Perfil_MobileModalDelete:active {
+    background: #c0392b;
+}

@@ -1,0 +1,243 @@
+﻿@page "/centroscosto"
+@using SMITCOMIDAS.Shared.Components.Shared
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@inject ICentrosCostoService CentrosCostoService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IPlatformService Platform
+
+
+@if (isChecking)
+{
+    <LoadingState Message="Verificando permisos..." />
+}
+else if (!isAuthorized)
+{
+    <UnauthorizedState OnGoBack="GoBack" />
+}
+else
+{
+    <div class="@(Platform.IsMobile ? "CentrosCosto_containerMobile" : "CentrosCosto_container")">
+        <AdminPageHeader Title="Gestión de Centros de Costo" 
+                         ButtonText="Nuevo Centro de Costo" 
+                         OnButtonClick="NuevoCentroCosto" />
+
+        @if (isLoading)
+        {
+            <LoadingState Message="Cargando..." />
+        }
+        else if (centrosCosto.Any())
+        {
+            @if (!Platform.IsMobile)
+            {
+                <DataTable>
+                    <HeaderContent>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Compañía</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </HeaderContent>
+                    <BodyContent>
+                        @foreach (var cc in centrosCosto)
+                        {
+                            <tr>
+                                <td>@cc.Codigo</td>
+                                <td>@cc.Nombre</td>
+                                <td>@cc.Compania?.NombreComercial</td>
+                                <td>
+                                    <StatusBadge IsActive="@cc.Activo" />
+                                </td>
+                                <td>
+                                    <ActionButtons OnEdit="() => Editar(cc.Id)" 
+                                                  OnDelete="() => MostrarConfirmacionEliminar(cc.Id)" />
+                                </td>
+                            </tr>
+                        }
+                    </BodyContent>
+                </DataTable>
+            }
+            else
+            {
+                <div class="CentrosCosto_cardList">
+                    @foreach (var cc in centrosCosto)
+                    {
+                        <div class="CentrosCosto_card">
+                            <div class="CentrosCosto_cardHeader">
+                                <h3 class="CentrosCosto_cardTitle">@cc.Nombre</h3>
+                                <StatusBadge IsActive="@cc.Activo" />
+                            </div>
+                            <div class="CentrosCosto_cardBody">
+                                <div class="CentrosCosto_cardDetail">
+                                    <span class="CentrosCosto_detailLabel">Código:</span>
+                                    <span class="CentrosCosto_detailValue">@cc.Codigo</span>
+                                </div>
+                                <div class="CentrosCosto_cardDetail">
+                                    <span class="CentrosCosto_detailLabel">Compañía:</span>
+                                    <span class="CentrosCosto_detailValue">@cc.Compania?.NombreComercial</span>
+                                </div>
+                            </div>
+                            <div class="CentrosCosto_cardFooter">
+                                <button class="CentrosCosto_cardButton CentrosCosto_editButton"
+                                        @onclick="() => Editar(cc.Id)">
+                                    <span>✏️</span> Editar
+                                </button>
+                                <button class="CentrosCosto_cardButton CentrosCosto_deleteButton"
+                                        @onclick="() => MostrarConfirmacionEliminar(cc.Id)">
+                                    <span>🗑️</span> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <EmptyState Title="No hay centros de costo"
+                        Message="Comienza creando tu primer centro de costo"
+                        ButtonText="Crear el primero"
+                        OnButtonClick="NuevoCentroCosto" />
+        }
+    </div>
+}
+
+<ConfirmModal IsVisible="@mostrarConfirmacion"
+              Title="Confirmar eliminación"
+              Message="¿Está seguro que desea eliminar este centro de costo?"
+              WarningMessage="Esta acción no se puede deshacer."
+              IsProcessing="@isProcessing"
+              OnConfirm="ConfirmarEliminacion"
+              OnCancel="OcultarConfirmacion" />
+
+@code {
+    private List<CentroCosto> centrosCosto = new();
+    private bool isLoading = true;
+    private bool initialized = false;
+    private bool isChecking = true;
+    private bool isAuthorized = false;
+    private bool mostrarConfirmacion = false;
+    private bool isProcessing = false;
+    private int centroIdEliminar = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            await InvokeAsync(async () =>
+            {
+                try
+                {
+                    var role = await AuthService.GetUserRoleAsync();
+                    isAuthorized = role == "Admin";
+
+                    if (isAuthorized)
+                    {
+                        await CargarCentrosCosto();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"Error al inicializar: {ex.Message}", Severity.Error);
+                    isAuthorized = false;
+                }
+                finally
+                {
+                    isChecking = false;
+                    StateHasChanged();
+                }
+            });
+        }
+    }
+
+    private async Task CargarCentrosCosto()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+            
+            centrosCosto = await CentrosCostoService.GetCentrosCostoAsync();
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al cargar centros de costo: {ex.Message}", Severity.Error);
+            });
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void NuevoCentroCosto()
+    {
+        Navigation.NavigateTo("/centroscosto/crear");
+    }
+
+    private void Editar(int id)
+    {
+        Navigation.NavigateTo($"/centroscosto/editar/{id}");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void MostrarConfirmacionEliminar(int id)
+    {
+        centroIdEliminar = id;
+        mostrarConfirmacion = true;
+    }
+
+    private void OcultarConfirmacion()
+    {
+        mostrarConfirmacion = false;
+        centroIdEliminar = 0;
+    }
+
+    private async Task ConfirmarEliminacion()
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            await CentrosCostoService.DeleteCentroCostoAsync(centroIdEliminar);
+            
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add("Centro de costo eliminado correctamente", Severity.Success);
+                OcultarConfirmacion();
+            });
+            
+            await CargarCentrosCosto();
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al eliminar: {ex.Message}", Severity.Error);
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+}

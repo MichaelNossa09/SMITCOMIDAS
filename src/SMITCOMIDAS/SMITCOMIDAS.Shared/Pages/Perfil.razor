@@ -1,0 +1,746 @@
+﻿@page "/perfil"
+@using SMITCOMIDAS.Shared.Components.Shared
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@using System.Net.Http.Json
+@inject IAuthService AuthService
+@inject IPersonasService PersonasService
+@inject IProveedoresService ProveedorService
+@inject IPlatformService Platform
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Perfil</PageTitle>
+@if (Platform.IsMobile)
+{
+    <!-- Vista Móvil -->
+    <div class="Perfil_MobileContainer">
+        @if (isAdmin)
+        {
+            <!-- Vista Admin Móvil: Lista de personas -->
+            <div class="Perfil_MobileHeader">
+                <h2>Gestión de Personas</h2>
+                <button class="Perfil_MobileAddBtn" @onclick="CrearPerfil">
+                    <span class="Perfil_MobileAddIcon">+</span>
+                </button>
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="Perfil_MobileLoading">
+                    <div class="Perfil_MobileSpinner"></div>
+                    <span>Cargando...</span>
+                </div>
+            }
+            else if (personas.Any())
+            {
+                <div class="Perfil_MobileList">
+                    @foreach (var p in personas)
+                    {
+                        <div class="Perfil_MobileCard">
+                            <div class="Perfil_MobileCardContent">
+                                <h3 class="Perfil_MobileCardName">@p.Nombres @p.Apellidos</h3>
+                                <p class="Perfil_MobileCardId">@p.TipoIdentificacion @p.Identificacion</p>
+
+                                <div class="Perfil_MobileCardDetails">
+                                    <div class="Perfil_MobileDetailItem">
+                                        <span class="Perfil_MobileDetailLabel">Cargo:</span>
+                                        <span class="Perfil_MobileDetailValue">@(string.IsNullOrEmpty(p.Cargo) ? "N/A" : p.Cargo)</span>
+                                    </div>
+
+                                    <div class="Perfil_MobileDetailItem">
+                                        <span class="Perfil_MobileDetailLabel">Centro:</span>
+                                        <span class="Perfil_MobileDetailValue">@(p.CentroCosto?.Nombre ?? "N/A")</span>
+                                    </div>
+                                </div>
+
+                                <div class="Perfil_MobileCardStatus">
+                                    <span class="Perfil_MobileBadge @(p.Activo ? "Perfil_MobileBadgeActive" : "Perfil_MobileBadgeInactive")">
+                                        @(p.Activo ? "Activo" : "Inactivo")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="Perfil_MobileCardActions">
+                                <button class="Perfil_MobileActionBtn" @onclick="() => Editar(p.Id)">Editar</button>
+                                <button class="Perfil_MobileDeleteBtn" @onclick="() => ConfirmarEliminar(p)">Eliminar</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="Perfil_MobileEmpty">
+                    <div class="Perfil_MobileEmptyIcon">👤</div>
+                    <p>No hay personas registradas</p>
+                    <button class="Perfil_MobileBtnPrimary" @onclick="CrearPerfil">Crear la primera</button>
+                </div>
+            }
+        }
+        else
+        {
+            <!-- Vista Usuario Móvil: Solo su perfil -->
+            <div class="Perfil_MobileHeader">
+                <h2>Mi Perfil</h2>
+                @if (persona != null || proveedor != null)
+                {
+                    <button class="Perfil_MobileEditBtn" @onclick="EditarMiPerfil">
+                        <span class="Perfil_MobileEditIcon">✏️</span>
+                    </button>
+                }
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="Perfil_MobileLoading">
+                    <div class="Perfil_MobileSpinner"></div>
+                    <span>Cargando...</span>
+                </div>
+            }
+            else if (persona != null || proveedor != null)
+            {
+                <div class="Perfil_MobileProfileCard">
+                    @if (!esProveedor)
+                    {
+                        <!-- Perfil de persona normal -->
+                        <div class="Perfil_MobileProfileHeader">
+                            <div class="Perfil_MobileAvatar">
+                                @(persona.Nombres.Substring(0, 1) + persona.Apellidos.Substring(0, 1))
+                            </div>
+                            <div class="Perfil_MobileName">
+                                <h3>@persona.Nombres @persona.Apellidos</h3>
+                                <span class="Perfil_MobileBadge @(persona.Activo ? "Perfil_MobileBadgeActive" : "Perfil_MobileBadgeInactive")">
+                                    @(persona.Activo ? "Activo" : "Inactivo")
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="Perfil_MobileInfoSection">
+                            <h4>Información Personal</h4>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Documento:</span>
+                                <span class="Perfil_MobileInfoValue">@persona.TipoIdentificacion @persona.Identificacion</span>
+                            </div>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Cargo:</span>
+                                <span class="Perfil_MobileInfoValue">@(string.IsNullOrEmpty(persona.Cargo) ? "N/A" : persona.Cargo)</span>
+                            </div>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Centro:</span>
+                                <span class="Perfil_MobileInfoValue">@(persona.CentroCosto?.Nombre ?? "N/A")</span>
+                            </div>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Ingreso:</span>
+                                <span class="Perfil_MobileInfoValue">@persona.FechaIngreso.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+
+                        <div class="Perfil_MobileInfoSection">
+                            <h4>Contacto</h4>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Teléfono:</span>
+                                <span class="Perfil_MobileInfoValue">@persona.Telefono</span>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(persona.TelefonoAdicional))
+                            {
+                                <div class="Perfil_MobileInfoItem">
+                                    <span class="Perfil_MobileInfoLabel">Tel. adicional:</span>
+                                    <span class="Perfil_MobileInfoValue">@persona.TelefonoAdicional</span>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(persona.Direccion))
+                            {
+                                <div class="Perfil_MobileInfoItem">
+                                    <span class="Perfil_MobileInfoLabel">Dirección:</span>
+                                    <span class="Perfil_MobileInfoValue">@persona.Direccion</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Perfil de proveedor -->
+                        <div class="Perfil_MobileProfileHeader">
+                            <div class="Perfil_MobileAvatar">
+                                @(proveedor.NombreComercial.Substring(0, 1))
+                            </div>
+                            <div class="Perfil_MobileName">
+                                <h3>@proveedor.NombreComercial</h3>
+                                <span class="Perfil_MobileBadge @(proveedor.Activo ? "Perfil_MobileBadgeActive" : "Perfil_MobileBadgeInactive")">
+                                    @(proveedor.Activo ? "Activo" : "Inactivo")
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="Perfil_MobileInfoSection">
+                            <h4>Información Comercial</h4>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">NIT:</span>
+                                <span class="Perfil_MobileInfoValue">@proveedor.NIT</span>
+                            </div>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Razón Social:</span>
+                                <span class="Perfil_MobileInfoValue">@proveedor.RazonSocial</span>
+                            </div>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Registro:</span>
+                                <span class="Perfil_MobileInfoValue">@proveedor.FechaRegistro.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+
+                        <div class="Perfil_MobileInfoSection">
+                            <h4>Contacto</h4>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Email:</span>
+                                <span class="Perfil_MobileInfoValue">@proveedor.Email</span>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(proveedor.EmailAdicional))
+                            {
+                                <div class="Perfil_MobileInfoItem">
+                                    <span class="Perfil_MobileInfoLabel">Email adicional:</span>
+                                    <span class="Perfil_MobileInfoValue">@proveedor.EmailAdicional</span>
+                                </div>
+                            }
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Teléfono:</span>
+                                <span class="Perfil_MobileInfoValue">@proveedor.Telefono</span>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(proveedor.TelefonoAdicional))
+                            {
+                                <div class="Perfil_MobileInfoItem">
+                                    <span class="Perfil_MobileInfoLabel">Tel. adicional:</span>
+                                    <span class="Perfil_MobileInfoValue">@proveedor.TelefonoAdicional</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="Perfil_MobileInfoSection">
+                            <h4>Ubicación</h4>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Dirección:</span>
+                                <span class="Perfil_MobileInfoValue">@(string.IsNullOrEmpty(proveedor.Direccion) ? "N/A" : proveedor.Direccion)</span>
+                            </div>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Ciudad:</span>
+                                <span class="Perfil_MobileInfoValue">@(string.IsNullOrEmpty(proveedor.Ciudad) ? "N/A" : proveedor.Ciudad)</span>
+                            </div>
+
+                            <div class="Perfil_MobileInfoItem">
+                                <span class="Perfil_MobileInfoLabel">Departamento:</span>
+                                <span class="Perfil_MobileInfoValue">@(string.IsNullOrEmpty(proveedor.Departamento) ? "N/A" : proveedor.Departamento)</span>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(proveedor.Contacto))
+                        {
+                            <div class="Perfil_MobileInfoSection">
+                                <h4>Persona de Contacto</h4>
+
+                                <div class="Perfil_MobileInfoItem">
+                                    <span class="Perfil_MobileInfoLabel">Nombre:</span>
+                                    <span class="Perfil_MobileInfoValue">@proveedor.Contacto</span>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(proveedor.TelefonoContacto))
+                                {
+                                    <div class="Perfil_MobileInfoItem">
+                                        <span class="Perfil_MobileInfoLabel">Teléfono:</span>
+                                        <span class="Perfil_MobileInfoValue">@proveedor.TelefonoContacto</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+
+                    <div class="Perfil_MobileActions">
+                        <button class="Perfil_MobileEditButton" @onclick="EditarMiPerfil">Editar Perfil</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="Perfil_MobileEmpty">
+                    <div class="Perfil_MobileEmptyIcon">👤</div>
+                    <p>No hay información de perfil registrada.</p>
+                    <button class="Perfil_MobileBtnPrimary" @onclick="CrearMiPerfil">Crear Perfil</button>
+                </div>
+            }
+        }
+    </div>
+}
+else
+{
+    <!-- Vista Desktop -->
+   <div class="Perfil_Container">
+    @if (isAdmin)
+    {
+        <!-- Vista Admin: Lista de todas las personas -->
+        <AdminPageHeader Title="Gestión de Personas" 
+                         ButtonText="Nueva Persona" 
+                         OnButtonClick="CrearPerfil" />
+
+        @if (isLoading)
+        {
+            <LoadingState Message="Cargando..." />
+        }
+        else if (personas.Any())
+        {
+            <DataTable>
+                <HeaderContent>
+                    <th>Identificación</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Cargo</th>
+                    <th>Centro de Costo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </HeaderContent>
+                <BodyContent>
+                    @foreach (var p in personas)
+                    {
+                        <tr>
+                            <td>@p.TipoIdentificacion @p.Identificacion</td>
+                            <td>@p.Nombres</td>
+                            <td>@p.Apellidos</td>
+                            <td>@(string.IsNullOrEmpty(p.Cargo) ? "N/A" : p.Cargo)</td>
+                            <td>@(p.CentroCosto?.Nombre ?? "N/A")</td>
+                            <td>
+                                <StatusBadge IsActive="@p.Activo" />
+                            </td>
+                            <td>
+                                <ActionButtons OnEdit="() => Editar(p.Id)" 
+                                              OnDelete="() => ConfirmarEliminar(p)" />
+                            </td>
+                        </tr>
+                    }
+                </BodyContent>
+            </DataTable>
+        }
+        else
+        {
+            <EmptyState Title="No hay personas registradas"
+                        Message="Comienza creando el primer perfil"
+                        ButtonText="Crear la primera"
+                        OnButtonClick="CrearPerfil" />
+        }
+    }
+    else
+    {
+        <!-- Vista Usuario: Mi Perfil -->
+        <div class="Perfil_UserHeader">
+            <h2>Mi Perfil</h2>
+        </div>
+
+        @if (isLoading)
+        {
+            <LoadingState Message="Cargando..." />
+        }
+        else if (persona != null || proveedor != null)
+        {
+            <div class="Perfil_CardContainer">
+                <div class="Perfil_InfoCard">
+                    <h3>Información Personal</h3>
+
+                    <div class="Perfil_UserGrid">
+                        @if (!esProveedor)
+                        {
+                            <!-- Información de Persona -->
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Nombre:</div>
+                                <div class="Perfil_FieldValue">@persona.Nombres</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Apellidos:</div>
+                                <div class="Perfil_FieldValue">@persona.Apellidos</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Tipo ID:</div>
+                                <div class="Perfil_FieldValue">@persona.TipoIdentificacion</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Identificación:</div>
+                                <div class="Perfil_FieldValue">@persona.Identificacion</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Cargo:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(persona.Cargo) ? "N/A" : persona.Cargo)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Centro de Costo:</div>
+                                <div class="Perfil_FieldValue">@(persona.CentroCosto?.Nombre ?? "N/A")</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Teléfono:</div>
+                                <div class="Perfil_FieldValue">@persona.Telefono</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Teléfono Adicional:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(persona.TelefonoAdicional) ? "N/A" : persona.TelefonoAdicional)</div>
+                            </div>
+
+                            <div class="Perfil_UserField full">
+                                <div class="Perfil_FieldLabel">Dirección:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(persona.Direccion) ? "N/A" : persona.Direccion)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Estado:</div>
+                                <div class="Perfil_FieldValue estado">
+                                    <span class="Perfil_StatusDot @(persona.Activo ? "active" : "inactive")"></span>
+                                    @(persona.Activo ? "Activo" : "Inactivo")
+                                </div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Fecha de Ingreso:</div>
+                                <div class="Perfil_FieldValue">@persona.FechaIngreso.ToString("dd/MM/yyyy")</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Información de Proveedor -->
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">NIT:</div>
+                                <div class="Perfil_FieldValue">@proveedor.NIT</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Razón Social:</div>
+                                <div class="Perfil_FieldValue">@proveedor.RazonSocial</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Nombre Comercial:</div>
+                                <div class="Perfil_FieldValue">@proveedor.NombreComercial</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Email:</div>
+                                <div class="Perfil_FieldValue">@proveedor.Email</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Email Adicional:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.EmailAdicional) ? "N/A" : proveedor.EmailAdicional)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Teléfono:</div>
+                                <div class="Perfil_FieldValue">@proveedor.Telefono</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Teléfono Adicional:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.TelefonoAdicional) ? "N/A" : proveedor.TelefonoAdicional)</div>
+                            </div>
+
+                            <div class="Perfil_UserField full">
+                                <div class="Perfil_FieldLabel">Dirección:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.Direccion) ? "N/A" : proveedor.Direccion)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Ciudad:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.Ciudad) ? "N/A" : proveedor.Ciudad)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Departamento:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.Departamento) ? "N/A" : proveedor.Departamento)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">País:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.Pais) ? "N/A" : proveedor.Pais)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Contacto:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.Contacto) ? "N/A" : proveedor.Contacto)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Teléfono Contacto:</div>
+                                <div class="Perfil_FieldValue">@(string.IsNullOrEmpty(proveedor.TelefonoContacto) ? "N/A" : proveedor.TelefonoContacto)</div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Estado:</div>
+                                <div class="Perfil_FieldValue estado">
+                                    <span class="Perfil_StatusDot @(proveedor.Activo ? "active" : "inactive")"></span>
+                                    @(proveedor.Activo ? "Activo" : "Inactivo")
+                                </div>
+                            </div>
+
+                            <div class="Perfil_UserField">
+                                <div class="Perfil_FieldLabel">Fecha de Registro:</div>
+                                <div class="Perfil_FieldValue">@proveedor.FechaRegistro.ToString("dd/MM/yyyy")</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <button class="Perfil_BtnEdit" @onclick="EditarMiPerfil" title="Editar mi perfil">
+                    Editar
+                </button>
+            </div>
+        }
+        else
+        {
+            <EmptyState Title="No hay información de perfil"
+                        Message="Crea tu perfil para comenzar"
+                        ButtonText="Crear Perfil"
+                        OnButtonClick="CrearMiPerfil" />
+        }
+    }
+</div>
+
+    <ConfirmModal IsVisible="@mostrarConfirmacion"
+                  Title="Confirmar eliminación"
+                  Message="@($"¿Está seguro que desea eliminar a {personaEliminar?.Nombres} {personaEliminar?.Apellidos}?")"
+                  WarningMessage="Esta acción no se puede deshacer y eliminará también el usuario asociado."
+                  IsProcessing="@isProcessing"
+                  OnConfirm="EliminarConfirmado"
+                  OnCancel="CancelarEliminar" />
+}
+
+@if (mostrarConfirmacion)
+{
+    @if (Platform.IsMobile)
+    {
+        <!-- Modal móvil -->
+        <div class="Perfil_MobileModalBackdrop">
+            <div class="Perfil_MobileModal">
+                <div class="Perfil_MobileModalContent">
+                    <h3 class="Perfil_MobileModalTitle">¿Eliminar perfil?</h3>
+
+                    <p class="Perfil_MobileModalText">
+                        ¿Confirma que desea eliminar a <strong>@($"{personaEliminar?.Nombres} {personaEliminar?.Apellidos}")</strong>?
+                    </p>
+
+                    <p class="Perfil_MobileModalWarning">Esta acción no se puede deshacer</p>
+
+                    <div class="Perfil_MobileModalButtons">
+                        <button class="Perfil_MobileModalCancel" @onclick="CancelarEliminar">Cancelar</button>
+                        <button class="Perfil_MobileModalDelete" @onclick="EliminarConfirmado">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    @if (Platform.IsMobile)
+    {
+        <div class="Perfil_MobileError">@errorMessage</div>
+    }
+    else
+    {
+        <div class="Perfil_ErrorMessage">@errorMessage</div>
+    }
+}
+
+
+@code {
+    private Persona persona;
+    private List<Persona> personas = new();
+    private bool isLoading = true;
+    private bool isAdmin = false;
+    private bool mostrarConfirmacion = false;
+    private bool isProcessing = false;
+    private Persona personaEliminar;
+    private Proveedor proveedor;
+    private string errorMessage = "";
+    private bool initialized = false;
+    private bool esProveedor = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            await CargarPerfil();
+        }
+    }
+
+    private async Task CargarPerfil()
+    {
+        try
+        {
+            await InvokeAsync(async () =>
+            {
+                var role = await AuthService.GetUserRoleAsync();
+                isAdmin = role == "Admin";
+
+                if (isAdmin)
+                {
+                    personas = await PersonasService.GetPersonasAsync();
+
+                    // Ordenar por estado (activos primero) y luego por nombre
+                    personas = personas
+                        .OrderByDescending(p => p.Activo)
+                        .ThenBy(p => p.Nombres)
+                        .ToList();
+                }
+                else
+                {
+                    try
+                    {
+                        persona = await PersonasService.GetMiPerfilAsync();
+                    }
+                    catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        try
+                        {
+                            proveedor = await ProveedorService.GetMiProveedorAsync();
+                            esProveedor = true;
+                        }
+                        catch (HttpRequestException provEx) when (provEx.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            persona = null;
+                            proveedor = null;
+                            esProveedor = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Otros errores (conectividad, autenticación, etc.)
+                        errorMessage = $"Error al cargar el perfil: {ex.Message}";
+                        await InvokeAsync(() => Snackbar.Add(errorMessage, Severity.Error));
+                    }
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                errorMessage = $"Error: {ex.Message}";
+                Snackbar.Add(errorMessage, Severity.Error);
+            });
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void CrearPerfil()
+    {
+        Navigation.NavigateTo("/perfil/crear");
+    }
+
+    private void CrearMiPerfil()
+    {
+        // Verificamos el rol actual para decidir dónde dirigir
+        var role = AuthService.GetUserRoleAsync().Result;
+        if (role == "Proveedor")
+        {
+            Navigation.NavigateTo("/proveedores/crear");
+        }
+        else
+        {
+            Navigation.NavigateTo("/perfil/crear");
+        }
+    }
+
+    private void Editar(int id)
+    {
+        Navigation.NavigateTo($"/perfil/editar/{id}");
+    }
+
+    private void EditarMiPerfil()
+    {
+        if (esProveedor)
+        {
+            Navigation.NavigateTo($"/proveedores/editar/{proveedor.Id}");
+        }
+        else
+        {
+            Navigation.NavigateTo($"/perfil/editar/{persona.Id}");
+        }
+    }
+
+    private void ConfirmarEliminar(Persona p)
+    {
+        personaEliminar = p;
+        mostrarConfirmacion = true;
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmacion = false;
+        personaEliminar = null;
+    }
+
+    private async Task EliminarConfirmado()
+    {
+        if (personaEliminar == null) return;
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            int id = personaEliminar.Id;
+            string nombreCompleto = $"{personaEliminar.Nombres} {personaEliminar.Apellidos}";
+
+            await PersonasService.DeletePersonaAsync(id);
+
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Persona '{nombreCompleto}' eliminada correctamente", Severity.Success);
+                mostrarConfirmacion = false;
+                personaEliminar = null;
+            });
+
+            await CargarPerfil();
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al eliminar: {ex.Message}", Severity.Error);
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+}
+

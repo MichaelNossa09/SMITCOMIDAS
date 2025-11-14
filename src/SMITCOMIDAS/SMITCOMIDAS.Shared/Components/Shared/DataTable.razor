@@ -1,0 +1,63 @@
+﻿<div class="DataTable_container">
+    <table class="DataTable">
+        <thead>
+            <tr>
+                @HeaderContent
+            </tr>
+        </thead>
+        <tbody>
+            @BodyContent
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? BodyContent { get; set; }
+}
+<style>
+.DataTable_container {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    overflow: auto;
+}
+
+.DataTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.DataTable thead {
+    background-color: #f8fafc;
+}
+
+.DataTable th {
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.DataTable td {
+    padding: 15px 20px;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+}
+
+.DataTable tbody tr {
+    transition: background-color 0.2s;
+}
+
+.DataTable tbody tr:hover {
+    background-color: #f8fafc;
+}
+</style>

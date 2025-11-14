@@ -1,0 +1,775 @@
+﻿@page "/pedidos"
+@using SMITCOMIDAS.Shared.Components.Shared
+@using SMITCOMIDAS.Shared.Components.Shared.mobile
+@using SMITCOMIDAS.Shared.Models
+@using System.Globalization
+@using SMITCOMIDAS.Shared.Models.DTOs
+@using System.ComponentModel.DataAnnotations
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@inject IPedidoService PedidoService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IPlatformService Platform
+@inject IAuthService AuthService
+@inject ICentrosCostoService CentroCostoService
+
+<PageTitle>Pedidos</PageTitle>
+
+<div class="@(Platform.IsMobile ? "PedidoListado_containerMobile" : "PedidoListado_container")">
+
+    @if (!Platform.IsMobile)
+    {
+        <AdminPageHeader Title="@GetTitleByRole()" 
+                         ButtonText="@(!IsProveedor() ? "Nuevo Pedido" : null)" 
+                         OnButtonClick="@(() => Navigation.NavigateTo("/pedidos/nuevo"))" />
+    }
+    else
+    {
+        <MobilePageHeader Title="Todos los Pedidos"
+                          Subtitle="Gestiona tus pedidos de comida"
+                          ButtonText="Nuevo Pedido"
+                          ShowBackButton="true"
+                          ShowMenuButton="false"
+                          OnBackClick="@(() => Navigation.NavigateTo("/"))"
+                          OnButtonClick="@(() => Navigation.NavigateTo("/pedidos/nuevo"))" />
+    }
+
+    @if (isLoading)
+    {
+        <LoadingState Message="Cargando pedidos..." />
+    }
+    else
+    {
+        @if (!Platform.IsMobile)
+        {
+            <!-- Filtros Web -->
+            <FilterPanel>
+                <div class="PedidoListado_filterGroup">
+                    <label class="PedidoListado_filterLabel">Estado:</label>
+                    <select class="PedidoListado_select" @bind="filtroEstado">
+                        <option value="-1">Todos</option>
+                        <option value="0">Pendientes</option>
+                        <option value="1">Confirmados</option>
+                        <option value="2">En preparación</option>
+                        <option value="3">Listos</option>
+                        <option value="4">Entregados</option>
+                        <option value="5">Recibidos</option>
+                        <option value="6">Devueltos</option>
+                        <option value="7">Cancelados</option>
+                    </select>
+                </div>
+
+                <div class="PedidoListado_filterGroup">
+                    <label class="PedidoListado_filterLabel">Fecha:</label>
+                    <select class="PedidoListado_select" @bind="filtroFecha">
+                        <option value="0">Todas las fechas</option>
+                        <option value="1">Hoy</option>
+                        <option value="2">Esta semana</option>
+                        <option value="3">Este mes</option>
+                    </select>
+                </div>
+
+                @if (IsAdmin() || IsProveedor())
+                {
+                    <div class="PedidoListado_filterGroup">
+                        <label class="PedidoListado_filterLabel">Centro de Costo:</label>
+                        <select class="PedidoListado_select" @bind="filtroCentroCosto">
+                            <option value="0">Todos</option>
+                            @foreach (var centro in centrosCosto)
+                            {
+                                <option value="@centro.Id">@centro.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                }
+            </FilterPanel>
+        }
+        else
+        {
+            <!-- Filtros Mobile -->
+            <MobileFilterSheet HasActiveFilters="@TieneFiltrosActivos()"
+                              ActiveFiltersCount="@ContarFiltrosActivos()"
+                              OnApply="StateHasChanged"
+                              OnClear="LimpiarFiltros">
+                <MobileFilterGroup Label="Estado">
+                    <select @bind="filtroEstado">
+                        <option value="-1">Todos</option>
+                        <option value="0">Pendientes</option>
+                        <option value="1">Confirmados</option>
+                        <option value="2">En preparación</option>
+                        <option value="3">Listos</option>
+                        <option value="4">Entregados</option>
+                        <option value="5">Recibidos</option>
+                        <option value="6">Devueltos</option>
+                        <option value="7">Cancelados</option>
+                    </select>
+                </MobileFilterGroup>
+
+                <MobileFilterGroup Label="Fecha">
+                    <select @bind="filtroFecha">
+                        <option value="0">Todas las fechas</option>
+                        <option value="1">Hoy</option>
+                        <option value="2">Esta semana</option>
+                        <option value="3">Este mes</option>
+                    </select>
+                </MobileFilterGroup>
+
+                @if (IsAdmin() || IsProveedor())
+                {
+                    <MobileFilterGroup Label="Centro de Costo">
+                        <select @bind="filtroCentroCosto">
+                            <option value="0">Todos</option>
+                            @foreach (var centro in centrosCosto)
+                            {
+                                <option value="@centro.Id">@centro.Nombre</option>
+                            }
+                        </select>
+                    </MobileFilterGroup>
+                }
+            </MobileFilterSheet>
+        }
+
+        @if (!pedidosFiltrados.Any())
+        {
+            <EmptyState Title="No hay pedidos"
+                        Message="No se encontraron pedidos con los filtros seleccionados."
+                        ButtonText="@(!IsProveedor() ? "Realizar nuevo pedido" : null)"
+                        OnButtonClick="@(() => Navigation.NavigateTo("/pedidos/nuevo"))" />
+        }
+        else
+        {
+            @if (!Platform.IsMobile)
+            {
+                <!-- Vista Desktop -->
+                <DataTable>
+                    <HeaderContent>
+                        <th>Pedido</th>
+                        <th>Fecha Pedido</th>
+                        <th>Fecha Entrega</th>
+                        @if (IsAdmin() || IsProveedor())
+                        {
+                            <th>Centro Costo</th>
+                            <th>Usuario</th>
+                        }
+                        <th>Estado</th>
+                        @if (IsAdmin() || IsProveedor())
+                        {
+                            <th>Total</th>
+                        }
+                        <th>Elementos</th>
+                        <th>Acciones</th>
+                    </HeaderContent>
+                    <BodyContent>
+                        @foreach (var pedido in pedidosFiltrados)
+                        {
+                            <tr>
+                                <td>@pedido.Id</td>
+                                <td>@pedido.FechaPedido.ToString("dd 'de' MMMM 'del' yyyy - HH:mm", new CultureInfo("es-ES"))</td>
+                                <td>@pedido.FechaEntrega.ToString("dd 'de' MMMM 'del' yyyy", new CultureInfo("es-ES"))</td>
+                                @if (IsAdmin() || IsProveedor())
+                                {
+                                    <td>@pedido.CentroCosto?.Nombre</td>
+                                    <td>@pedido.Usuario?.FullName</td>
+                                }
+                                <td>
+                                    <span class="PedidoListado_estado PedidoListado_estado@(pedido.Estado)">
+                                        @pedido.Estado
+                                    </span>
+                                </td>
+                                @if (IsAdmin() || IsProveedor())
+                                {
+                                    <td>@pedido.Total.ToString("C")</td>
+                                }
+                                <td>@(pedido.Detalles?.Count ?? 0)</td>
+                                <td>
+                                    <ActionButtons OnView="() => VerPedido(pedido.Id)"
+                                                   OnCancel="@(PuedeCancelarPedido(pedido) ? () => MostrarConfirmacionCancelar(pedido.Id) : default)"
+                                                   OnChangeStatus="@(PuedeCambiarEstado(pedido) ? () => MostrarCambioEstado(pedido) : default)"
+                                                   ViewTitle="Ver detalle"
+                                                   CancelTitle="Cancelar pedido"
+                                                   ChangeStatusTitle="Cambiar Estado" />
+                                </td>
+                            </tr>
+                        }
+                        
+                    </BodyContent>
+                </DataTable>
+            }
+            else
+            {
+                <!-- Vista Mobile con Cards optimizadas -->
+                <div class="PedidoListado_cardList">
+                    @foreach (var pedido in pedidosFiltrados)
+                    {
+                        <div class="PedidoListado_card" @onclick="() => VerPedido(pedido.Id)">
+                            <!-- Header con ID, fecha y estado -->
+                            <div class="PedidoListado_cardHeader">
+                                <div class="PedidoListado_cardHeaderLeft">
+                                    <span class="PedidoListado_cardId">#@pedido.Id</span>
+                                    <div class="PedidoListado_cardDates">
+                                        <span class="PedidoListado_cardDateLabel">Entrega:</span>
+                                        <span class="PedidoListado_cardDateValue">@pedido.FechaEntrega.ToString("dd MMM", new CultureInfo("es-ES"))</span>
+                                    </div>
+                                </div>
+                                <span class="PedidoListadoMobile_estadoBadge PedidoListadoMobile_estado@(pedido.Estado)">
+                                    @GetEstadoCorto(pedido.Estado)
+                                </span>
+                            </div>
+
+                            <!-- Body con información -->
+                            <div class="PedidoListado_cardBody">
+                                @if (IsAdmin() || IsProveedor())
+                                {
+                                    <div class="PedidoListado_cardInfoRow">
+                                        <div class="PedidoListado_cardInfoCol">
+                                            <span class="PedidoListado_cardInfoLabel">Centro de Costo</span>
+                                            <span class="PedidoListado_cardInfoValue">@(pedido.CentroCosto?.Nombre ?? "-")</span>
+                                        </div>
+                                    </div>
+                                    <div class="PedidoListado_cardInfoRow">
+                                        <div class="PedidoListado_cardInfoCol">
+                                            <span class="PedidoListado_cardInfoLabel">Usuario</span>
+                                            <span class="PedidoListado_cardInfoValue">@pedido.Usuario?.FullName</span>
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="PedidoListado_cardFooter">
+                                    <div class="PedidoListado_cardStat">
+                                        <span class="PedidoListado_cardStatLabel">Elementos</span>
+                                        <span class="PedidoListado_cardStatValue">@(pedido.Detalles?.Count ?? 0)</span>
+                                    </div>
+                                    @if (IsAdmin() || IsProveedor())
+                                    {
+                                        <div class="PedidoListado_cardStat">
+                                            <span class="PedidoListado_cardStatLabel">Total</span>
+                                            <span class="PedidoListado_cardStatValue PedidoListado_cardStatTotal">@pedido.Total.ToString("C")</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Actions solo si hay disponibles -->
+                            @if (PuedeCancelarPedido(pedido) || PuedeCambiarEstado(pedido))
+                            {
+                                <div class="PedidoListado_cardActions" @onclick:stopPropagation="true">
+                                    @if (PuedeCancelarPedido(pedido))
+                                    {
+                                        <button class="PedidoListado_cardActionButton PedidoListado_cancelButton"
+                                                @onclick="() => MostrarConfirmacionCancelar(pedido.Id)">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="m15 9-6 6m0-6 6 6" />
+                                            </svg>
+                                            <span>Cancelar</span>
+                                        </button>
+                                    }
+
+                                    @if (PuedeCambiarEstado(pedido))
+                                    {
+                                        <button class="PedidoListado_cardActionButton PedidoListado_statusButton"
+                                                @onclick="() => MostrarCambioEstado(pedido)">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+                                            </svg>
+                                            <span>Cambiar</span>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    }
+</div>
+
+<ConfirmModal IsVisible="@mostrarConfirmacion"
+              Title="Confirmar cancelación"
+              Message="@($"¿Está seguro que desea cancelar el pedido #{pedidoIdCancelar}?")"
+              WarningMessage="Esta acción no se puede deshacer."
+              ConfirmButtonText="Sí, cancelar pedido"
+              IsProcessing="@isProcessing"
+              OnConfirm="ConfirmarCancelacion"
+              OnCancel="OcultarConfirmacion" />
+
+<ChangeStateModal IsVisible="@mostrarCambioEstadoModal"
+                  Pedido="@pedidoSeleccionado"
+                  NuevoEstado="@nuevoEstado"
+                  MotivoDevolucion="@motivoDevolucion"
+                  IsProcessing="@isProcessing"
+                  EstadosSiguientes="@GetEstadosSiguientes()"
+                  OnConfirm="ConfirmarCambioEstado"
+                  OnCancel="OcultarCambioEstado"
+                  OnEstadoChanged="@((estado) => nuevoEstado = estado)"
+                  OnMotivoChanged="@((motivo) => motivoDevolucion = motivo)" />
+
+@code {
+    private bool isLoading = true;
+    private bool isProcessing = false;
+    private bool initialized = false;
+    private List<Pedido> pedidos = new List<Pedido>();
+    private List<CentroCosto> centrosCosto = new List<CentroCosto>();
+    private int filtroEstado = -1;
+    private int filtroFecha = 0;
+    private int filtroCentroCosto = 0;
+    private string userRole = "";
+    private string userId = "";
+    private string motivoDevolucion = "";
+    private int proveedorId = 0;
+
+    // Modal de cancelación
+    private bool mostrarConfirmacion = false;
+    private int pedidoIdCancelar = 0;
+
+    // Modal de cambio de estado
+    private bool mostrarCambioEstadoModal = false;
+    private Pedido? pedidoSeleccionado = null;
+    private EstadoPedido nuevoEstado = EstadoPedido.Pendiente;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            await InvokeAsync(async () =>
+            {
+                try
+                {
+                    userRole = await AuthService.GetUserRoleAsync();
+                    userId = await AuthService.GetUserIdAsync();
+
+                    // Si es proveedor, obtener su ID
+                    if (userRole == "Proveedor")
+                    {
+                        var proveedor = await PedidoService.GetProveedorByUsuarioIdAsync(userId);
+                        if (proveedor != null)
+                        {
+                            proveedorId = proveedor.Id;
+                        }
+                    }
+
+                    // Cargar centros de costo si es admin o proveedor
+                    if (userRole == "Admin" || userRole == "Proveedor")
+                    {
+                        await CargarCentrosCosto();
+                    }
+
+                    // Cargar los pedidos según el rol
+                    await CargarPedidos();
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add("Error al inicializar: " + ex.Message, Severity.Error);
+                    isLoading = false;
+                }
+                finally
+                {
+                    StateHasChanged();
+                }
+            });
+        }
+    }
+
+    private async Task CargarCentrosCosto()
+    {
+        try
+        {
+            if (IsAdmin())
+            {
+                centrosCosto = await CentroCostoService.GetCentrosCostoAsync();
+            }
+            else if (IsProveedor())
+            {
+                centrosCosto = await CentroCostoService.GetCentrosCostoByProveedorIdAsync(proveedorId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error al cargar centros de costo: " + ex.Message, Severity.Warning);
+        }
+    }
+
+    private async Task CargarPedidos()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            if (IsAdmin())
+            {
+                pedidos = await PedidoService.GetAllPedidosAsync();
+            }
+            else if (IsProveedor())
+            {
+                pedidos = await PedidoService.GetPedidosByProveedorIdAsync(proveedorId);
+            }
+            else
+            {
+                pedidos = await PedidoService.GetPedidosUsuarioAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error al cargar pedidos: " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private List<Pedido> pedidosFiltrados => pedidos
+        .Where(p => FiltrarPorEstado(p))
+        .Where(p => FiltrarPorFecha(p))
+        .Where(p => FiltrarPorCentroCosto(p))
+        .OrderByDescending(p => p.FechaPedido)
+        .ToList();
+
+    private bool FiltrarPorEstado(Pedido pedido)
+    {
+        if (filtroEstado == -1) return true;
+        return (int)pedido.Estado == filtroEstado;
+    }
+
+    private bool FiltrarPorFecha(Pedido pedido)
+    {
+        switch (filtroFecha)
+        {
+            case 1: // Hoy
+                return pedido.FechaEntrega.Date == DateTime.Now.Date;
+
+            case 2: // Esta semana
+                var startOfWeek = DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek);
+                var endOfWeek = startOfWeek.AddDays(7);
+                return pedido.FechaEntrega.Date >= startOfWeek && pedido.FechaEntrega.Date < endOfWeek;
+
+            case 3: // Este mes
+                return pedido.FechaEntrega.Year == DateTime.Now.Year && pedido.FechaEntrega.Month == DateTime.Now.Month;
+
+            default: // Todas
+                return true;
+        }
+    }
+
+    private bool FiltrarPorCentroCosto(Pedido pedido)
+    {
+        if (!IsAdmin() && !IsProveedor()) return true;
+        if (filtroCentroCosto == 0) return true;
+        return pedido.CentroCostoId == filtroCentroCosto;
+    }
+
+    private string GetEstadoCorto(EstadoPedido estado)
+    {
+        return estado switch
+        {
+            EstadoPedido.Pendiente => "PENDIENTE",
+            EstadoPedido.Confirmado => "CONFIRMADO",
+            EstadoPedido.EnPreparacion => "EN PREP.",
+            EstadoPedido.Listo => "LISTO",
+            EstadoPedido.Entregado => "ENTREGADO",
+            EstadoPedido.Recibido => "RECIBIDO",
+            EstadoPedido.Devuelto => "DEVUELTO",
+            EstadoPedido.Cancelado => "CANCELADO",
+            _ => estado.ToString().ToUpper()
+        };
+    }
+
+    private bool PuedeCancelarPedido(Pedido pedido)
+    {
+        if (IsAdmin())
+        {
+            return (pedido.Estado == EstadoPedido.Pendiente || pedido.Estado == EstadoPedido.Confirmado);
+        }
+
+        if (!IsProveedor() && pedido.UsuarioId == userId)
+        {
+            return (pedido.Estado == EstadoPedido.Pendiente || pedido.Estado == EstadoPedido.Confirmado) &&
+                   pedido.FechaEntrega > DateTime.Now.AddHours(2);
+        }
+
+        return false;
+    }
+
+    private bool PuedeCambiarEstado(Pedido pedido)
+    {
+        if (!IsAdmin() && !IsProveedor())
+        {
+            return pedido.Estado == EstadoPedido.Entregado;
+        }
+
+        if (pedido.Estado == EstadoPedido.Cancelado ||
+            pedido.Estado == EstadoPedido.Recibido ||
+            pedido.Estado == EstadoPedido.Devuelto)
+            return false;
+
+        if (IsAdmin()) return true;
+
+        if (IsProveedor())
+        {
+            return pedido.Estado == EstadoPedido.Confirmado ||
+                   pedido.Estado == EstadoPedido.EnPreparacion ||
+                   pedido.Estado == EstadoPedido.Listo || 
+                   pedido.Estado == EstadoPedido.Pendiente;
+        }
+
+        return false;
+    }
+
+    private List<EstadoPedido> GetEstadosSiguientes()
+    {
+        if (pedidoSeleccionado == null) return new List<EstadoPedido>();
+
+        var estadosDisponibles = new List<EstadoPedido>();
+
+        if (IsAdmin())
+        {
+            switch (pedidoSeleccionado.Estado)
+            {
+                case EstadoPedido.Pendiente:
+                    estadosDisponibles.Add(EstadoPedido.Confirmado);
+                    break;
+                case EstadoPedido.Confirmado:
+                    estadosDisponibles.Add(EstadoPedido.EnPreparacion);
+                    break;
+                case EstadoPedido.EnPreparacion:
+                    estadosDisponibles.Add(EstadoPedido.Listo);
+                    break;
+                case EstadoPedido.Listo:
+                    estadosDisponibles.Add(EstadoPedido.Entregado);
+                    break;
+                case EstadoPedido.Entregado:
+                    estadosDisponibles.Add(EstadoPedido.Recibido);
+                    estadosDisponibles.Add(EstadoPedido.Devuelto);
+                    break;
+            }
+        }
+        else if (IsProveedor())
+        {
+            switch (pedidoSeleccionado.Estado)
+            {
+                case EstadoPedido.Pendiente:
+                    estadosDisponibles.Add(EstadoPedido.EnPreparacion);
+                    estadosDisponibles.Add(EstadoPedido.Confirmado);
+                    estadosDisponibles.Add(EstadoPedido.EnPreparacion);
+                    estadosDisponibles.Add(EstadoPedido.Listo);
+                    estadosDisponibles.Add(EstadoPedido.Entregado);
+                    break;
+                case EstadoPedido.Confirmado:
+                    estadosDisponibles.Add(EstadoPedido.EnPreparacion);
+                    estadosDisponibles.Add(EstadoPedido.Listo);
+                    estadosDisponibles.Add(EstadoPedido.Entregado);
+                    break;
+                case EstadoPedido.EnPreparacion:
+                    estadosDisponibles.Add(EstadoPedido.Listo);
+                    estadosDisponibles.Add(EstadoPedido.Entregado);
+                    break;
+                case EstadoPedido.Listo:
+                    estadosDisponibles.Add(EstadoPedido.Entregado);
+                    break;
+            }
+        }
+        else if (userRole == "Administrativo" || userRole == "Operativo")
+        {
+            if (pedidoSeleccionado.Estado == EstadoPedido.Entregado)
+            {
+                estadosDisponibles.Add(EstadoPedido.Recibido);
+                estadosDisponibles.Add(EstadoPedido.Devuelto);
+            }
+        }
+
+        return estadosDisponibles;
+    }
+
+    private void VerPedido(int pedidoId)
+    {
+        Navigation.NavigateTo($"/pedidos/detalle/{pedidoId}");
+    }
+
+    private void MostrarConfirmacionCancelar(int pedidoId)
+    {
+        pedidoIdCancelar = pedidoId;
+        mostrarConfirmacion = true;
+    }
+
+    private void OcultarConfirmacion()
+    {
+        mostrarConfirmacion = false;
+        pedidoIdCancelar = 0;
+    }
+
+    private async Task ConfirmarCancelacion()
+    {
+        if (pedidoIdCancelar <= 0) return;
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            var resultado = await PedidoService.CancelarPedidoAsync(pedidoIdCancelar);
+
+            await InvokeAsync(() =>
+            {
+                if (resultado)
+                {
+                    Snackbar.Add("Pedido cancelado con éxito.", Severity.Success);
+                    mostrarConfirmacion = false;
+                    pedidoIdCancelar = 0;
+                }
+                else
+                {
+                    Snackbar.Add("No se pudo cancelar el pedido.", Severity.Error);
+                }
+            });
+
+            await CargarPedidos();
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add("Error al cancelar el pedido: " + ex.Message, Severity.Error);
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void MostrarCambioEstado(Pedido pedido)
+    {
+        pedidoSeleccionado = pedido;
+
+        var estadosDisponibles = GetEstadosSiguientes();
+        if (estadosDisponibles.Any())
+        {
+            nuevoEstado = estadosDisponibles.First();
+            motivoDevolucion = "";
+        }
+
+        mostrarCambioEstadoModal = true;
+    }
+
+    private void OcultarCambioEstado()
+    {
+        mostrarCambioEstadoModal = false;
+        pedidoSeleccionado = null;
+        motivoDevolucion = "";
+    }
+
+    private async Task ConfirmarCambioEstado()
+    {
+        if (pedidoSeleccionado == null) return;
+
+        if (nuevoEstado == EstadoPedido.Devuelto && string.IsNullOrWhiteSpace(motivoDevolucion))
+        {
+            Snackbar.Add("Debe proporcionar un motivo de devolución", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            var resultado = await PedidoService.ActualizarEstadoPedidoAsync(
+                pedidoSeleccionado.Id,
+                nuevoEstado,
+                motivoDevolucion
+            );
+
+            if (resultado)
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add($"Estado cambiado a {nuevoEstado} correctamente", Severity.Success);
+                    mostrarCambioEstadoModal = false;
+                    pedidoSeleccionado = null;
+                    motivoDevolucion = "";
+                    StateHasChanged();
+                });
+
+                // CargarPedidos DENTRO de InvokeAsync
+                await InvokeAsync(async () =>
+                {
+                    await CargarPedidos();
+                });
+            }
+            else
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("No se pudo actualizar el estado del pedido.", Severity.Error);
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al actualizar el estado: {ex.Message}", Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private bool IsAdmin() => userRole == "Admin";
+    private bool IsProveedor() => userRole == "Proveedor";
+
+    private string GetTitleByRole()
+    {
+        return userRole switch
+        {
+            "Admin" => "Todos los Pedidos",
+            "Proveedor" => "Pedidos Recibidos",
+            _ => "Mis Pedidos"
+        };
+    }
+
+    private bool TieneFiltrosActivos()
+    {
+        return filtroEstado != -1 || filtroFecha != 0 || filtroCentroCosto != 0;
+    }
+
+    private int ContarFiltrosActivos()
+    {
+        int count = 0;
+        if (filtroEstado != -1) count++;
+        if (filtroFecha != 0) count++;
+        if (filtroCentroCosto != 0) count++;
+        return count;
+    }
+
+    private void LimpiarFiltros()
+    {
+        filtroEstado = -1;
+        filtroFecha = 0;
+        filtroCentroCosto = 0;
+    }
+}

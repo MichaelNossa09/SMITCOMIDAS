@@ -1,0 +1,242 @@
+﻿
+
+.Proveedores_MobileContainer {
+    padding: 12px;
+    background-color: #f8f9fa;
+    min-height: 100%;
+}
+
+.Proveedores_MobileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: white;
+    padding: 14px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.Proveedores_MobileHeader h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    position: relative;
+    padding-left: 12px;
+}
+
+.Proveedores_MobileHeader h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    background-color: #51A121;
+    border-radius: 2px;
+}
+
+.Proveedores_MobileAddBtn {
+    width: 36px;
+    height: 36px;
+    background: #51A121;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(81, 161, 33, 0.2);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.Proveedores_MobileLoading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.Proveedores_MobileSpinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(81, 161, 33, 0.2);
+    border-top-color: #51A121;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+.Proveedores_MobileLoading span {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.Proveedores_MobileList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.Proveedores_MobileCard {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.Proveedores_MobileCardHeader {
+    padding: 14px 16px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9fa;
+}
+
+.Proveedores_MobileCardTitle {
+    font-size: 17px;
+    font-weight: 700; 
+    color: #2c3e50;
+    margin: 0;
+}
+
+.Proveedores_MobileCardContent {
+    padding: 16px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.Proveedores_MobileDetailItem {
+    display: flex;
+    margin-bottom: 12px;
+    align-items: flex-start; 
+}
+
+.Proveedores_MobileDetailItem:last-child {
+    margin-bottom: 0;
+}
+
+.Proveedores_MobileDetailLabel {
+    width: 100px;
+    font-weight: 600;
+    color: #51A121;
+    font-size: 13px;
+    flex-shrink: 0;
+    padding-right: 10px;
+}
+
+.Proveedores_MobileDetailValue {
+    flex: 1;
+    color: #2c3e50;
+    padding-left: 10px; 
+    position: relative;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.Proveedores_MobileBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.Proveedores_MobileBadge::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.Proveedores_MobileBadgeActive {
+    background-color: rgba(40, 167, 69, 0.12);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.Proveedores_MobileBadgeActive::before {
+    background-color: #28a745;
+}
+
+.Proveedores_MobileBadgeInactive {
+    background-color: rgba(108, 117, 125, 0.12);
+    color: #6c757d;
+    border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.Proveedores_MobileBadgeInactive::before {
+    background-color: #6c757d;
+}
+
+.Proveedores_MobileCardActions {
+    display: flex;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    background-color: #f9f9fa;
+}
+
+.Proveedores_MobileActionBtn {
+    flex: 1;
+    padding: 14px 0;
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-top: none;
+    color: #28a745;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.Proveedores_MobileActionBtn:first-child {
+    border-right: 1px solid rgba(0,0,0,0.08);
+}
+
+.Proveedores_MobileActionBtn.delete {
+    color: #e74c3c;
+}
+
+.Proveedores_MobileNoData {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.Proveedores_MobileNoData p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.Proveedores_MobileBtnPrimary {
+    background: #51A121;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}

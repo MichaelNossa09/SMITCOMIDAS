@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\SMITCOMIDAS.Web.props" />
+</Project>

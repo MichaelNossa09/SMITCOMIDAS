@@ -1,0 +1,296 @@
+﻿@page "/proveedores"
+@using SMITCOMIDAS.Shared.Components.Shared
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@inject IProveedoresService ProveedoresService
+@inject IAuthService AuthService
+@inject IPlatformService Platform
+@inject NavigationManager Navigation
+
+<PageTitle>Proveedores</PageTitle>
+@if (isChecking)
+{
+    @if (Platform.IsMobile)
+    {
+        <div class="Proveedores_MobileLoading">
+            <div class="Proveedores_MobileSpinner"></div>
+            <span>Verificando permisos...</span>
+        </div>
+    }
+    else
+    {
+        <div class="Proveedores_Loading">Verificando permisos...</div>
+    }
+}
+else if (!isAuthorized)
+{
+    <div class="Proveedores_Unauthorized">
+        <div class="Proveedores_UnauthorizedIcon">🔒</div>
+        <h2>Acceso Denegado</h2>
+        <p>No tienes permisos suficientes para acceder a esta página.</p>
+        <button class="Proveedores_BtnBack" @onclick="GoBack">Volver al Inicio</button>
+    </div>
+}
+else
+{
+    @if (Platform.IsMobile)
+    {
+        <!-- Vista Móvil -->
+        <div class="Proveedores_MobileContainer">
+            <div class="Proveedores_MobileHeader">
+                <h2>Gestión de Proveedores</h2>
+                <button class="Proveedores_MobileAddBtn" @onclick="CrearProveedor">+</button>
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="Proveedores_MobileLoading">
+                    <div class="Proveedores_MobileSpinner"></div>
+                    <span>Cargando...</span>
+                </div>
+            }
+            else if (proveedores.Any())
+            {
+                <div class="Proveedores_MobileList">
+                    @foreach (var p in proveedores)
+                    {
+                        <div class="Proveedores_MobileCard">
+                            <div class="Proveedores_MobileCardHeader">
+                                <h3 class="Proveedores_MobileCardTitle">@p.NombreComercial</h3>
+                                <span class="Proveedores_MobileBadge @(p.Activo ? "Proveedores_MobileBadgeActive" : "Proveedores_MobileBadgeInactive")">
+                                    @(p.Activo ? "Activo" : "Inactivo")
+                                </span>
+                            </div>
+
+                            <div class="Proveedores_MobileCardContent">
+                                <div class="Proveedores_MobileDetailItem">
+                                    <div class="Proveedores_MobileDetailLabel">NIT:</div>
+                                    <div class="Proveedores_MobileDetailValue">@p.NIT</div>
+                                </div>
+
+                                <div class="Proveedores_MobileDetailItem">
+                                    <div class="Proveedores_MobileDetailLabel">Razón Social:</div>
+                                    <div class="Proveedores_MobileDetailValue">@p.RazonSocial</div>
+                                </div>
+
+                                <div class="Proveedores_MobileDetailItem">
+                                    <div class="Proveedores_MobileDetailLabel">Teléfono:</div>
+                                    <div class="Proveedores_MobileDetailValue">@p.Telefono</div>
+                                </div>
+
+                                <div class="Proveedores_MobileDetailItem">
+                                    <div class="Proveedores_MobileDetailLabel">Email:</div>
+                                    <div class="Proveedores_MobileDetailValue">@p.Email</div>
+                                </div>
+
+                                <div class="Proveedores_MobileDetailItem">
+                                    <div class="Proveedores_MobileDetailLabel">Ciudad:</div>
+                                    <div class="Proveedores_MobileDetailValue">@p.Ciudad</div>
+                                </div>
+                            </div>
+
+                            <div class="Proveedores_MobileCardActions">
+                                <button class="Proveedores_MobileActionBtn" @onclick="() => Editar(p.Id)">Editar</button>
+                                <button class="Proveedores_MobileActionBtn delete" @onclick="() => ConfirmarEliminar(p)">Eliminar</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="Proveedores_MobileNoData">
+                    <p>No hay proveedores registrados</p>
+                    <button class="Proveedores_MobileBtnPrimary" @onclick="CrearProveedor">Crear el primero</button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Vista Desktop -->
+        <div class="Proveedores_Container">
+            <AdminPageHeader Title="Gestión de Proveedores" 
+                             ButtonText="Nuevo Proveedor" 
+                             OnButtonClick="CrearProveedor" />
+    
+            @if (isLoading)
+            {
+                <div class="Proveedores_Loading">
+                    <div class="Proveedores_Loader"></div>
+                    <p>Cargando...</p>
+                </div>
+            }
+            else if (proveedores.Any())
+            {
+                <DataTable>
+                    <HeaderContent>
+                        <th>NIT</th>
+                        <th>Razón Social</th>
+                        <th>Nombre Comercial</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </HeaderContent>
+                    <BodyContent>
+                        @foreach (var p in proveedores)
+                        {
+                            <tr>
+                                <td>@p.NIT</td>
+                                <td>@p.RazonSocial</td>
+                                <td>@p.NombreComercial</td>
+                                <td>@p.Telefono</td>
+                                <td>@p.Email</td>
+                                <td>@p.Ciudad</td>
+                                <td>
+                                    <StatusBadge IsActive="@p.Activo" />
+                                </td>
+                                <td>
+                                    <ActionButtons OnEdit="() => Editar(p.Id)" 
+                                                  OnDelete="() => ConfirmarEliminar(p)" />
+                                </td>
+                            </tr>
+                        }
+                    </BodyContent>
+                </DataTable>
+            }
+            else
+            {
+                <EmptyState Message="No hay proveedores registrados"
+                            ButtonText="Crear el primero"
+                            OnButtonClick="CrearProveedor" />
+            }
+        </div>
+    }
+}
+
+<!-- Modal de confirmación de eliminación (compartido) -->
+@if (mostrarConfirmacion)
+{
+    <div class="Proveedores_ModalBackdrop" @onclick="CancelarEliminar">
+        <div class="Proveedores_Modal" @onclick:stopPropagation="true">
+            <div class="Proveedores_ModalHeader">
+                <h3>Confirmar Eliminación</h3>
+            </div>
+            <div class="Proveedores_ModalBody">
+                <p>¿Está seguro que desea eliminar al proveedor <strong>@($"{proveedorEliminar?.NombreComercial}")</strong>?</p>
+                <p class="Proveedores_ModalWarning">Esta acción no se puede deshacer y eliminará también el usuario asociado al proveedor.</p>
+            </div>
+            <div class="Proveedores_ModalFooter">
+                <button class="Proveedores_BtnSecondary" @onclick="CancelarEliminar">Cancelar</button>
+                <button class="Proveedores_BtnDanger" @onclick="EliminarConfirmado">Eliminar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="Proveedores_ErrorToast">@errorMessage</div>
+}
+@code {
+    private List<Proveedor> proveedores = new();
+    private bool isLoading = true;
+    private string errorMessage = "";
+    private bool initialized = false;
+    private bool isChecking = true;
+    private bool isAuthorized = false;
+
+    // Para la confirmación de eliminación
+    private bool mostrarConfirmacion = false;
+    private Proveedor proveedorEliminar = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+
+            try
+            {
+                var role = await AuthService.GetUserRoleAsync();
+                isAuthorized = role == "Admin";
+
+                if (isAuthorized)
+                {
+                    await CargarProveedores();
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Error al cargar: " + ex.Message;
+                isAuthorized = false;
+            }
+            finally
+            {
+                isLoading = false;
+                isChecking = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CargarProveedores()
+    {
+        try
+        {
+            proveedores = await ProveedoresService.GetProveedoresAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error al cargar proveedores: " + ex.Message;
+        }
+    }
+
+    private void CrearProveedor()
+    {
+        Navigation.NavigateTo("/proveedores/crear");
+    }
+
+    private void Editar(int id)
+    {
+        Navigation.NavigateTo($"/proveedores/editar/{id}");
+    }
+
+    private void ConfirmarEliminar(Proveedor proveedor)
+    {
+        proveedorEliminar = proveedor;
+        mostrarConfirmacion = true;
+        StateHasChanged();
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmacion = false;
+        proveedorEliminar = null;
+        StateHasChanged();
+    }
+
+    private async Task EliminarConfirmado()
+    {
+        if (proveedorEliminar != null)
+        {
+            try
+            {
+                await ProveedoresService.DeleteProveedorAsync(proveedorEliminar.Id);
+                mostrarConfirmacion = false;
+                proveedorEliminar = null;
+                await CargarProveedores();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Error al eliminar: " + ex.Message;
+                mostrarConfirmacion = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/home");
+    }
+}

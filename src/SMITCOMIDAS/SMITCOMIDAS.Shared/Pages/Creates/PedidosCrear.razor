@@ -1,0 +1,728 @@
+﻿@page "/pedidos/nuevo"
+@using System.Globalization
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Models.DTOs
+@using System.ComponentModel.DataAnnotations
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@inject IPedidoService PedidoService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IToastService ToastService
+@inject IPlatformService Platform
+@inject IAuthService AuthService
+@inject ISnackbar Snackbar
+
+<PageTitle>Crear Pedido</PageTitle>
+<div class="@(Platform.IsMobile ? "PedidoRealizacion_containerMobile" : "PedidoRealizacion_container")">
+    <div class="PedidoRealizacion_header">
+        <div class="PedidoRealizacion_backButton" @onclick="@(() => Navigation.NavigateTo("/pedidos"))">
+            <span>←</span>
+        </div>
+        <h1 class="PedidoRealizacion_title">Realizar Pedido</h1>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="PedidoRealizacion_loadingContainer">
+            <div class="PedidoRealizacion_loader"></div>
+            <p>Cargando...</p>
+        </div>
+    }
+    else
+    {
+        <div class="PedidoRealizacion_card">
+            <!-- Paso 1: Selección de Fecha -->
+            @if (currentStep == 1)
+            {
+                <div class="PedidoRealizacion_stepContainer">
+                    <h2 class="PedidoRealizacion_stepTitle">Paso 1: Seleccione la fecha de entrega</h2>
+
+                    <div class="PedidoRealizacion_calendario">
+                        <div class="PedidoRealizacion_calendarHeader">
+                            <button class="PedidoRealizacion_calendarNav"
+                                    @onclick="PreviousMonth"
+                                    disabled="@(new DateTime(currentDate.Year, currentDate.Month, 1) <= DateTime.Now.Date)">
+                                <span>←</span>
+                            </button>
+                            <h3 class="PedidoRealizacion_calendarTitle">@currentDate.ToString("MMMM 'de' yyyy", new CultureInfo("es-ES"))</h3>
+                            <button class="PedidoRealizacion_calendarNav" @onclick="NextMonth">
+                                <span>→</span>
+                            </button>
+                        </div>
+
+                        <div class="PedidoRealizacion_calendarDays">
+                            <div class="PedidoRealizacion_dayHeader">Lun</div>
+                            <div class="PedidoRealizacion_dayHeader">Mar</div>
+                            <div class="PedidoRealizacion_dayHeader">Mié</div>
+                            <div class="PedidoRealizacion_dayHeader">Jue</div>
+                            <div class="PedidoRealizacion_dayHeader">Vie</div>
+                            <div class="PedidoRealizacion_dayHeader">Sáb</div>
+                            <div class="PedidoRealizacion_dayHeader">Dom</div>
+
+                            @foreach (var day in GetCalendarDays())
+                            {
+                                <div class="@GetDayClass(day)" @onclick="@(() => SelectDate(day))">
+                                    @day.Day
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @if (selectedDate != default)
+                    {
+                        <div class="PedidoRealizacion_dateSelected">
+                            <span>Fecha seleccionada:</span>
+                            <strong>@selectedDate.ToString("dddd, dd 'de' MMMM 'del' yyyy", new CultureInfo("es-ES"))</strong>
+                        </div>
+
+                        <div class="PedidoRealizacion_actions">
+                            <button class="PedidoRealizacion_primaryButton"
+                                    @onclick="() => GoToNextStep()"
+                                    disabled="@(selectedDate == default)">
+                                Continuar
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Paso 2: Selección de Proveedor -->
+            @if (currentStep == 2)
+            {
+                <div class="PedidoRealizacion_stepContainer">
+                    <h2 class="PedidoRealizacion_stepTitle">Paso 2: Seleccione el proveedor</h2>
+
+                    <div class="PedidoRealizacion_dateInfo">
+                        <div class="PedidoRealizacion_dateSelected">
+                            <span>Fecha seleccionada:</span>
+                            <strong>@selectedDate.ToString("dddd, dd 'de' MMMM 'del' yyyy", new CultureInfo("es-ES"))</strong>
+                        </div>
+                    </div>
+
+                    @if (proveedores.Count == 0)
+                    {
+                        <div class="PedidoRealizacion_emptyState">
+                            <div class="PedidoRealizacion_emptyIcon">🏢</div>
+                            <h3>No hay proveedores disponibles</h3>
+                            <p>No se encontraron proveedores activos en el sistema.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="PedidoRealizacion_proveedoresList">
+                            @foreach (var proveedor in proveedores)
+                            {
+                                <div class="PedidoRealizacion_proveedorCard @(selectedProveedorId == proveedor.Id ? "PedidoRealizacion_selected" : "")"
+                                     @onclick="@(() => SelectProveedor(proveedor.Id))">
+                                    <h3 class="PedidoRealizacion_proveedorName">@proveedor.NombreComercial</h3>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="PedidoRealizacion_actions">
+                            <button class="PedidoRealizacion_secondaryButton" @onclick="() => GoToPreviousStep()">
+                                Regresar
+                            </button>
+                            <button class="PedidoRealizacion_primaryButton"
+                                    @onclick="() => GoToNextStep()"
+                                    disabled="@(selectedProveedorId == 0)">
+                                Continuar
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Paso 3: Selección de Menú -->
+            @if (currentStep == 3)
+            {
+                <div class="PedidoRealizacion_stepContainer">
+                    <h2 class="PedidoRealizacion_stepTitle">Paso 3: Seleccione un menú</h2>
+
+                    <div class="PedidoRealizacion_dateInfo">
+                        <div class="PedidoRealizacion_selectionInfo">
+                            <span>Fecha: <strong>@selectedDate.ToString("dd - MMMM - yyyy", new CultureInfo("es-ES"))</strong></span>
+                            <span>Proveedor: <strong>@(proveedores.FirstOrDefault(p => p.Id == selectedProveedorId)?.NombreComercial ?? "N/A")</strong></span>
+                        </div>
+                    </div>
+
+                    @if (menusDisponibles.Count == 0)
+                    {
+                        <div class="PedidoRealizacion_emptyState">
+                            <div class="PedidoRealizacion_emptyIcon">📋</div>
+                            <h3>No hay menús disponibles</h3>
+                            <p>No se encontraron menús disponibles para esta fecha y proveedor.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="PedidoRealizacion_menuList">
+                            @foreach (var menu in menusDisponibles)
+                            {
+                                <div class="PedidoRealizacion_menuCard @(selectedMenuId == menu.Id ? "PedidoRealizacion_selected" : "")"
+                                     @onclick="@(() => SelectMenu(menu.Id))">
+                                    <div class="PedidoRealizacion_menuHeader">
+                                        <h3 class="PedidoRealizacion_menuTitle">@menu.Nombre</h3>
+                                        <div class="PedidoRealizacion_menuBadge">@menu.Tipo</div>
+                                    </div>
+                                    <p class="PedidoRealizacion_menuDesc">@menu.Descripcion</p>
+                                    <div class="PedidoRealizacion_menuFooter">
+                                        <div class="PedidoRealizacion_menuDates">
+                                            <span>Disponible:</span>
+                                            <span>@menu.FechaInicio.ToString("dd - MMMM", new CultureInfo("es-ES")) - @menu.FechaFin.ToString("dd - MMMM", new CultureInfo("es-ES"))</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="PedidoRealizacion_actions">
+                            <button class="PedidoRealizacion_secondaryButton" @onclick="() => GoToPreviousStep()">
+                                Regresar
+                            </button>
+                            <button class="PedidoRealizacion_primaryButton"
+                                    @onclick="() => GoToNextStep()"
+                                    disabled="@(selectedMenuId == 0)">
+                                Continuar
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Paso 4: Selección de Elementos -->
+            @if (currentStep == 4)
+            {
+                <div class="PedidoRealizacion_stepContainer">
+                    <h2 class="PedidoRealizacion_stepTitle">Paso 4: Seleccione los elementos</h2>
+
+                    <div class="PedidoRealizacion_dateInfo">
+                        <div class="PedidoRealizacion_selectionInfo">
+                            <span>Fecha: <strong>@selectedDate.ToString("dd - MMMM - yyyy", new CultureInfo("es-ES"))</strong></span>
+                            <span>Menú: <strong>@(menusDisponibles.FirstOrDefault(m => m.Id == selectedMenuId)?.Nombre ?? "N/A")</strong></span>
+                        </div>
+                    </div>
+
+                    @if (elementosDisponibles.Count == 0)
+                    {
+                        <div class="PedidoRealizacion_emptyState">
+                            <div class="PedidoRealizacion_emptyIcon">🍽️</div>
+                            <h3>No hay elementos disponibles</h3>
+                            <p>No se encontraron elementos disponibles para este menú en la fecha seleccionada.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="PedidoRealizacion_elementosList">
+                            @foreach (var elemento in elementosDisponibles)
+                            {
+                                var disponibilidad = GetDisponibilidad(elemento);
+
+                                <div class="PedidoRealizacion_elementoCard">
+                                    <div class="PedidoRealizacion_elementoHeader">
+                                        @if (!string.IsNullOrEmpty(elemento.ImagenUrl))
+                                        {
+                                            <div class="PedidoRealizacion_elementoImage">
+                                                <img src="@elemento.ImagenUrl" alt="@elemento.Nombre" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="PedidoRealizacion_elementoImagePlaceholder">
+                                                <span>🍲</span>
+                                            </div>
+                                        }
+                                        <div class="PedidoRealizacion_elementoInfo">
+                                            <h3 class="PedidoRealizacion_elementoTitle">@elemento.Nombre</h3>
+                                            <div class="PedidoRealizacion_elementoCategoria">@elemento.TipoComida</div>
+                                            <p class="PedidoRealizacion_elementoDesc">@elemento.Descripcion</p>
+                                            @if(MostrarPrecios()){
+                                                <div class="PedidoRealizacion_elementoPrecio">@elemento.Precio.ToString("C")</div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="PedidoRealizacion_elementoFooter">
+                                        <div class="PedidoRealizacion_elementoDisponibilidad">
+                                            @{
+                                                var disponibilidadTexto = disponibilidad != null
+                                                ? (disponibilidad.DisponibleAlmuerzo && disponibilidad.DisponibleCena
+                                                ? "Almuerzo y Cena"
+                                                : disponibilidad.DisponibleAlmuerzo
+                                                ? "Solo Almuerzo"
+                                                : "Solo Cena")
+                                                : "No disponible";
+                                            }
+                                            <span>Disponible: <strong>@disponibilidadTexto</strong></span>
+
+                                            @if (disponibilidad != null && disponibilidad.CantidadDisponible.HasValue)
+                                            {
+                                                <span>Cantidad disponible: <strong>@disponibilidad.CantidadDisponible</strong></span>
+                                            }
+                                        </div>
+
+                                        <div class="PedidoRealizacion_elementoActions">
+                                            @if (elementosSeleccionados.Any(e => e.Id == elemento.Id))
+                                            {
+                                                <button class="PedidoRealizacion_removeButton" @onclick="() => RemoveElemento(elemento)">
+                                                    <span>-</span> Quitar
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="PedidoRealizacion_addButton" @onclick="() => AddElemento(elemento)">
+                                                    <span>+</span> Agregar
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="PedidoRealizacion_seleccionados">
+                            <h3 class="PedidoRealizacion_seleccionadosTitle">
+                                Elementos seleccionados: <span>@elementosSeleccionados.Count</span>
+                            </h3>
+
+                            @if (elementosSeleccionados.Any())
+                            {
+                                <div class="PedidoRealizacion_seleccionadosList">
+                                    @foreach (var elemento in elementosSeleccionados)
+                                    {
+                                        <div class="PedidoRealizacion_seleccionadoItem">
+                                            <div class="PedidoRealizacion_seleccionadoInfo">
+                                                <span class="PedidoRealizacion_seleccionadoNombre">@elemento.Nombre</span>
+                                                @if (MostrarPrecios())
+                                                {
+                                                <span class="PedidoRealizacion_seleccionadoPrecio">@elemento.Precio.ToString("C")</span>
+                                                }
+                                            </div>
+                                            <button class="PedidoRealizacion_seleccionadoRemove" @onclick="() => RemoveElemento(elemento)">
+                                                ×
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                                @if(MostrarPrecios()){
+                                    <div class="PedidoRealizacion_total">
+                                        <span>Total:</span>
+                                        <span class="PedidoRealizacion_totalAmount">@CalcularTotal().ToString("C")</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <div class="PedidoRealizacion_actions">
+                            <button class="PedidoRealizacion_secondaryButton" @onclick="() => GoToPreviousStep()">
+                                Regresar
+                            </button>
+                            <button class="PedidoRealizacion_primaryButton"
+                                    @onclick="() => GoToNextStep()"
+                                    disabled="@(!elementosSeleccionados.Any())">
+                                Continuar
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Paso 5: Confirmación -->
+            @if (currentStep == 5)
+            {
+                <div class="PedidoRealizacion_stepContainer">
+                    <h2 class="PedidoRealizacion_stepTitle">Paso 5: Confirmación</h2>
+
+                    <div class="PedidoRealizacion_confirmacion">
+                        <div class="PedidoRealizacion_confirmacionItem">
+                            <span class="PedidoRealizacion_confirmacionLabel">Fecha de entrega:</span>
+                            <span class="PedidoRealizacion_confirmacionValue">@selectedDate.ToString("dddd, dd 'de' MMMM 'del' yyyy", new CultureInfo("es-ES"))</span>
+                        </div>
+
+                        <div class="PedidoRealizacion_confirmacionItem">
+                            <span class="PedidoRealizacion_confirmacionLabel">Proveedor:</span>
+                            <span class="PedidoRealizacion_confirmacionValue">
+                                @(proveedores.FirstOrDefault(p => p.Id == selectedProveedorId)?.NombreComercial ?? "N/A")
+                            </span>
+                        </div>
+
+                        <div class="PedidoRealizacion_confirmacionItem">
+                            <span class="PedidoRealizacion_confirmacionLabel">Menú:</span>
+                            <span class="PedidoRealizacion_confirmacionValue">
+                                @(menusDisponibles.FirstOrDefault(m => m.Id == selectedMenuId)?.Nombre ?? "N/A")
+                            </span>
+                        </div>
+
+                        <div class="PedidoRealizacion_confirmacionItem">
+                            <span class="PedidoRealizacion_confirmacionLabel">Elementos:</span>
+                            <span class="PedidoRealizacion_confirmacionValue">@elementosSeleccionados.Count</span>
+                        </div>
+
+                        <div class="PedidoRealizacion_confirmacionElementos">
+                            @foreach (var elemento in elementosSeleccionados)
+                            {
+                                <div class="PedidoRealizacion_confirmacionElementoItem">
+                                    <span class="PedidoRealizacion_confirmacionElementoNombre">@elemento.Nombre</span>
+                                    @if(MostrarPrecios()){
+                                        <span class="PedidoRealizacion_confirmacionElementoPrecio">@elemento.Precio.ToString("C")</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        @if(MostrarPrecios()){
+                            <div class="PedidoRealizacion_confirmacionTotal">
+                                <span>Total:</span>
+                                <span class="PedidoRealizacion_confirmacionTotalAmount">@CalcularTotal().ToString("C")</span>
+                            </div>
+                        }
+
+                        <div class="PedidoRealizacion_comentarios">
+                            <label for="comentarios">Comentarios u observaciones:</label>
+                            <textarea id="comentarios" rows="3" @bind="comentarios"
+                                      placeholder="Especifique alguna observación adicional para su pedido..."></textarea>
+                        </div>
+
+                        <div class="PedidoRealizacion_actions">
+                            <button class="PedidoRealizacion_secondaryButton" @onclick="() => GoToPreviousStep()">
+                                Regresar
+                            </button>
+                            <button class="PedidoRealizacion_confirmButton" @onclick="ConfirmarPedido" disabled="@isProcessing">
+                                @(isProcessing ? "Procesando..." : "Confirmar Pedido")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private bool isProcessing = false;
+    private int currentStep = 1;
+    private DateTime currentDate = DateTime.Now;
+    private DateTime selectedDate = default;
+    private int selectedProveedorId = 0;
+    private int selectedMenuId = 0;
+    private string userRole = "";
+    private bool MostrarPrecios() => userRole == "Admin" || userRole == "Proveedor";
+
+    private List<Proveedor> proveedores = new List<Proveedor>();
+    private List<Menu> menusDisponibles = new List<Menu>();
+    private List<ElementoMenu> elementosDisponibles = new List<ElementoMenu>();
+    private List<ElementoMenu> elementosSeleccionados = new List<ElementoMenu>();
+    private string comentarios = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoading = true;
+            try
+            {
+                userRole = await AuthService.GetUserRoleAsync();
+
+                // Cargar proveedores
+                proveedores = await PedidoService.GetProveedoresActivosAsync();
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", $"Error al cargar datos: {ex.Message}");
+                ToastService.ShowError("Error al cargar los datos. Por favor, intente nuevamente.");
+            }
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    // Navegación entre pasos
+    private void GoToNextStep()
+    {
+        switch (currentStep)
+        {
+            case 1: // Desde la selección de fecha
+                currentStep = 2; // Ir a selección de proveedor
+                break;
+
+            case 2: // Desde la selección de proveedor
+                LoadMenusDisponibles();
+                currentStep = 3; // Ir a selección de menú
+                break;
+
+            case 3: // Desde la selección de menú
+                LoadElementosDisponibles();
+                currentStep = 4; // Ir a selección de elementos
+                break;
+
+            case 4: // Desde la selección de elementos
+                currentStep = 5; // Ir a confirmación
+                break;
+        }
+    }
+
+    private void GoToPreviousStep()
+    {
+        currentStep--;
+    }
+
+    // Calendario
+    private List<DateTime> GetCalendarDays()
+    {
+        var days = new List<DateTime>();
+
+        // Primer día del mes
+        var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+
+        // Día de la semana del primer día (0 = Domingo, 1 = Lunes, etc.)
+        var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
+        if (firstDayOfWeek == 0) firstDayOfWeek = 7; // Ajustar domingo a 7 para que lunes sea 1
+
+        // Fecha de inicio del calendario (puede ser del mes anterior)
+        var startDate = firstDayOfMonth.AddDays(-(firstDayOfWeek - 1));
+
+        // Generar 42 días (6 semanas)
+        for (int i = 0; i < 42; i++)
+        {
+            days.Add(startDate.AddDays(i));
+        }
+
+        return days;
+    }
+
+    private string GetDayClass(DateTime date)
+    {
+        var classes = "PedidoRealizacion_day";
+
+        // Si es de otro mes
+        if (date.Month != currentDate.Month)
+        {
+            classes += " PedidoRealizacion_otherMonth";
+        }
+
+        // Si es la fecha seleccionada
+        if (date.Date == selectedDate.Date)
+        {
+            classes += " PedidoRealizacion_selectedDay";
+        }
+
+        // Si es hoy
+        if (date.Date == DateTime.Now.Date)
+        {
+            classes += " PedidoRealizacion_today";
+        }
+
+        // Si es fecha pasada
+        if (date < DateTime.Now.Date)
+        {
+            classes += " PedidoRealizacion_unavailable";
+        }
+
+        return classes;
+    }
+
+    private void PreviousMonth()
+    {
+        var firstDayOfCurrentMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+        if (firstDayOfCurrentMonth > DateTime.Now.Date)
+        {
+            currentDate = currentDate.AddMonths(-1);
+        }
+    }
+
+    private void NextMonth()
+    {
+        currentDate = currentDate.AddMonths(1);
+    }
+
+    private void SelectDate(DateTime date)
+    {
+        if (date < DateTime.Now.Date)
+            return;
+
+        selectedDate = date;
+    }
+
+    // Selección de proveedor
+    private void SelectProveedor(int proveedorId)
+    {
+        selectedProveedorId = proveedorId;
+    }
+
+    // Carga y selección de menús
+    private async Task LoadMenusDisponibles()
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isLoading = true;
+                StateHasChanged();
+            });
+
+            menusDisponibles = await PedidoService.GetMenusDisponiblesAsync(selectedDate, selectedProveedorId);
+
+            await InvokeAsync(() =>
+            {
+                selectedMenuId = 0;
+                StateHasChanged();
+            });
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add($"Error al cargar menús: {ex.Message}", Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isLoading = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void SelectMenu(int menuId)
+    {
+        selectedMenuId = menuId;
+    }
+
+    // Carga y selección de elementos
+    private async void LoadElementosDisponibles()
+    {
+        isLoading = true;
+
+        try
+        {
+            elementosDisponibles = await PedidoService.GetElementosDisponiblesAsync(selectedMenuId, selectedDate);
+            elementosSeleccionados.Clear();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"Error al cargar elementos: {ex.Message}");
+            ToastService.ShowError("Error al cargar los elementos disponibles.");
+        }
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private DisponibilidadElemento GetDisponibilidad(ElementoMenu elemento)
+    {
+        if (elemento.Disponibilidades == null || !elemento.Disponibilidades.Any())
+            return null;
+
+        DiaSemana diaSemana = (DiaSemana)((int)selectedDate.DayOfWeek);
+        if ((int)diaSemana == 0) diaSemana = DiaSemana.Domingo; // Ajustar domingo
+
+        return elemento.Disponibilidades.FirstOrDefault(d => d.Dia == diaSemana);
+    }
+
+    private void AddElemento(ElementoMenu elemento)
+    {
+        elementosSeleccionados.RemoveAll(e => e.TipoComida == elemento.TipoComida);
+        elementosSeleccionados.Add(elemento);
+
+        StateHasChanged();
+    }
+    private bool IsElementoSeleccionado(ElementoMenu elemento)
+    {
+        return elementosSeleccionados.Any(e => e.Id == elemento.Id);
+    }
+
+    private bool PuedeSeleccionarTipoComida(TipoComida tipoComida)
+    {
+        return !elementosSeleccionados.Any(e => e.TipoComida == tipoComida);
+    }
+    private void RemoveElemento(ElementoMenu elemento)
+    {
+        elementosSeleccionados.RemoveAll(e => e.Id == elemento.Id);
+        StateHasChanged();
+    }
+
+
+    private decimal CalcularTotal()
+    {
+        return elementosSeleccionados.Sum(e => e.Precio);
+    }
+
+    // Confirmación del pedido
+    private async Task ConfirmarPedido()
+    {
+        if (!elementosSeleccionados.Any())
+        {
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add("Debe seleccionar al menos un elemento para realizar el pedido.", Severity.Warning);
+                StateHasChanged();
+            });
+            return;
+        }
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            var pedidoDTO = new PedidoDTO
+                {
+                    UsuarioId = await AuthService.GetUserIdAsync(),
+                    FechaEntrega = selectedDate,
+                    Comentarios = comentarios,
+                    Detalles = elementosSeleccionados.Select(e => new DetallePedidoDTO
+                    {
+                        ElementoMenuId = e.Id,
+                        Cantidad = 1,
+                        PrecioUnitario = e.Precio
+                    }).ToList()
+                };
+
+            var resultDTO = await PedidoService.CrearPedidoAsync(pedidoDTO);
+
+            if (resultDTO != null && resultDTO.Id > 0)
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Pedido realizado con éxito.", Severity.Success);
+                });
+                Navigation.NavigateTo($"/pedidos/detalle/{resultDTO.Id}");
+            }
+            else
+            {
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("No se pudo crear el pedido.", Severity.Error);
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            var mensaje = ex.Message.Contains("Error HTTP")
+                ? ex.Message.Substring(ex.Message.LastIndexOf(':') + 1).Trim()
+                : ex.Message;
+
+            await InvokeAsync(() =>
+            {
+                Snackbar.Add(mensaje, Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+}

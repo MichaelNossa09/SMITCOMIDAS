@@ -1,0 +1,33 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.SMITCOMIDAS.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.SMITCOMIDAS.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.build.SMITCOMIDAS.props",
+      "PackagePath": "build\\SMITCOMIDAS.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.buildMultiTargeting.SMITCOMIDAS.props",
+      "PackagePath": "buildMultiTargeting\\SMITCOMIDAS.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-ios\\iossimulator-x64\\staticwebassets\\msbuild.buildTransitive.SMITCOMIDAS.props",
+      "PackagePath": "buildTransitive\\SMITCOMIDAS.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

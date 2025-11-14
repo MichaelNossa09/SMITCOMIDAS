@@ -1,0 +1,324 @@
+﻿@page "/companias"
+
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@inject ICompaniasService CompaniasService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+
+@if (isChecking)
+{
+    <div class="loading-container">
+        <p>Verificando permisos...</p>
+    </div>
+}
+else if (!isAuthorized)
+{
+    <div class="unauthorized-container">
+        <div class="unauthorized-icon">🔒</div>
+        <h2>Acceso Denegado</h2>
+        <p>No tienes permisos suficientes para acceder a esta página.</p>
+        <button class="btn-back" @onclick="GoBack">Volver al Inicio</button>
+    </div>
+}else{
+    <div class="companias-container">
+        <div class="header-section">
+            <h2>Gestión de Compañías</h2>
+            <button class="btn-primary" @onclick="NuevaCompania">
+                <span>➕</span> Nueva Compañía
+            </button>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="loading">Cargando...</div>
+        }
+        else if (companias.Any())
+        {
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>NIT</th>
+                            <th>Razón Social</th>
+                            <th>Nombre Comercial</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var comp in companias)
+                        {
+                            <tr>
+                                <td>@comp.NIT</td>
+                                <td>@comp.RazonSocial</td>
+                                <td>@comp.NombreComercial</td>
+                                <td>
+                                    <span class="badge @(comp.Activa ? "badge-active" : "badge-inactive")">
+                                        @(comp.Activa ? "Activa" : "Inactiva")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" @onclick="() => Editar(comp.Id)" title="Editar">
+                                        ✏️
+                                    </button>
+                                    <button class="btn-icon" @onclick="() => Eliminar(comp.Id)" title="Eliminar">
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="no-data">
+                <p>No hay compañías registradas</p>
+                <button class="btn-primary" @onclick="NuevaCompania">
+                    Crear la primera
+                </button>
+            </div>
+        }
+    </div>
+}
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="error-toast">@errorMessage</div>
+}
+
+@code {
+    private List<Compania> companias = new();
+    private bool isLoading = true;
+    private string errorMessage = "";
+    private bool initialized = false;
+
+    private bool isChecking = true;
+    private bool isAuthorized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            try
+            {
+                var role = await AuthService.GetUserRoleAsync();
+                isAuthorized = role == "Admin";
+
+                if (isAuthorized)
+                {
+                    await CargarCompanias();
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Error al inicializar: " + ex.Message;
+                isAuthorized = false;
+            }finally{
+                isLoading = false;
+                isChecking = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CargarCompanias()
+    {
+        try
+        {
+            isLoading = true;
+            companias = await CompaniasService.GetCompaniasAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error al cargar: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void NuevaCompania()
+    {
+        Navigation.NavigateTo("/companias/crear");
+    }
+
+    private void Editar(int id)
+    {
+        Navigation.NavigateTo($"/companias/editar/{id}");
+    }
+
+    private async Task Eliminar(int id)
+    {
+        try
+        {
+            await CompaniasService.DeleteCompaniaAsync(id);
+            await CargarCompanias();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error al eliminar: " + ex.Message;
+        }
+    }
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/home");
+    }
+}
+
+<style>
+    .companias-container {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+        .header-section h2 {
+            color: #56453C;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+    .btn-primary {
+        padding: 12px 24px;
+        background: #51A121;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+        .btn-primary:hover {
+            background: #429019;
+            box-shadow: 0 4px 12px rgba(81, 161, 33, 0.3);
+        }
+
+    .loading {
+        text-align: center;
+        padding: 60px;
+        color: #666;
+        font-size: 16px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .data-table thead {
+            background: #F5F5F5;
+        }
+
+        .data-table th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #56453C;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-top: 1px solid #F0F0F0;
+            color: #666;
+        }
+
+        .data-table tbody tr:hover {
+            background: #FAFAFA;
+        }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-active {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .badge-inactive {
+        background: #FFEBEE;
+        color: #C62828;
+    }
+
+    .btn-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 6px;
+        margin: 0 4px;
+        transition: transform 0.2s;
+    }
+
+        .btn-icon:hover {
+            transform: scale(1.2);
+        }
+
+    .no-data {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+    }
+
+        .no-data p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+    .error-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #F44336;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+    }
+
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        min-width: 700px;
+    }
+
+    
+</style>

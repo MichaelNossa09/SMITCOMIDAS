@@ -1,0 +1,44 @@
+﻿<span class="StatusBadge @(IsActive ? "StatusBadge_active" : "StatusBadge_inactive")">
+    <span class="StatusBadge_dot"></span>
+    @(IsActive ? "Activo" : "Inactivo")
+</span>
+
+@code {
+    [Parameter]
+    public bool IsActive { get; set; }
+}
+<style>
+    .StatusBadge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .StatusBadge_dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    .StatusBadge_active {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .StatusBadge_active .StatusBadge_dot {
+        background-color: #16a34a;
+    }
+
+    .StatusBadge_inactive {
+        background-color: #f1f5f9;
+        color: #64748b;
+    }
+
+    .StatusBadge_inactive .StatusBadge_dot {
+        background-color: #94a3b8;
+    }
+</style>

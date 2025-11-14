@@ -1,0 +1,185 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\Login.css",
+      "PackagePath": "staticwebassets\\Login.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\AppMenuLayout.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\AppMenuLayout.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\HomeMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\HomeMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\centroscosto\\CentroCostoMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\centroscosto\\CentroCostoMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\layouts\\AppLayoutMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\layouts\\AppLayoutMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\menus\\MenuDetailMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\menus\\MenuDetailMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\menus\\MenuMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\menus\\MenuMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\pedidos\\PedidoDetailMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\pedidos\\PedidoDetailMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\pedidos\\PedidoMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\pedidos\\PedidoMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\perfil\\PerfilCrearMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\perfil\\PerfilCrearMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\perfil\\PerfilMobile.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\perfil\\PerfilMobile.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\proveedores\\ProveedorCrear.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\proveedores\\ProveedorCrear.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\mobile\\proveedores\\Proveedores.css",
+      "PackagePath": "staticwebassets\\assets\\css\\mobile\\proveedores\\Proveedores.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\shared\\layouts\\AppLayout.css",
+      "PackagePath": "staticwebassets\\assets\\css\\shared\\layouts\\AppLayout.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\shared\\menus\\MenuDetail.css",
+      "PackagePath": "staticwebassets\\assets\\css\\shared\\menus\\MenuDetail.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\shared\\menus\\menuCrear.css",
+      "PackagePath": "staticwebassets\\assets\\css\\shared\\menus\\menuCrear.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\shared\\pedidos\\pedido.css",
+      "PackagePath": "staticwebassets\\assets\\css\\shared\\pedidos\\pedido.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\shared\\perfil\\Perfil.css",
+      "PackagePath": "staticwebassets\\assets\\css\\shared\\perfil\\Perfil.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\shared\\proveedores\\Proveedores.css",
+      "PackagePath": "staticwebassets\\assets\\css\\shared\\proveedores\\Proveedores.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\snackbar\\snackbar.css",
+      "PackagePath": "staticwebassets\\assets\\css\\snackbar\\snackbar.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\AppMenuLayout.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\AppMenuLayout.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\HomeWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\HomeWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\Unauthorized.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\Unauthorized.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\centroscosto\\CentroCostoWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\centroscosto\\CentroCostoWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\layouts\\AppLayoutWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\layouts\\AppLayoutWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\menus\\MenuDetailWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\menus\\MenuDetailWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\menus\\MenuWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\menus\\MenuWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\pedidos\\PedidoDetailWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\pedidos\\PedidoDetailWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\pedidos\\PedidoWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\pedidos\\PedidoWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\pedidos\\pedidoCrear.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\pedidos\\pedidoCrear.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\perfil\\PerfilCrearWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\perfil\\PerfilCrearWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\perfil\\PerfilWeb.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\perfil\\PerfilWeb.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\ProveedorCrear.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\proveedores\\ProveedorCrear.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\css\\web\\proveedores\\Proveedores.css",
+      "PackagePath": "staticwebassets\\assets\\css\\web\\proveedores\\Proveedores.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\imgs\\LOGOSMITCO.png",
+      "PackagePath": "staticwebassets\\assets\\imgs\\LOGOSMITCO.png"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\assets\\js\\toast.js",
+      "PackagePath": "staticwebassets\\assets\\js\\toast.js"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Proyectos Michael\\ProyectoComidas\\src\\SMITCOMIDAS\\SMITCOMIDAS.Shared\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.SMITCOMIDAS.Shared.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.SMITCOMIDAS.Shared.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.build.SMITCOMIDAS.Shared.props",
+      "PackagePath": "build\\SMITCOMIDAS.Shared.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildMultiTargeting.SMITCOMIDAS.Shared.props",
+      "PackagePath": "buildMultiTargeting\\SMITCOMIDAS.Shared.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildTransitive.SMITCOMIDAS.Shared.props",
+      "PackagePath": "buildTransitive\\SMITCOMIDAS.Shared.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

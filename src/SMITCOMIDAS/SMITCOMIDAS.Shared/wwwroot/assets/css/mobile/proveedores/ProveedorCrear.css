@@ -1,0 +1,271 @@
+﻿/* ProveedorForm.mobile.css */
+
+.ProveedorForm_MobileContainer {
+    padding: 12px;
+    background-color: #f8f9fa;
+    min-height: 100%;
+}
+
+.ProveedorForm_MobileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: white;
+    padding: 14px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+    .ProveedorForm_MobileHeader h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+        position: relative;
+        padding-left: 12px;
+    }
+
+        .ProveedorForm_MobileHeader h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 16px;
+            background-color: #51A121;
+            border-radius: 2px;
+        }
+
+/* Tarjetas móviles */
+.ProveedorForm_MobileCard {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+    padding: 16px;
+}
+
+    .ProveedorForm_MobileCard h3 {
+        margin: 0 0 16px 0;
+        color: #2c3e50;
+        font-size: 16px;
+        font-weight: 600;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        position: relative;
+    }
+
+        .ProveedorForm_MobileCard h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 40px;
+            height: 3px;
+            background-color: #51A121;
+            border-radius: 3px;
+        }
+
+/* Campos individuales */
+.ProveedorForm_MobileGroup {
+    margin-bottom: 14px;
+}
+
+    .ProveedorForm_MobileGroup label {
+        display: block;
+        font-size: 13px;
+        color: #51A121;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+
+.ProveedorForm_MobileInputField {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #f9fafb;
+    color: #2c3e50;
+}
+
+.ProveedorForm_MobileInputField:focus {
+    border-color: #51A121;
+    box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.15);
+    outline: none;
+}
+
+/* Checkbox personalizado */
+.ProveedorForm_MobileCheckboxLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 8px 0;
+}
+
+    .ProveedorForm_MobileCheckboxLabel input {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .ProveedorForm_MobileCheckboxLabel span {
+        font-size: 14px;
+        color: #2c3e50;
+    }
+
+/* Acciones del formulario */
+.ProveedorForm_MobileActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.ProveedorForm_MobileBtnSecondary {
+    flex: 1;
+    background: white;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    padding: 14px 0;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.ProveedorForm_MobileBtnPrimary {
+    flex: 1;
+    background: #51A121;
+    color: white;
+    border: none;
+    padding: 14px 0;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(81, 161, 33, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+    .ProveedorForm_MobileBtnPrimary:disabled {
+        background: #8bc34a;
+        opacity: 0.7;
+    }
+
+/* Spinner para botón */
+.ProveedorForm_MobileSpinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Errores de validación */
+.ProveedorForm_MobileValidationErrors {
+    margin-bottom: 16px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 3px solid #e74c3c;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+    .ProveedorForm_MobileValidationErrors ul {
+        margin: 5px 0 0;
+        padding-left: 20px;
+        color: #c0392b;
+        font-size: 13px;
+    }
+
+.ProveedorForm_MobileErrorMessage {
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 3px solid #e74c3c;
+    border-radius: 8px;
+    color: #c0392b;
+    font-size: 14px;
+}
+
+/* Estado de carga */
+.ProveedorForm_MobileLoading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.ProveedorForm_MobileSpinnerLarge {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(81, 161, 33, 0.2);
+    border-top-color: #51A121;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+.ProveedorForm_MobileLoading span {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* Acceso denegado */
+.ProveedorForm_MobileUnauthorized {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.ProveedorForm_MobileUnauthorizedIcon {
+    font-size: 36px;
+    margin-bottom: 16px;
+    opacity: 0.7;
+}
+
+.ProveedorForm_MobileUnauthorized h2 {
+    margin: 0 0 10px 0;
+    color: #e74c3c;
+    font-size: 18px;
+}
+
+.ProveedorForm_MobileUnauthorized p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.ProveedorForm_MobileBtnBack {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}

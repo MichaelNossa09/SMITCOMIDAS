@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SMITCOMIDAS</name>
+    </assembly>
+    <members>
+        <member name="M:SMITCOMIDAS.Services.RolesService.SetAuthHeaderAsync">
+            <summary>
+            Configura el header de autorización con el token JWT
+            </summary>
+        </member>
+        <member name="M:SMITCOMIDAS.Services.RolesService.GetRolesAsync">
+            <summary>
+            Obtiene todos los roles disponibles en el sistema
+            </summary>
+        </member>
+        <member name="M:SMITCOMIDAS.Services.RolesService.RoleExistsAsync(System.String)">
+            <summary>
+            Verifica si un rol específico existe en el sistema
+            </summary>
+        </member>
+        <member name="M:SMITCOMIDAS.Services.RolesService.GetUsersInRoleAsync(System.String)">
+            <summary>
+            Obtiene los usuarios asignados a un rol específico
+            </summary>
+        </member>
+        <member name="T:SMITCOMIDAS.Resource">
+            <summary>
+            Android Resource Designer class.
+            Exposes the Android Resource designer assembly into the project Namespace.
+            </summary>
+        </member>
+    </members>
+</doc>

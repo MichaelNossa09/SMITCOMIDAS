@@ -1,0 +1,13 @@
+﻿@page "/home"
+@using SMITCOMIDAS.Shared.Services
+@inject IPlatformService Platform
+
+<PageTitle>Home</PageTitle>
+@if (Platform.IsMobile)
+{
+    <HomeMobile />
+}
+else
+{
+    <HomeWeb />
+}

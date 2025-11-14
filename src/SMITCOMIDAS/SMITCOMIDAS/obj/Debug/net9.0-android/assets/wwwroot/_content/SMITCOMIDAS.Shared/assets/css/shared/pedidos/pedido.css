@@ -1,0 +1,316 @@
+﻿/* PedidoListado.shared.css - Estilos compartidos entre web y mobile */
+
+:root {
+    --primary-color: #51A121;
+    --primary-light: rgba(81, 161, 33, 0.1);
+    --primary-dark: #3F7D1A;
+    --secondary-color: #2196F3;
+    --success-color: #28a745;
+    --warning-color: #f7a700;
+    --danger-color: #dc3545;
+    --text-dark: #2c3e50;
+    --text-muted: #6c757d;
+    --border-color: #edf2f7;
+    --background-light: #f8f9fa;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --transition: all 0.2s ease-in-out;
+}
+
+
+/* Contenedor de carga */
+.PedidoListado_loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    text-align: center;
+}
+
+.PedidoListado_loader {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(81, 161, 33, 0.15);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.PedidoListado_loadingContainer p {
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+/* Estado vacío */
+.PedidoListado_emptyState {
+    padding: 60px 20px;
+    text-align: center;
+    background-color: var(--background-light);
+    border-radius: 10px;
+}
+
+.PedidoListado_emptyIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.PedidoListado_emptyState h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+}
+
+.PedidoListado_emptyState p {
+    color: var(--text-muted);
+    max-width: 300px;
+    margin: 0 auto 24px;
+}
+
+/* Estados de pedidos */
+.PedidoListado_estado {
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.PedidoListado_estadoPendiente {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.PedidoListado_estadoConfirmado {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.PedidoListado_estadoEnPreparacion {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.PedidoListado_estadoListo {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.PedidoListado_estadoEntregado {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.PedidoListado_estadoCancelado {
+    background-color: var(--danger-color);
+    color: white;
+}
+.PedidoListado_estadoRecibido {
+    background-color: var(--success-color);
+    color: white;
+}
+.PedidoListado_estadoDevuelto {
+    background-color: var(--warning-color);
+    color: black;
+}
+/* Botones de nuevo pedido */
+.PedidoListado_newButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.PedidoListado_newButton:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Modales */
+.PedidoListado_modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.PedidoListado_modalContent {
+    background-color: white;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: var(--shadow-lg);
+    animation: fadeInModal 0.3s ease;
+    overflow: hidden;
+}
+
+@keyframes fadeInModal {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.PedidoListado_modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.PedidoListado_modalHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text-dark);
+}
+
+.PedidoListado_modalCloseButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.PedidoListado_modalCloseButton:hover {
+    color: var(--text-dark);
+}
+
+.PedidoListado_modalBody {
+    padding: 20px;
+}
+
+.PedidoListado_modalWarning {
+    color: var(--danger-color);
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.PedidoListado_modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    background-color: var(--background-light);
+    border-top: 1px solid var(--border-color);
+}
+
+.PedidoListado_modalPrimaryButton,
+.PedidoListado_modalSecondaryButton,
+.PedidoListado_modalDangerButton {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.PedidoListado_modalPrimaryButton {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.PedidoListado_modalPrimaryButton:hover {
+    background-color: var(--primary-dark);
+}
+
+.PedidoListado_modalPrimaryButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.PedidoListado_modalSecondaryButton {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+}
+
+.PedidoListado_modalSecondaryButton:hover {
+    background-color: var(--background-light);
+}
+
+.PedidoListado_modalDangerButton {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.PedidoListado_modalDangerButton:hover {
+    background-color: #c82333;
+}
+
+.PedidoListado_modalDangerButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Form elements for modal */
+.PedidoListado_formGroup {
+    margin-bottom: 20px;
+}
+
+.PedidoListado_formLabel {
+    display: block;
+    font-size: 14px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.PedidoListado_formSelect {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: white;
+    color: var(--text-dark);
+    font-size: 15px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    transition: border-color 0.2s;
+}
+
+.PedidoListado_formSelect:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}

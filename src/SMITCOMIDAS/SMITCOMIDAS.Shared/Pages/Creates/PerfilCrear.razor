@@ -1,0 +1,1132 @@
+﻿@page "/perfil/crear"
+@page "/perfil/editar/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+@inject IPersonasService PersonasService
+@inject ICentrosCostoService CentrosCostoService
+@inject IRolesService RolesService
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IPlatformService Platform
+
+<PageTitle>@(Id.HasValue ? "Perfil - Editar" : "Perfil - Crear")</PageTitle>
+
+@if (Platform.IsMobile)
+{
+    <!-- Vista Móvil -->
+    @if (isChecking)
+    {
+        <div class="PerfilCrear_MobileLoading">
+            <div class="PerfilCrear_MobileSpinner"></div>
+            <span>Verificando permisos...</span>
+        </div>
+    }
+    else
+    {
+        <div class="PerfilCrear_MobileContainer">
+            <div class="PerfilCrear_MobileHeader">
+                <h2>@(Id.HasValue ? "Editar Perfil" : "Crear Perfil")</h2>
+            </div>
+
+            <EditForm Model="@currentModel" OnValidSubmit="Guardar">
+                <DataAnnotationsValidator />
+
+                @if (isAdmin)
+                {
+                    <!-- Datos de Acceso - Solo para admin -->
+                    <div class="PerfilCrear_MobileCard">
+                        <div class="PerfilCrear_MobileCardTitle">
+                            <span class="PerfilCrear_MobileCardIcon">🔑</span>
+                            <h3>Datos de Acceso</h3>
+                        </div>
+
+                        @if (!Id.HasValue)
+                        {
+                            <!-- Solo al crear -->
+                            <div class="PerfilCrear_MobileFormField">
+                                <label>Email / Usuario *</label>
+                                <InputText @bind-Value="registroRequest.Email" class="PerfilCrear_MobileInput" placeholder="usuario@empresa.com" />
+                            </div>
+
+                            <div class="PerfilCrear_MobileFormField">
+                                <label>Contraseña *</label>
+                                <div class="PerfilCrear_MobilePasswordContainer">
+                                    <InputText @bind-Value="registroRequest.Password"
+                                    type="@(showPassword ? "text" : "password")"
+                                    class="PerfilCrear_MobileInput" />
+                                    <button type="button" class="PerfilCrear_MobileEyeButton" @onclick="() => showPassword = !showPassword">
+                                        <span>@(showPassword ? "👁️" : "👁️‍🗨️")</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="PerfilCrear_MobileFormField">
+                                <label>Confirmar Contraseña *</label>
+                                <div class="PerfilCrear_MobilePasswordContainer">
+                                    <InputText @bind-Value="registroRequest.ConfirmPassword"
+                                    type="@(showConfirmPassword ? "text" : "password")"
+                                    class="PerfilCrear_MobileInput" />
+                                    <button type="button" class="PerfilCrear_MobileEyeButton" @onclick="() => showConfirmPassword = !showConfirmPassword">
+                                        <span>@(showConfirmPassword ? "👁️" : "👁️‍🗨️")</span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="PerfilCrear_MobileFormField">
+                            <label>Rol *</label>
+                            @if (Id.HasValue)
+                            {
+                                <InputSelect @bind-Value="usuarioRol" class="PerfilCrear_MobileInput">
+                                    <option value="">Seleccione...</option>
+                                    @foreach (var rol in roles.Where(r => r != "Admin" && r != "Proveedor"))
+                                    {
+                                        <option value="@rol">@rol</option>
+                                    }
+                                </InputSelect>
+                            }
+                            else
+                            {
+                                <InputSelect @bind-Value="registroRequest.Rol" class="PerfilCrear_MobileInput">
+                                    <option value="">Seleccione...</option>
+                                    @foreach (var rol in roles.Where(r => r != "Admin" && r != "Proveedor"))
+                                    {
+                                        <option value="@rol">@rol</option>
+                                    }
+                                </InputSelect>
+                            }
+                        </div>
+
+                        @if (Id.HasValue)
+                        {
+                            <div class="PerfilCrear_MobileToggleContainer" @onclick="ToggleCambiarPassword">
+                                <div class="PerfilCrear_MobileToggleLabel">
+                                    <h4>Cambiar Contraseña</h4>
+                                </div>
+                                <label class="PerfilCrear_MobileSwitch" @onclick:stopPropagation="true">
+                                    <input type="checkbox" checked="@cambiarPassword" @onchange="ToggleCambiarPassword" />
+                                    <span class="PerfilCrear_MobileSlider"></span>
+                                </label>
+                            </div>
+
+
+                            @if (cambiarPassword)
+                            {
+                                <div class="PerfilCrear_MobilePasswordSection">
+                                    <div class="PerfilCrear_MobileFormField">
+                                        <label>Nueva Contraseña *</label>
+                                        <div class="PerfilCrear_MobilePasswordContainer">
+                                            <InputText @bind-Value="nuevaPassword"
+                                            type="@(showPassword ? "text" : "password")"
+                                            class="PerfilCrear_MobileInput" />
+                                            <button type="button" class="PerfilCrear_MobileEyeButton" @onclick="() => showPassword = !showPassword">
+                                                <span>@(showPassword ? "👁️" : "👁️‍🗨️")</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="PerfilCrear_MobileFormField">
+                                        <label>Confirmar Nueva Contraseña *</label>
+                                        <div class="PerfilCrear_MobilePasswordContainer">
+                                            <InputText @bind-Value="confirmarPassword"
+                                            type="@(showConfirmPassword ? "text" : "password")"
+                                            class="PerfilCrear_MobileInput" />
+                                            <button type="button" class="PerfilCrear_MobileEyeButton" @onclick="() => showConfirmPassword = !showConfirmPassword">
+                                                <span>@(showConfirmPassword ? "👁️" : "👁️‍🗨️")</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="PerfilCrear_MobilePasswordStrength">
+                                        <div class="PerfilCrear_MobileMeter">
+                                            <div class="PerfilCrear_MobileMeterBar @GetPasswordStrengthClass(nuevaPassword)"
+                                            style="width: @(GetPasswordStrength(nuevaPassword))%"></div>
+                                        </div>
+                                        <span class="PerfilCrear_MobileMeterText">@GetPasswordStrengthText(nuevaPassword)</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+
+                <!-- Datos Personales -->
+                <div class="PerfilCrear_MobileCard">
+                    <div class="PerfilCrear_MobileCardTitle">
+                        <span class="PerfilCrear_MobileCardIcon">👤</span>
+                        <h3>Datos Personales</h3>
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Tipo Identificación *</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputSelect @bind-Value="persona.TipoIdentificacion" class="PerfilCrear_MobileInput">
+                                <option value="">Seleccione...</option>
+                                <option value="CC">Cédula de Ciudadanía</option>
+                                <option value="CE">Cédula de Extranjería</option>
+                                <option value="PA">Pasaporte</option>
+                            </InputSelect>
+                        }
+                        else
+                        {
+                            <InputSelect @bind-Value="registroRequest.TipoIdentificacion" class="PerfilCrear_MobileInput">
+                                <option value="">Seleccione...</option>
+                                <option value="CC">Cédula de Ciudadanía</option>
+                                <option value="CE">Cédula de Extranjería</option>
+                                <option value="PA">Pasaporte</option>
+                            </InputSelect>
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Identificación *</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputText @bind-Value="persona.Identificacion" class="PerfilCrear_MobileInput" placeholder="Número de documento" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Identificacion" class="PerfilCrear_MobileInput" placeholder="Número de documento" />
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Nombres *</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputText @bind-Value="persona.Nombres" class="PerfilCrear_MobileInput" placeholder="Ingrese sus nombres" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Nombres" class="PerfilCrear_MobileInput" placeholder="Ingrese sus nombres" />
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Apellidos *</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputText @bind-Value="persona.Apellidos" class="PerfilCrear_MobileInput" placeholder="Ingrese sus apellidos" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Apellidos" class="PerfilCrear_MobileInput" placeholder="Ingrese sus apellidos" />
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Cargo</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputText @bind-Value="persona.Cargo" class="PerfilCrear_MobileInput" placeholder="Ej: Analista, Gerente, etc." />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Cargo" class="PerfilCrear_MobileInput" placeholder="Ej: Analista, Gerente, etc." />
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Teléfono *</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputText @bind-Value="persona.Telefono" class="PerfilCrear_MobileInput" placeholder="Ingrese su teléfono" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Telefono" class="PerfilCrear_MobileInput" placeholder="Ingrese su teléfono" />
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Teléfono Adicional</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputText @bind-Value="persona.TelefonoAdicional" class="PerfilCrear_MobileInput" placeholder="Teléfono adicional (opcional)" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.TelefonoAdicional" class="PerfilCrear_MobileInput" placeholder="Teléfono adicional (opcional)" />
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Centro de Costo</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputSelect @bind-Value="persona.CentroCostoId" class="PerfilCrear_MobileInput">
+                                <option value="">Seleccione...</option>
+                                @foreach (var cc in centrosCosto)
+                                {
+                                    <option value="@cc.Id">@cc.Nombre</option>
+                                }
+                            </InputSelect>
+                        }
+                        else
+                        {
+                            <InputSelect @bind-Value="registroRequest.CentroCostoId" class="PerfilCrear_MobileInput">
+                                <option value="">Seleccione...</option>
+                                @foreach (var cc in centrosCosto)
+                                {
+                                    <option value="@cc.Id">@cc.Nombre</option>
+                                }
+                            </InputSelect>
+                        }
+                    </div>
+
+                    <div class="PerfilCrear_MobileFormField">
+                        <label>Dirección</label>
+                        @if (Id.HasValue || !isAdmin)
+                        {
+                            <InputText @bind-Value="persona.Direccion" class="PerfilCrear_MobileInput" placeholder="Ingrese su dirección" />
+                        }
+                        else
+                        {
+                            <InputText @bind-Value="registroRequest.Direccion" class="PerfilCrear_MobileInput" placeholder="Ingrese su dirección" />
+                        }
+                    </div>
+
+                    @if (isAdmin)
+                    {
+                        <div class="PerfilCrear_MobileCard">
+                            <div class="PerfilCrear_MobileCardTitle">
+                                <span class="PerfilCrear_MobileCardIcon">📊</span>
+                                <h3>Configuración de Pedidos</h3>
+                            </div>
+
+                            <div class="PerfilCrear_MobileFormField">
+                                <label>Máximo de Pedidos por Mes *</label>
+                                @if (Id.HasValue)
+                                {
+                                    <InputNumber @bind-Value="persona.MaxPedidosMes" class="PerfilCrear_MobileInput" min="1" max="31" />
+                                }
+                                else
+                                {
+                                    <InputNumber @bind-Value="registroRequest.MaxPedidosMes" class="PerfilCrear_MobileInput" min="1" max="31" />
+                                }
+                                <small class="PerfilCrear_MobileFieldHint">Cantidad de almuerzos permitidos al mes (1-31)</small>
+                            </div>
+
+                            @if (Id.HasValue)
+                            {
+                                <div class="PerfilCrear_MobileInfoBox">
+                                    <div class="PerfilCrear_MobileInfoRow">
+                                        <span class="PerfilCrear_MobileInfoLabel">Pedidos Restantes:</span>
+                                        <span class="PerfilCrear_MobileInfoValue">@persona.PedidosRestantesMes</span>
+                                    </div>
+                                    <div class="PerfilCrear_MobileInfoRow">
+                                        <span class="PerfilCrear_MobileInfoLabel">Última Actualización:</span>
+                                        <span class="PerfilCrear_MobileInfoValue">@persona.UltimaActualizacionPedidos.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if (Id.HasValue)
+                    {
+                        <div class="PerfilCrear_MobileCard">
+                            <div class="PerfilCrear_MobileCardTitle">
+                                <span class="PerfilCrear_MobileCardIcon">📊</span>
+                                <h3>Información de Pedidos</h3>
+                            </div>
+
+                            <div class="PerfilCrear_MobileInfoBox">
+                                <div class="PerfilCrear_MobileInfoRow">
+                                    <span class="PerfilCrear_MobileInfoLabel">Pedidos Disponibles:</span>
+                                    <span class="PerfilCrear_MobileInfoValue">@persona.PedidosRestantesMes de @persona.MaxPedidosMes</span>
+                                </div>
+                                <div class="PerfilCrear_MobileInfoRow">
+                                    <span class="PerfilCrear_MobileInfoLabel">Última Actualización:</span>
+                                    <span class="PerfilCrear_MobileInfoValue">@persona.UltimaActualizacionPedidos.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="PerfilCrear_MobileError">
+                        <span class="PerfilCrear_MobileErrorIcon">⚠️</span>
+                        <span class="PerfilCrear_MobileErrorText">@errorMessage</span>
+                    </div>
+                }
+
+                <div class="PerfilCrear_MobileButtons">
+                    <button type="button" class="PerfilCrear_MobileBtnCancel" @onclick="Cancelar">Cancelar</button>
+                    <button type="submit" class="PerfilCrear_MobileBtnSave" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="PerfilCrear_MobileBtnSpinner"></span>
+                            <span>Guardando...</span>
+                        }
+                        else
+                        {
+                            <span>Guardar</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    }
+}
+else
+{
+    <!-- Vista Desktop -->
+    @if (isChecking)
+    {
+        <div class="PerfilCrear_LoadingContainer">
+            <p>Verificando permisos...</p>
+        </div>
+    }
+    else
+    {
+        <div class="PerfilCrear_FormContainer">
+            <div class="PerfilCrear_FormHeader">
+                <h2>@(Id.HasValue ? "Editar Perfil" : "Registrar Perfil")</h2>
+            </div>
+
+            <EditForm Model="@currentModel" OnValidSubmit="Guardar">
+                <DataAnnotationsValidator />
+
+                <div class="PerfilCrear_CardContainer">
+                    @if (isAdmin)
+                    {
+                        <!-- Datos de Acceso - Solo para admin (crear o editar) -->
+                        <div class="PerfilCrear_FormCard">
+                            <h3>Datos de Acceso</h3>
+
+                            @if (!Id.HasValue)
+                            {
+                                <!-- Solo al crear -->
+                                <div class="PerfilCrear_FormRow">
+                                    <div class="PerfilCrear_FormField">
+                                        <label>Email / Usuario *</label>
+                                        <InputText @bind-Value="registroRequest.Email" class="PerfilCrear_InputField" placeholder="usuario@empresa.com" />
+                                    </div>
+                                </div>
+
+                                <div class="PerfilCrear_FormRow">
+                                    <div class="PerfilCrear_FormField">
+                                        <label>Contraseña *</label>
+                                        <div class="PerfilCrear_PasswordInputContainer">
+                                            <InputText @bind-Value="registroRequest.Password" type="@(showPassword ? "text" : "password")" class="PerfilCrear_InputField" />
+                                            <span class="PerfilCrear_PasswordToggle" @onclick="() => showPassword = !showPassword">
+                                                <i class="@(showPassword ? "PerfilCrear_EyeOff" : "PerfilCrear_Eye")"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="PerfilCrear_FormField">
+                                        <label>Confirmar Contraseña *</label>
+                                        <div class="PerfilCrear_PasswordInputContainer">
+                                            <InputText @bind-Value="registroRequest.ConfirmPassword" type="@(showConfirmPassword ? "text" : "password")" class="PerfilCrear_InputField" />
+                                            <span class="PerfilCrear_PasswordToggle" @onclick="() => showConfirmPassword = !showConfirmPassword">
+                                                <i class="@(showConfirmPassword ? "PerfilCrear_EyeOff" : "PerfilCrear_Eye")"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="PerfilCrear_FormRow">
+                                <div class="PerfilCrear_FormField">
+                                    <label>Rol *</label>
+                                    @if (Id.HasValue)
+                                    {
+                                        <InputSelect @bind-Value="usuarioRol" class="PerfilCrear_InputField">
+                                            <option value="">Seleccione...</option>
+                                            @foreach (var rol in roles.Where(r => r != "Admin" && r != "Proveedor"))
+                                            {
+                                                <option value="@rol">@rol</option>
+                                            }
+                                        </InputSelect>
+                                    }
+                                    else
+                                    {
+                                        <InputSelect @bind-Value="registroRequest.Rol" class="PerfilCrear_InputField">
+                                            <option value="">Seleccione...</option>
+                                            @foreach (var rol in roles.Where(r => r != "Admin" && r != "Proveedor"))
+                                            {
+                                                <option value="@rol">@rol</option>
+                                            }
+                                        </InputSelect>
+                                    }
+                                </div>
+                            </div>
+
+                            @if (Id.HasValue)
+                            {
+                                <!-- Sección de cambio de contraseña para editar -->
+                                <div class="PerfilCrear_PasswordHeader" @onclick="ToggleCambiarPassword">
+                                    <h3>Cambiar Contraseña</h3>
+                                    <div class="PerfilCrear_ToggleMini @(cambiarPassword ? "active" : "")">
+                                        <div class="PerfilCrear_ToggleSliderMini"></div>
+                                    </div>
+                                </div>
+
+                                @if (cambiarPassword)
+                                {
+                                    <div class="PerfilCrear_PasswordContent">
+                                        <div class="PerfilCrear_FormRow">
+                                            <div class="PerfilCrear_FormField">
+                                                <label>Nueva Contraseña *</label>
+                                                <div class="PerfilCrear_PasswordInputContainer">
+                                                    <InputText @bind-Value="nuevaPassword" type="@(showPassword ? "text" : "password")" class="PerfilCrear_InputField" />
+                                                    <span class="PerfilCrear_PasswordToggle" @onclick="() => showPassword = !showPassword">
+                                                        <i class="@(showPassword ? "PerfilCrear_EyeOff" : "PerfilCrear_Eye")"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="PerfilCrear_FormField">
+                                                <label>Confirmar Nueva Contraseña *</label>
+                                                <div class="PerfilCrear_PasswordInputContainer">
+                                                    <InputText @bind-Value="confirmarPassword" type="@(showConfirmPassword ? "text" : "password")" class="PerfilCrear_InputField" />
+                                                    <span class="PerfilCrear_PasswordToggle" @onclick="() => showConfirmPassword = !showConfirmPassword">
+                                                        <i class="@(showConfirmPassword ? "PerfilCrear_EyeOff" : "PerfilCrear_Eye")"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="PerfilCrear_PasswordStrength">
+                                            <div class="PerfilCrear_StrengthMeter">
+                                                <div class="PerfilCrear_StrengthLevel @GetPasswordStrengthClass(nuevaPassword)" style="width: @(GetPasswordStrength(nuevaPassword))%"></div>
+                                            </div>
+                                            <span class="PerfilCrear_StrengthText">@GetPasswordStrengthText(nuevaPassword)</span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+
+                    <!-- Datos Personales - Siempre visible -->
+                    <div class="PerfilCrear_FormCard">
+                        <h3>Datos Personales</h3>
+
+                        <div class="PerfilCrear_FormRow">
+                            <div class="PerfilCrear_FormField">
+                                <label>Tipo Identificación *</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputSelect @bind-Value="persona.TipoIdentificacion" class="PerfilCrear_InputField">
+                                        <option value="">Seleccione...</option>
+                                        <option value="CC">Cédula de Ciudadanía</option>
+                                        <option value="CE">Cédula de Extranjería</option>
+                                        <option value="PA">Pasaporte</option>
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <InputSelect @bind-Value="registroRequest.TipoIdentificacion" class="PerfilCrear_InputField">
+                                        <option value="">Seleccione...</option>
+                                        <option value="CC">Cédula de Ciudadanía</option>
+                                        <option value="CE">Cédula de Extranjería</option>
+                                        <option value="PA">Pasaporte</option>
+                                    </InputSelect>
+                                }
+                            </div>
+
+                            <div class="PerfilCrear_FormField">
+                                <label>Identificación *</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputText @bind-Value="persona.Identificacion" class="PerfilCrear_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Identificacion" class="PerfilCrear_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="PerfilCrear_FormRow">
+                            <div class="PerfilCrear_FormField">
+                                <label>Nombres *</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputText @bind-Value="persona.Nombres" class="PerfilCrear_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Nombres" class="PerfilCrear_InputField" />
+                                }
+                            </div>
+
+                            <div class="PerfilCrear_FormField">
+                                <label>Apellidos *</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputText @bind-Value="persona.Apellidos" class="PerfilCrear_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Apellidos" class="PerfilCrear_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="PerfilCrear_FormRow">
+                            <div class="PerfilCrear_FormField">
+                                <label>Cargo</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputText @bind-Value="persona.Cargo" class="PerfilCrear_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Cargo" class="PerfilCrear_InputField" />
+                                }
+                            </div>
+
+                            <div class="PerfilCrear_FormField">
+                                <label>Teléfono *</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputText @bind-Value="persona.Telefono" class="PerfilCrear_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Telefono" class="PerfilCrear_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        <div class="PerfilCrear_FormRow">
+                            <div class="PerfilCrear_FormField">
+                                <label>Teléfono Adicional</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputText @bind-Value="persona.TelefonoAdicional" class="PerfilCrear_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.TelefonoAdicional" class="PerfilCrear_InputField" />
+                                }
+                            </div>
+
+                            <div class="PerfilCrear_FormField">
+                                <label>Centro de Costo</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputSelect @bind-Value="persona.CentroCostoId" class="PerfilCrear_InputField">
+                                        <option value="">Seleccione...</option>
+                                        @foreach (var cc in centrosCosto)
+                                        {
+                                            <option value="@cc.Id">@cc.Nombre</option>
+                                        }
+                                    </InputSelect>
+                                }
+                                else
+                                {
+                                    <InputSelect @bind-Value="registroRequest.CentroCostoId" class="PerfilCrear_InputField">
+                                        <option value="">Seleccione...</option>
+                                        @foreach (var cc in centrosCosto)
+                                        {
+                                            <option value="@cc.Id">@cc.Nombre</option>
+                                        }
+                                    </InputSelect>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="PerfilCrear_FormRow">
+                            <div class="PerfilCrear_FormField">
+                                <label>Dirección</label>
+                                @if (Id.HasValue || !isAdmin)
+                                {
+                                    <InputText @bind-Value="persona.Direccion" class="PerfilCrear_InputField" />
+                                }
+                                else
+                                {
+                                    <InputText @bind-Value="registroRequest.Direccion" class="PerfilCrear_InputField" />
+                                }
+                            </div>
+                        </div>
+
+                        @if (isAdmin)
+                        {
+                            <!-- SOLO ADMIN puede editar -->
+                            <div class="PerfilCrear_FormCard">
+                                <h3>Configuración de Pedidos</h3>
+
+                                <div class="PerfilCrear_FormRow">
+                                    <div class="PerfilCrear_FormField">
+                                        <label>Máximo de Pedidos por Mes *</label>
+                                        @if (Id.HasValue)
+                                        {
+                                            <InputNumber @bind-Value="persona.MaxPedidosMes" class="PerfilCrear_InputField" min="1" max="31" />
+                                        }
+                                        else
+                                        {
+                                            <InputNumber @bind-Value="registroRequest.MaxPedidosMes" class="PerfilCrear_InputField" min="1" max="31" />
+                                        }
+                                        <small class="PerfilCrear_FieldHint">Cantidad de almuerzos permitidos al mes (1-31)</small>
+                                    </div>
+
+                                    @if (Id.HasValue)
+                                    {
+                                        <div class="PerfilCrear_FormField">
+                                            <label>Pedidos Restantes Este Mes</label>
+                                            <div class="PerfilCrear_InfoDisplay">
+                                                <span class="PerfilCrear_InfoValue">@persona.PedidosRestantesMes</span>
+                                                <small>Última actualización: @persona.UltimaActualizacionPedidos.ToString("dd/MM/yyyy")</small>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else if (Id.HasValue)
+                        {
+                            <!-- USUARIO NORMAL solo ve información -->
+                            <div class="PerfilCrear_FormCard">
+                                <h3>Información de Pedidos</h3>
+
+                                <div class="PerfilCrear_InfoDisplay">
+                                    <label>Pedidos Disponibles Este Mes</label>
+                                    <span class="PerfilCrear_InfoValue">@persona.PedidosRestantesMes de @persona.MaxPedidosMes</span>
+                                    <small>Última actualización: @persona.UltimaActualizacionPedidos.ToString("dd/MM/yyyy")</small>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="PerfilCrear_ErrorMessage">@errorMessage</div>
+                }
+
+                <div class="PerfilCrear_FormActions">
+                    <button type="button" class="PerfilCrear_BtnSecondary" @onclick="Cancelar">Cancelar</button>
+                    <button type="submit" class="PerfilCrear_BtnPrimary" disabled="@isLoading">
+                        @(isLoading ? "Guardando..." : "Guardar")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    }
+}
+
+
+
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private RegistroPersonaRequest registroRequest = new();
+    private Persona persona = new()
+        {
+            Activo = true,
+            FechaIngreso = DateTime.Now,
+            Identificacion = "",
+            TipoIdentificacion = "",
+            Nombres = "",
+            Apellidos = "",
+            Telefono = ""
+        };
+
+    private List<CentroCosto> centrosCosto = new();
+    private List<string> roles = new();
+    private string errorMessage = "";
+    private bool isLoading = false;
+    private bool isChecking = true;
+    private bool isAdmin = false;
+    private bool cambiarPassword = false;
+    private bool showPassword = false;
+    private bool showConfirmPassword = false;
+    private string nuevaPassword = "";
+    private string confirmarPassword = "";
+    private bool initialized = false;
+    private string usuarioRol = "";
+
+    private object currentModel => Id.HasValue || !isAdmin ? persona : registroRequest;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+
+            try
+            {
+                // Determinar si el usuario es administrador y obtener su ID
+                var role = await AuthService.GetUserRoleAsync();
+                isAdmin = role == "Admin";
+                var currentUserId = await AuthService.GetUserIdAsync();
+                registroRequest.MaxPedidosMes = 5;
+                // Validación de seguridad: Si hay un Id y no es admin, verificar que solo pueda editar su propio perfil
+                if (!isAdmin && Id.HasValue)
+                {
+                    try
+                    {
+                        // Intenta obtener la persona a editar
+                        var response = await PersonasService.GetPersonaAsync(Id.Value);
+
+                        if (response == null)
+                        {
+                            await InvokeAsync(() =>
+                            {
+                                Snackbar.Add("El perfil que intentas editar no existe", Severity.Warning);
+                            });
+                            Navigation.NavigateTo("/perfil");
+                            return;
+                        }
+
+                        // Verificar si el perfil pertenece al usuario actual
+                        if (response.UserId != currentUserId)
+                        {
+                            await InvokeAsync(() =>
+                            {
+                                Snackbar.Add("Solo puedes editar tu propio perfil", Severity.Warning);
+                            });
+                            Navigation.NavigateTo("/perfil");
+                            return;
+                        }
+
+                        // Si pasó la validación, asignar la persona
+                        persona = response;
+                    }
+                    catch (Exception ex)
+                    {
+                        // En caso de cualquier error, redirigir a la página principal
+                        await InvokeAsync(() =>
+                        {
+                            Snackbar.Add("No se pudo acceder al perfil solicitado: " + ex.Message, Severity.Error);
+                        });
+                        Navigation.NavigateTo("/perfil");
+                        return;
+                    }
+                }
+
+                // Cargar datos necesarios
+                try
+                {
+                    centrosCosto = await CentrosCostoService.GetCentrosCostoAsync();
+                }
+                catch
+                {
+                    // Si falla, usar lista vacía pero seguir
+                    centrosCosto = new List<CentroCosto>();
+                }
+
+                // Cargar roles solo si es admin
+                if (isAdmin)
+                {
+                    try
+                    {
+                        roles = await RolesService.GetRolesAsync();
+                    }
+                    catch
+                    {
+                        // Si falla, usar roles predeterminados
+                        roles = new List<string> { "Usuario", "Admin", "Proveedor" };
+                    }
+
+                    // Si es admin y estamos editando, cargar el perfil si aún no lo hemos hecho
+                    if (Id.HasValue && persona.Id == 0)
+                    {
+                        try
+                        {
+                            persona = await PersonasService.GetPersonaAsync(Id.Value);
+
+                            // Si existe el perfil pero no se pudo cargar, mostrar mensaje apropiado
+                            if (persona == null)
+                            {
+                                await InvokeAsync(() =>
+                                {
+                                    Snackbar.Add("No se encontró el perfil solicitado", Severity.Error);
+                                });
+                                Navigation.NavigateTo("/perfil");
+                                return;
+                            }
+
+                            // Cargar rol del usuario si existe
+                            if (!string.IsNullOrEmpty(persona.UserId))
+                            {
+                                try
+                                {
+                                    usuarioRol = await AuthService.GetUserRoleByIdAsync(persona.UserId);
+                                    if (string.IsNullOrEmpty(usuarioRol))
+                                    {
+                                        usuarioRol = "Usuario"; // Valor por defecto
+                                    }
+                                }
+                                catch
+                                {
+                                    usuarioRol = "Usuario"; // Valor por defecto
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Capturar el mensaje exacto para ver el detalle en la consola
+                            Console.WriteLine($"Error al cargar persona: {ex.Message}");
+
+                            if (ex.Message.Contains("404") || ex.Message.Contains("not found"))
+                            {
+                                await InvokeAsync(() =>
+                                {
+                                    Snackbar.Add("El perfil solicitado no existe", Severity.Error);
+                                });
+                            }
+                            else
+                            {
+                                await InvokeAsync(() =>
+                                {
+                                    Snackbar.Add("Error al cargar el perfil: " + ex.Message, Severity.Error);
+                                });
+                            }
+
+                            Navigation.NavigateTo("/perfil");
+                            return;
+                        }
+                    }
+                }
+                else if (!Id.HasValue)
+                {
+                    // Si un usuario no-admin está creando un nuevo perfil, asignarle su ID
+                    persona.UserId = currentUserId;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Capturar mensaje para debug
+                Console.WriteLine($"Error general: {ex.Message}");
+                errorMessage = ObtenerMensajeError(ex);
+
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add(errorMessage, Severity.Error);
+                });
+            }
+            finally
+            {
+                isChecking = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    // Método auxiliar para extraer mensajes de error más amigables
+    private string ObtenerMensajeError(Exception ex)
+    {
+        if (ex.Message.Contains("403") || ex.Message.Contains("Forbidden"))
+        {
+            return "No tienes permisos suficientes para realizar esta acción";
+        }
+        else if (ex.Message.Contains("401") || ex.Message.Contains("Unauthorized"))
+        {
+            return "Sesión expirada o credenciales inválidas. Por favor inicia sesión nuevamente";
+        }
+        else if (ex.Message.Contains("404") || ex.Message.Contains("Not Found"))
+        {
+            return "El recurso solicitado no existe o ha sido eliminado";
+        }
+        else if (ex.Message.Contains("429") || ex.Message.Contains("Too Many Requests"))
+        {
+            return "Demasiadas solicitudes. Intenta nuevamente en unos momentos";
+        }
+        else if (ex.Message.Contains("500") || ex.Message.Contains("Internal Server Error"))
+        {
+            return "Error interno del servidor. Contacta al administrador";
+        }
+        else
+        {
+            // Para otros errores, devolver el mensaje original
+            return "Error: " + ex.Message;
+        }
+    }
+
+    private void ToggleCambiarPassword()
+    {
+        cambiarPassword = !cambiarPassword;
+        if (!cambiarPassword)
+        {
+            nuevaPassword = "";
+            confirmarPassword = "";
+        }
+        StateHasChanged();
+    }
+
+    private int GetPasswordStrength(string password)
+    {
+        if (string.IsNullOrEmpty(password))
+            return 0;
+
+        int score = 0;
+
+        // Longitud
+        if (password.Length > 8)
+            score += 20;
+        else if (password.Length >= 6)
+            score += 10;
+
+        // Complejidad
+        if (System.Text.RegularExpressions.Regex.IsMatch(password, "[A-Z]"))
+            score += 20;
+        if (System.Text.RegularExpressions.Regex.IsMatch(password, "[a-z]"))
+            score += 20;
+        if (System.Text.RegularExpressions.Regex.IsMatch(password, "[0-9]"))
+            score += 20;
+        if (System.Text.RegularExpressions.Regex.IsMatch(password, "[^a-zA-Z0-9]"))
+            score += 20;
+
+        return Math.Min(score, 100);
+    }
+
+    private string GetPasswordStrengthText(string password)
+    {
+        int strength = GetPasswordStrength(password);
+
+        if (strength == 0)
+            return "";
+        if (strength < 40)
+            return "Débil";
+        if (strength < 70)
+            return "Media";
+
+        return "Fuerte";
+    }
+
+    private string GetPasswordStrengthClass(string password)
+    {
+        int strength = GetPasswordStrength(password);
+
+        if (strength == 0)
+            return "";
+        if (strength < 40)
+            return "weak";
+        if (strength < 70)
+            return "medium";
+
+        return "strong";
+    }
+
+    private async Task Guardar()
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isLoading = true;
+                errorMessage = "";
+                StateHasChanged();
+            });
+
+            if (Id.HasValue)
+            {
+                // Todas las operaciones asíncronas juntas
+                await PersonasService.UpdatePersonaAsync(persona);
+                var personaActualizada = await PersonasService.GetPersonaAsync(Id.Value);
+
+                if (isAdmin && !string.IsNullOrEmpty(usuarioRol))
+                {
+                    await AuthService.UpdateUserRoleAsync(personaActualizada.UserId, usuarioRol);
+                }
+
+                if (cambiarPassword && isAdmin)
+                {
+                    if (nuevaPassword != confirmarPassword)
+                    {
+                        await InvokeAsync(() =>
+                        {
+                            errorMessage = "Las contraseñas no coinciden";
+                            Snackbar.Add(errorMessage, Severity.Error);
+                            isLoading = false;
+                            StateHasChanged();
+                        });
+                        return;
+                    }
+
+                    if (!string.IsNullOrEmpty(nuevaPassword))
+                    {
+                        await PersonasService.CambiarPasswordAsync(personaActualizada.UserId, nuevaPassword);
+                    }
+                }
+
+                // Actualizar UI una sola vez al final
+                await InvokeAsync(() =>
+                {
+                    persona = personaActualizada;
+                    Snackbar.Add("Perfil actualizado correctamente", Severity.Success);
+                    StateHasChanged();
+                });
+
+                Navigation.NavigateTo("/perfil");
+            }
+            else if (isAdmin)
+            {
+                await PersonasService.RegistroCompletoAsync(registroRequest);
+
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Perfil creado correctamente", Severity.Success);
+                });
+
+                Navigation.NavigateTo("/perfil");
+            }
+            else
+            {
+                var userId = await AuthService.GetUserIdAsync();
+                persona.UserId = userId;
+                await PersonasService.CreatePersonaAsync(persona);
+
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Perfil creado correctamente", Severity.Success);
+                });
+
+                Navigation.NavigateTo("/perfil");
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                if (ex.Message.Contains("Ya existe"))
+                {
+                    errorMessage = "Ya existe una persona con esta identificación";
+                }
+                else if (ex.Message.Contains("contraseñas"))
+                {
+                    errorMessage = "Las contraseñas no coinciden";
+                }
+                else if (ex.Message.Contains("403") || ex.Message.Contains("Forbidden"))
+                {
+                    errorMessage = "No tiene permisos para realizar esta acción";
+                }
+                else
+                {
+                    errorMessage = "Error al guardar: " + ex.Message;
+                }
+
+                Snackbar.Add(errorMessage, Severity.Error);
+                Console.WriteLine($"Error al guardar: {ex.Message}");
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isLoading = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/perfil");
+    }
+}

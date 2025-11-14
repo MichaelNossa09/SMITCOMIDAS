@@ -1,0 +1,253 @@
+﻿@page "/centroscosto/crear"
+@page "/centroscosto/editar/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@inject ICentrosCostoService CentrosCostoService
+@inject ICompaniasService CompaniasService
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+
+
+@if (isChecking)
+{
+    <div class="loading-container">
+        <p>Verificando permisos...</p>
+    </div>
+}
+else if (!isAuthorized)
+{
+    <div class="unauthorized-container">
+        <div class="unauthorized-icon">🔒</div>
+        <h2>Acceso Denegado</h2>
+        <p>No tienes permisos suficientes para acceder a esta página.</p>
+        <button class="btn-back" @onclick="GoBack">Volver al Inicio</button>
+    </div>
+}
+else
+{
+    <div class="form-container">
+        <div class="form-header">
+            <h2>@(Id.HasValue ? "Editar" : "Crear") Centro de Costo</h2>
+        </div>
+
+        <EditForm Model="@centroCosto" OnValidSubmit="Guardar">
+            <DataAnnotationsValidator />
+
+            <div class="form-card">
+                <div class="form-group">
+                    <label>Código *</label>
+                    <InputText @bind-Value="centroCosto.Codigo" class="input-field" placeholder="CC001" />
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <InputText @bind-Value="centroCosto.Nombre" class="input-field" placeholder="Centro Administrativo" />
+                </div>
+
+                <div class="form-group">
+                    <label>Compañía *</label>
+                    <InputSelect @bind-Value="centroCosto.CompaniaId" class="input-field">
+                        <option value="0">Seleccione...</option>
+                        @foreach (var comp in companias)
+                        {
+                            <option value="@comp.Id">@comp.NombreComercial</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <InputCheckbox @bind-Value="centroCosto.Activo" />
+                        <span>Activo</span>
+                    </label>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="error-message">@errorMessage</div>
+            }
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" @onclick="Cancelar">Cancelar</button>
+                <button type="submit" class="btn-primary" disabled="@isLoading">
+                    @(isLoading ? "Guardando..." : "Guardar")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private bool isChecking = true;
+    private bool isAuthorized = false;
+    private bool initialized = false;
+
+    private CentroCosto centroCosto = new() { Activo = true };
+    private List<Compania> companias = new();
+    private string errorMessage = "";
+    private bool isLoading = false;
+
+     protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            try
+            {
+                var role = await AuthService.GetUserRoleAsync();
+                isAuthorized = role == "Admin";
+
+                if (isAuthorized)
+                {
+                    companias = await CompaniasService.GetCompaniasAsync();
+                    if (Id.HasValue)
+                    {
+                        centroCosto = await CentrosCostoService.GetCentroCostoAsync(Id.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Error al inicializar: " + ex.Message;
+                isAuthorized = false;
+            }finally{
+                isChecking = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task Guardar()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = "";
+
+            if (Id.HasValue)
+            {
+                await CentrosCostoService.UpdateCentroCostoAsync(centroCosto);
+            }
+            else
+            {
+                await CentrosCostoService.CreateCentroCostoAsync(centroCosto);
+            }
+
+            Navigation.NavigateTo("/centroscosto");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error al guardar: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/home");
+    }
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/centroscosto");
+    }
+}
+
+<style>
+    .form-container {
+        padding: 20px;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        margin-bottom: 30px;
+    }
+
+        .form-header h2 {
+            color: #56453C;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+    .form-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #56453C;
+        margin-bottom: 8px;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
+    .input-field:focus {
+        outline: none;
+        border-color: #51A121;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .error-message {
+        padding: 12px;
+        background: #FEE;
+        color: #C33;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background: #51A121;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #E8E8CE;
+        color: #56453C;
+    }
+    
+</style>

@@ -1,0 +1,1190 @@
+﻿@page "/menus/nuevo"
+@page "/menus/editar/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using SMITCOMIDAS.Shared.Models
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@inject IMenuService MenuService
+@inject IElementoMenuService ElementoMenuService
+@inject IProveedoresService ProveedorService
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+@inject ISnackbar Snackbar
+@inject IPlatformService Platform
+
+<PageTitle>@(Id == null ? "Nuevo Menú" : "Editar Menú")</PageTitle>
+
+@if (isChecking)
+{
+    <div class="loading-container">
+        <div class="loader"></div>
+        <p>Verificando permisos...</p>
+    </div>
+}
+else if (!isAuthorized)
+{
+    <div class="unauthorized-container">
+        <div class="unauthorized-icon">🔒</div>
+        <h2>Acceso Denegado</h2>
+        <p>No tienes permisos suficientes para acceder a esta página.</p>
+        <button class="btn-back" @onclick="GoBack">Volver al Inicio</button>
+    </div>
+}
+else
+{
+    <div class="MENU_container">
+        <div class="MENU_header">
+            <div class="MENU_backButton" @onclick="Cancelar">
+                <span>←</span>
+            </div>
+            <h1 class="MENU_title">@(Id == null ? "Crear Nuevo Menú" : "Editar Menú")</h1>
+        </div>
+
+        <div class="MENU_card">
+            <EditForm Model="@menu" OnValidSubmit="Guardar" FormName="menuForm">
+                <DataAnnotationsValidator />
+
+                <!-- Sección de información general -->
+                <div class="MENU_section">
+                    <div class="MENU_sectionHeader">
+                        <h2 class="MENU_sectionTitle">Información General</h2>
+                    </div>
+
+                    <div class="MENU_horizontalLayout">
+                        <div class="MENU_column MENU_columnFull">
+                            <div class="MENU_formGroup">
+                                <label class="MENU_label" for="nombre">Nombre del Menú *</label>
+                                <InputText id="nombre" @bind-Value="menu.Nombre" class="MENU_control" />
+                                <ValidationMessage For="@(() => menu.Nombre)" class="validation-message" />
+                            </div>
+                        </div>
+
+                        <div class="MENU_column MENU_columnFull">
+                            <div class="MENU_formGroup">
+                                <label class="MENU_label" for="descripcion">Descripción *</label>
+                                <InputTextArea id="descripcion" @bind-Value="menu.Descripcion" class="MENU_control" rows="1" />
+                                <ValidationMessage For="@(() => menu.Descripcion)" class="validation-message" />
+                            </div>
+                        </div>
+
+                        <div class="MENU_column MENU_columnQuarter">
+                            <div class="MENU_formGroup">
+                                <label class="MENU_label" for="tipo">Tipo de Menú *</label>
+                                <InputSelect id="tipo" @bind-Value="menu.Tipo" class="MENU_control">
+                                    <option value="@TipoMenu.Diario">Diario</option>
+                                    <option value="@TipoMenu.Semanal">Semanal</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => menu.Tipo)" class="validation-message" />
+                            </div>
+                        </div>
+
+                        <div class="MENU_column MENU_columnQuarter">
+                            <div class="MENU_formGroup">
+                                <label class="MENU_label" for="fechaInicio">Fecha Inicio *</label>
+                                <InputDate id="fechaInicio" @bind-Value="menu.FechaInicio" class="MENU_control" />
+                                <ValidationMessage For="@(() => menu.FechaInicio)" class="validation-message" />
+                            </div>
+                        </div>
+
+                        <div class="MENU_column MENU_columnQuarter">
+                            <div class="MENU_formGroup">
+                                <label class="MENU_label" for="fechaFin">Fecha Fin *</label>
+                                <InputDate id="fechaFin" @bind-Value="menu.FechaFin" class="MENU_control" />
+                                <ValidationMessage For="@(() => menu.FechaFin)" class="validation-message" />
+                            </div>
+                        </div>
+
+                        <div class="MENU_column MENU_columnQuarter">
+                            <div class="MENU_formGroup">
+                                <label class="MENU_label" for="proveedorId">Proveedor *</label>
+                                <InputSelect id="proveedorId" @bind-Value="menu.ProveedorId" class="MENU_control">
+                                    <option value="0">Seleccione un proveedor...</option>
+                                    @foreach (var proveedor in proveedores)
+                                    {
+                                        <option value="@proveedor.Id">@proveedor.NombreComercial</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => menu.ProveedorId)" class="validation-message"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (Id.HasValue)
+                {
+                <!-- Sección de Elementos del Menú -->
+                    <div class="MENU_section">
+                    <div class="MENU_sectionHeader">
+                        <h2 class="MENU_sectionTitle">Elementos del Menú</h2>
+                        <button type="button" class="MENU_addButton" @onclick="AddElementoMenu">Agregar Elemento
+                        </button>
+                    </div>
+
+                    <!-- Controles de filtro - Visibles en ambas versiones -->
+                    <div class="MENU_filterControls">
+                        <div class="MENU_filterButtons">
+                            @foreach (var filtro in new[] { "Todos", "Desayuno", "Almuerzo", "Cena" })
+                            {
+                                string currentFilter = filtro;
+                                <button type="button"
+                                        class="MENU_filterButton @(filtroActual == currentFilter ? "MENU_filterActive" : "")"
+                                        @onclick="() => FiltrarElementos(currentFilter)">
+                                    @filtro
+                                </button>
+                            }
+                        </div>
+
+                        <div class="MENU_viewToggle">
+                            <button type="button" class="MENU_viewButton @(vistaCompacta ? "" : "MENU_viewActive")" @onclick="() => ToggleVista(false)">
+                                <span>📅</span> Detallada
+                            </button>
+                            <button type="button" class="MENU_viewButton @(vistaCompacta ? "MENU_viewActive" : "")" @onclick="() => ToggleVista(true)">
+                                <span>📋</span> Compacta
+                            </button>
+                        </div>
+                    </div>
+
+                    @if (!menu.Elementos.Any())
+                    {
+                        <div class="MENU_emptyMessage">
+                            <p>Este menú no tiene elementos. Agrega elementos para que los clientes puedan ordenar.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- VISTA MÓVIL -->
+                        <div class="MENU_mobileView">
+                            <!-- Vista móvil compacta -->
+                            <div class="@(vistaCompacta ? "" : "MENU_hidden")">
+                                <div class="MENU_mobileCompactTable">
+                                    <div class="MENU_mobileTableHeader">
+                                        <div class="MENU_mobileHeaderCell MENU_cellPlato">Plato</div>
+                                        <div class="MENU_mobileHeaderCell MENU_cellTipo">Tipo</div>
+                                        <div class="MENU_mobileHeaderCell MENU_cellPrecio">Precio</div>
+                                        <div class="MENU_mobileHeaderCell MENU_cellDias">Días</div>
+                                    </div>
+
+                                    @{
+                                        var elementosFiltradasMovil = menu.Elementos;
+                                        if (filtroActual != "Todos")
+                                        {
+                                            elementosFiltradasMovil = elementosFiltradasMovil
+                                            .Where(e => e.TipoComida.ToString() == filtroActual)
+                                            .ToList();
+                                        }
+                                    }
+
+                                    @foreach (var elemento in elementosFiltradasMovil)
+                                    {
+                                        <div class="MENU_mobileTableRow">
+                                            <div class="MENU_mobileCell MENU_cellPlato">@elemento.Nombre</div>
+                                            <div class="MENU_mobileCell MENU_cellTipo">
+                                                <span class="MENU_compactType MENU_type@(elemento.TipoComida.ToString())Badge">
+                                                    @elemento.TipoComida.ToString().Substring(0, 3)
+                                                </span>
+                                            </div>
+                                            <div class="MENU_mobileCell MENU_cellPrecio">@elemento.Precio.ToString("C")</div>
+                                            <div class="MENU_mobileCell MENU_cellDias">
+                                                <div class="MENU_mobileDaysList">
+                                                    @foreach (var disponibilidad in elemento.Disponibilidades)
+                                                    {
+                                                        <span class="MENU_dayBadge">@disponibilidad.Dia.ToString().Substring(0, 3)</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="MENU_mobileRowActions">
+                                                <button type="button" class="MENU_actionButton MENU_editButton" @onclick="() => EditElementoMenu(elemento)" title="Editar">✏️</button>
+                                                <button type="button" class="MENU_actionButton MENU_deleteButton" @onclick="() => DeleteElementoMenu(elemento)" title="Eliminar">🗑️</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Vista móvil detallada por día -->
+                            <div class="@(vistaCompacta ? "MENU_hidden" : "")">
+                                <div class="MENU_mobileSelector">
+                                    <select @bind="diaSeleccionadoMobile" class="MENU_mobileDropdown">
+                                        @foreach (var dia in Enum.GetValues(typeof(DiaSemana)).Cast<DiaSemana>())
+                                        {
+                                            var elementosDelDia = menu.Elementos
+                                            .Where(e => e.Disponibilidades.Any(d => d.Dia == dia))
+                                            .Count();
+
+                                            <option value="@dia">@dia.ToString() (@elementosDelDia)</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="MENU_mobileDay">
+                                    @{
+                                        var elementosDiaMobile = menu.Elementos
+                                        .Where(e => e.Disponibilidades.Any(d => d.Dia == diaSeleccionadoMobile));
+
+                                        // Aplicar filtro actual a la vista móvil
+                                        if (filtroActual != "Todos")
+                                        {
+                                            elementosDiaMobile = elementosDiaMobile
+                                            .Where(e => e.TipoComida.ToString() == filtroActual);
+                                        }
+
+                                        elementosDiaMobile = elementosDiaMobile.ToList();
+
+                                        var tiposComidasMobile = elementosDiaMobile
+                                        .Select(e => e.TipoComida)
+                                        .Distinct()
+                                        .OrderBy(tc => tc.ToString())
+                                        .ToList();
+                                    }
+
+                                    @if (!elementosDiaMobile.Any())
+                                    {
+                                        <div class="MENU_emptyDay">
+                                            @if (filtroActual != "Todos")
+                                            {
+                                                <span>No hay elementos de tipo @filtroActual para este día</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Sin elementos para este día</span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var tipoComida in tiposComidasMobile)
+                                        {
+                                            var elementosTipoComida = elementosDiaMobile
+                                            .Where(e => e.TipoComida == tipoComida)
+                                            .ToList();
+
+                                            <div class="MENU_mealSection MENU_meal@(tipoComida.ToString())">
+                                                <div class="MENU_mealHeader" @onclick="() => ToggleTipoComida(tipoComida)">
+                                                    <div class="MENU_mealIcon">
+                                                        @switch (tipoComida)
+                                                        {
+                                                            case TipoComida.Desayuno:
+                                                                <span>☕</span>
+                                                                break;
+                                                            case TipoComida.Almuerzo:
+                                                                <span>🍽️</span>
+                                                                break;
+                                                            case TipoComida.Cena:
+                                                                <span>🌙</span>
+                                                                break;
+                                                            default:
+                                                                <span>🍴</span>
+                                                                break;
+                                                        }
+                                                    </div>
+                                                    <div class="MENU_mealTitle">@tipoComida.ToString()</div>
+                                                    <div class="MENU_mealCount">@elementosTipoComida.Count elemento@(elementosTipoComida.Count != 1 ? "s" : "")</div>
+                                                    <div class="MENU_expandIcon @(tiposComidaExpandidos.Contains(tipoComida) ? "MENU_expanded" : "")">▼</div>
+                                                </div>
+
+                                                @if (tiposComidaExpandidos.Contains(tipoComida))
+                                                {
+                                                    <div class="MENU_mealItems">
+                                                        @foreach (var elemento in elementosTipoComida)
+                                                        {
+                                                            <div class="MENU_mobileItem">
+                                                                <div class="MENU_itemInfo">
+                                                                    <div class="MENU_itemName">@elemento.Nombre</div>
+                                                                    <div class="MENU_itemPrice">@elemento.Precio.ToString("C")</div>
+                                                                </div>
+                                                                <div class="MENU_itemActions">
+                                                                    <button type="button" class="MENU_actionButton MENU_editButton" @onclick="() => EditElementoMenu(elemento)" title="Editar">
+                                                                        ✏️
+                                                                    </button>
+                                                                    <button type="button" class="MENU_actionButton MENU_deleteButton" @onclick="() => DeleteDisponibilidad(elemento.Id, diaSeleccionadoMobile)" title="Quitar">
+                                                                        ❌
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VISTA DESKTOP -->
+                        <div class="MENU_desktopView">
+                            <!-- Vista de escritorio detallada -->
+                            <div class="MENU_calendar @(vistaCompacta ? "MENU_hidden" : "")">
+                                @foreach (var dia in Enum.GetValues(typeof(DiaSemana)).Cast<DiaSemana>())
+                                {
+                                    <div class="MENU_day">
+                                        <div class="MENU_dayHeader">
+                                            <div class="MENU_dayName">@dia.ToString()</div>
+                                            @{
+                                                var elementosCount = menu.Elementos
+                                                .Where(e => e.Disponibilidades.Any(d => d.Dia == dia))
+                                                .Count();
+                                            }
+                                            <div class="MENU_dayCount">@elementosCount</div>
+                                        </div>
+                                        <div class="MENU_dayContent">
+                                            @{
+                                                var elementosDelDia = menu.Elementos
+                                                .Where(e => e.Disponibilidades.Any(d => d.Dia == dia));
+
+                                                if (filtroActual != "Todos")
+                                                {
+                                                    elementosDelDia = elementosDelDia.Where(e => e.TipoComida.ToString() == filtroActual);
+                                                }
+
+                                                elementosDelDia = elementosDelDia
+                                                .OrderBy(e => e.TipoComida)
+                                                .ThenBy(e => e.Orden)
+                                                .ToList();
+
+                                                var tiposComidaDelDia = elementosDelDia
+                                                .Select(e => e.TipoComida)
+                                                .Distinct()
+                                                .ToList();
+                                            }
+
+                                            @if (!elementosDelDia.Any())
+                                            {
+                                                <div class="MENU_emptyDay">
+                                                    Sin elementos
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var tipoComida in tiposComidaDelDia)
+                                                {
+                                                    var elementosTipoComida = elementosDelDia.Where(e => e.TipoComida == tipoComida);
+
+                                                    <div class="MENU_typeSection MENU_type@(tipoComida.ToString())">
+                                                        <div class="MENU_typeHeader">
+                                                            @tipoComida.ToString()
+                                                        </div>
+
+                                                        @foreach (var elemento in elementosTipoComida)
+                                                        {
+                                                            <div class="MENU_item">
+                                                                <div class="MENU_itemContent">
+                                                                    <div class="MENU_itemName">@elemento.Nombre</div>
+                                                                    <div class="MENU_itemPrice">@elemento.Precio.ToString("C")</div>
+
+                                                                    <div class="MENU_itemActions">
+                                                                        <button type="button" class="MENU_actionButton MENU_editButton" @onclick="() => EditElementoMenu(elemento)" title="Editar">
+                                                                            ✏️
+                                                                        </button>
+                                                                        <button type="button" class="MENU_actionButton MENU_deleteButton" @onclick="() => DeleteDisponibilidad(elemento.Id, dia)" title="Quitar">
+                                                                            ❌
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Vista de escritorio compacta -->
+                            <div class="MENU_compactView @(vistaCompacta ? "" : "MENU_hidden")">
+                                <table class="MENU_compactTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Plato</th>
+                                            <th>Tipo</th>
+                                            <th>Precio</th>
+                                            <th>Disponibilidad</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            var elementosFiltrados = menu.Elementos;
+                                            if (filtroActual != "Todos")
+                                            {
+                                                elementosFiltrados = elementosFiltrados
+                                                .Where(e => e.TipoComida.ToString() == filtroActual)
+                                                .ToList();
+                                            }
+                                        }
+
+                                        @foreach (var elemento in elementosFiltrados)
+                                        {
+                                            <tr class="MENU_compactRow">
+                                                <td>@elemento.Nombre</td>
+                                                <td>
+                                                    <span class="MENU_compactType MENU_type@(elemento.TipoComida.ToString())Badge">
+                                                        @elemento.TipoComida.ToString()
+                                                    </span>
+                                                </td>
+                                                <td>@elemento.Precio.ToString("C")</td>
+                                                <td class="MENU_availabilityCell">
+                                                    @foreach (var disponibilidad in elemento.Disponibilidades)
+                                                    {
+                                                        <span class="MENU_dayBadge">@disponibilidad.Dia.ToString().Substring(0, 3)</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <div class="MENU_compactActions">
+                                                        <button type="button" class="MENU_actionButton MENU_editButton" @onclick="() => EditElementoMenu(elemento)" title="Editar">
+                                                            ✏️
+                                                        </button>
+                                                        <button type="button" class="MENU_actionButton MENU_deleteButton" @onclick="() => DeleteElementoMenu(elemento)" title="Eliminar">
+                                                            🗑️
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+                }else{
+                    <div class="MENU_infoMessage">
+                        <div class="MENU_infoIcon">ℹ️</div>
+                        <p>Para agregar elementos al menú, primero guarde la información básica del menú.</p>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="MENU_errorMessage">@errorMessage</div>
+                }
+
+                <div class="MENU_formActions">
+                    <button type="button" class="MENU_secondaryButton" @onclick="Cancelar">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="MENU_primaryButton" disabled="@isLoading">
+                        @(isLoading ? "Guardando..." : "Guardar Menú")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+
+        @if (showElementoDialog)
+        {
+            <div class="MENU_overlay">
+                <div class="MENU_dialogContainer">
+                    <div class="MENU_dialogHeader">
+                        <h2 class="MENU_dialogTitle">@(elementoEdit.Id == 0 ? "Agregar Elemento" : "Editar Elemento")</h2>
+                        <button class="MENU_closeButton" @onclick="CloseElementoDialog">×</button>
+                    </div>
+                    <div class="MENU_dialogBody">
+                        <EditForm Model="@elementoEdit" OnValidSubmit="SaveElementoMenu" FormName="elementoForm">
+                            <DataAnnotationsValidator />
+
+                            <div class="MENU_dialogColumns">
+                                <div class="MENU_dialogColumn MENU_dialogColumnFull">
+                                    <div class="MENU_formGroup">
+                                        <label class="MENU_label" for="nombreElemento">Nombre del plato *</label>
+                                        <InputText id="nombreElemento" @bind-Value="elementoEdit.Nombre" class="MENU_control" />
+                                        <ValidationMessage For="@(() => elementoEdit.Nombre)" class="validation-message" />
+                                    </div>
+                                </div>
+
+                                <div class="MENU_dialogColumn MENU_dialogColumnFull">
+                                    <div class="MENU_formGroup">
+                                        <label class="MENU_label" for="descripcionElemento">Descripción *</label>
+                                        <InputTextArea id="descripcionElemento" @bind-Value="elementoEdit.Descripcion" class="MENU_control" rows="1" />
+                                        <ValidationMessage For="@(() => elementoEdit.Descripcion)" class="validation-message" />
+                                    </div>
+                                </div>
+
+                                <div class="MENU_dialogColumn MENU_dialogColumnHalf">
+                                    <div class="MENU_formGroup">
+                                        <label class="MENU_label" for="precioElemento">Precio *</label>
+                                        <InputNumber id="precioElemento" @bind-Value="elementoEdit.Precio" class="MENU_control" />
+                                        <ValidationMessage For="@(() => elementoEdit.Precio)" class="validation-message" />
+                                    </div>
+                                </div>
+
+                                <div class="MENU_dialogColumn MENU_dialogColumnHalf">
+                                    <div class="MENU_formGroup">
+                                        <label class="MENU_label" for="tipoComida">Tipo de Comida *</label>
+                                        <InputSelect id="tipoComida" @bind-Value="elementoEdit.TipoComida" class="MENU_control">
+                                            <option value="@TipoComida.Desayuno">Desayuno</option>
+                                            <option value="@TipoComida.Almuerzo">Almuerzo</option>
+                                            <option value="@TipoComida.Cena">Cena</option>
+                                            <option value="@TipoComida.Otro">Otro</option>
+                                        </InputSelect>
+                                        <ValidationMessage For="@(() => elementoEdit.TipoComida)" class="validation-message" />
+                                    </div>
+                                </div>
+
+                                <div class="MENU_dialogColumn MENU_dialogColumnFull">
+                                    <div class="MENU_formGroup">
+                                        <label class="MENU_label" for="imagenElemento">URL de Imagen (opcional)</label>
+                                        <InputText id="imagenElemento" @bind-Value="elementoEdit.ImagenUrl" class="MENU_control" />
+                                    </div>
+                                </div>
+
+                                <div class="MENU_dialogColumn MENU_dialogColumnFull">
+                                    <div class="MENU_formGroup">
+                                        <label class="MENU_label">Disponibilidad por día:</label>
+                                        <div class="MENU_daysGrid">
+                                            @foreach (var dia in Enum.GetValues(typeof(DiaSemana)).Cast<DiaSemana>())
+                                            {
+                                                var diaActual = dia;
+                                                var isChecked = elementoEdit.Disponibilidades.Any(d => d.Dia == diaActual);
+
+                                                <div class="MENU_dayOption @(isChecked ? "MENU_selected" : "")" @onclick="() => ToggleDiaDisponible(diaActual, !isChecked)">
+                                                    <span class="MENU_dayOptionLabel">@dia.ToString().Substring(0, 3)</span>
+                                                    <input type="checkbox" checked="@isChecked" style="pointer-events: none;" />
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(elementoErrorMessage))
+                            {
+                                <div class="MENU_errorMessage">@elementoErrorMessage</div>
+                            }
+
+                            <div class="MENU_dialogActions">
+                                <button type="button" class="MENU_secondaryButton" @onclick="CloseElementoDialog">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="MENU_primaryButton" disabled="@isElementoLoading">
+                                    @(isElementoLoading ? "Guardando..." : "Guardar Elemento")
+                                </button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+    private Menu menu = new() { FechaInicio = DateTime.Today, FechaFin = DateTime.Today.AddDays(7) };
+    private List<Proveedor> proveedores;
+    private string errorMessage = "";
+    private bool isLoading = false;
+    private bool isAuthorized = false;
+    private bool isChecking = true;
+    private bool initialized = false;
+    private string role = "";
+
+    private string filtroActual = "Todos";
+    private bool vistaCompacta = false;
+    private DiaSemana diaSeleccionadoMobile = DiaSemana.Lunes;
+    private HashSet<TipoComida> tiposComidaExpandidos = new HashSet<TipoComida>();
+
+
+    // Para edición de elementos
+    private ElementoMenu elementoEdit = new();
+    private bool showElementoDialog = false;
+    private string elementoErrorMessage = "";
+    private bool isElementoLoading = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            diaSeleccionadoMobile = ObtenerDiaActual();
+
+            try
+            {
+                // Inicializar la lista de proveedores para evitar NullReferenceException
+                proveedores = new List<Proveedor>();
+
+                // Obtener el rol del usuario
+                role = await AuthService.GetUserRoleAsync();
+                isAuthorized = role == "Admin" || role == "Proveedor";
+
+                if (!isAuthorized)
+                {
+                    await InvokeAsync(() =>
+                    {
+                        Snackbar.Add("No tiene permisos para acceder a esta página", Severity.Error);
+                    });
+                    Navigation.NavigateTo("/");
+                    return;
+                }
+
+                // Cargar proveedores si es administrador
+                if (role == "Admin")
+                {
+                    try
+                    {
+                        proveedores = await ProveedorService.GetProveedoresAsync();
+
+                        // Si no se pudo cargar, asegurar que no es null
+                        if (proveedores == null)
+                        {
+                            proveedores = new List<Proveedor>();
+                            await InvokeAsync(() =>
+                            {
+                                Snackbar.Add("No se pudieron cargar los proveedores", Severity.Warning);
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // En caso de error, seguir con lista vacía
+                        await InvokeAsync(() =>
+                        {
+                            Snackbar.Add("Error al cargar proveedores: " + ex.Message, Severity.Warning);
+                        });
+                    }
+                }
+                // Si es proveedor, establecer su ID automáticamente
+                else if (role == "Proveedor")
+                {
+                    var userId = await AuthService.GetUserIdAsync();
+                    var proveedor = await ProveedorService.GetProveedorByUsuarioIdAsync(userId);
+
+                    if (proveedor != null)
+                    {
+                        menu.ProveedorId = proveedor.Id;
+
+                        // Agregar el proveedor a la lista para que aparezca en el dropdown
+                        proveedores.Add(proveedor);
+                    }
+                    else
+                    {
+                        await InvokeAsync(() =>
+                        {
+                            Snackbar.Add("No se encontró información del proveedor asociado a su cuenta", Severity.Warning);
+                        });
+                        Navigation.NavigateTo("/proveedores/crear");
+                        return;
+                    }
+                }
+
+                // Si es edición, cargar el menú existente
+                if (Id.HasValue)
+                {
+                    try
+                    {
+                        menu = await MenuService.GetMenuByIdAsync(Id.Value, true);
+
+                        if (menu == null)
+                        {
+                            await InvokeAsync(() =>
+                            {
+                                Snackbar.Add("El menú solicitado no existe", Severity.Error);
+                            });
+                            Navigation.NavigateTo("/menus");
+                            return;
+                        }
+
+                        // Verificar que el proveedor tenga permiso para editar este menú si no es admin
+                        if (role == "Proveedor" && !proveedores.Any(p => p.Id == menu.ProveedorId))
+                        {
+                            await InvokeAsync(() =>
+                            {
+                                Snackbar.Add("No tiene permisos para editar este menú", Severity.Error);
+                            });
+                            Navigation.NavigateTo("/menus");
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await InvokeAsync(() =>
+                        {
+                            Snackbar.Add("Error al cargar el menú: " + ex.Message, Severity.Error);
+                        });
+                        Navigation.NavigateTo("/menus");
+                        return;
+                    }
+                }
+                else
+                {
+                    // Inicializar un nuevo menú
+                    menu = new Menu
+                     {
+                            FechaCreacion = DateTime.Now,
+                            FechaInicio = DateTime.Now,
+                            FechaFin = DateTime.Now.AddDays(6)
+                     };
+
+                    // Si ya tenemos el ProveedorId (para usuarios con rol Proveedor), establecerlo
+                    if (role == "Proveedor" && proveedores.Count == 1)
+                    {
+                        menu.ProveedorId = proveedores[0].Id;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Error al inicializar: " + ex.Message;
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add(errorMessage, Severity.Error);
+                });
+                Console.WriteLine($"Error en OnAfterRenderAsync: {ex.Message}");
+            }
+            finally
+            {
+                isChecking = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+   private DiaSemana ObtenerDiaActual()
+    {
+        // Obtener el día de la semana actual
+        DayOfWeek diaActual = DateTime.Now.DayOfWeek;
+    
+        // Convertir de DayOfWeek a DiaSemana
+        switch (diaActual)
+        {
+            case DayOfWeek.Monday:
+                return DiaSemana.Lunes;
+            case DayOfWeek.Tuesday:
+                return DiaSemana.Martes;
+            case DayOfWeek.Wednesday:
+                return DiaSemana.Miercoles;
+            case DayOfWeek.Thursday:
+                return DiaSemana.Jueves;
+            case DayOfWeek.Friday:
+                return DiaSemana.Viernes;
+            case DayOfWeek.Saturday:
+                return DiaSemana.Sabado;
+            case DayOfWeek.Sunday:
+                return DiaSemana.Domingo;
+            default:
+                return DiaSemana.Lunes; // Por si acaso, aunque nunca debería llegar aquí
+        }
+    }
+    private async Task Guardar()
+    {
+        try
+        {
+            // Operaciones iniciales de UI deben estar dentro de InvokeAsync
+            await InvokeAsync(() =>
+            {
+                isLoading = true;
+                errorMessage = "";
+                StateHasChanged();
+            });
+
+            // Las operaciones asíncronas de servicio pueden ir fuera de InvokeAsync
+            if (Id.HasValue)
+            {
+                // Lógica de actualización
+                await MenuService.UpdateMenuAsync(menu);
+
+                // Operaciones de UI deben estar en InvokeAsync
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Menú actualizado correctamente", Severity.Success);
+                    // No ejecutes Navigation.NavigateTo dentro de InvokeAsync
+                    // ya que puede causar problemas
+                });
+
+                // Navegar fuera del InvokeAsync
+                Navigation.NavigateTo("/menus");
+            }
+            else
+            {
+                // Lógica de creación
+                var result = await MenuService.CreateMenuAsync(menu);
+
+                // Operaciones de UI en InvokeAsync
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Menú creado correctamente", Severity.Success);
+                });
+
+                // Navegar fuera del InvokeAsync
+                Navigation.NavigateTo($"/menus/editar/{result.Id}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Capturar cualquier error y actualizarlo en la UI
+            await InvokeAsync(() =>
+            {
+                errorMessage = "Error al guardar: " + ex.Message;
+                Snackbar.Add(errorMessage, Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            // Asegurar que isLoading se establezca a false en el hilo correcto
+            await InvokeAsync(() =>
+            {
+                isLoading = false;
+                CloseElementoDialog();
+                StateHasChanged();
+            });
+        }
+    }
+
+    private async Task AddElementoMenu()
+    {
+        // No necesitamos InvokeAsync aquí si solo estamos modificando estados internos
+        elementoEdit = new ElementoMenu
+            {
+                MenuId = menu.Id,
+                Disponible = true,
+                TipoComida = TipoComida.Almuerzo, // Tipo de comida por defecto
+                Orden = menu.Elementos.Count > 0 ? menu.Elementos.Max(e => e.Orden) + 1 : 1,
+                Disponibilidades = new List<DisponibilidadElemento>()
+            };
+        showElementoDialog = true;
+        StateHasChanged();
+    }
+    private async Task EditElementoMenu(ElementoMenu elemento)
+    {
+        // No necesitamos InvokeAsync aquí si solo estamos modificando estados internos
+        elementoEdit = new ElementoMenu
+            {
+                Id = elemento.Id,
+                MenuId = elemento.MenuId,
+                Nombre = elemento.Nombre,
+                Descripcion = elemento.Descripcion,
+                Precio = elemento.Precio,
+                TipoComida = elemento.TipoComida,
+                ImagenUrl = elemento.ImagenUrl,
+                Disponible = elemento.Disponible,
+                Orden = elemento.Orden,
+                Disponibilidades = elemento.Disponibilidades.ToList()
+            };
+        showElementoDialog = true;
+        StateHasChanged();
+    }
+    private async Task SaveElementoMenu()
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isElementoLoading = true;
+                elementoErrorMessage = "";
+                StateHasChanged();
+            });
+
+            // Validación de disponibilidad
+            if (!elementoEdit.Disponibilidades.Any())
+            {
+                await InvokeAsync(() =>
+                {
+                    elementoErrorMessage = "Debe seleccionar al menos un día de disponibilidad";
+                    isElementoLoading = false;
+                    StateHasChanged();
+                });
+                return;
+            }
+
+            // Crear una copia limpia del elemento - operación sin UI
+            var elementoLimpio = new ElementoMenu
+                {
+                    Id = elementoEdit.Id,
+                    Nombre = elementoEdit.Nombre,
+                    Descripcion = elementoEdit.Descripcion,
+                    Precio = elementoEdit.Precio,
+                    TipoComida = elementoEdit.TipoComida,
+                    ImagenUrl = elementoEdit.ImagenUrl,
+                    Disponible = elementoEdit.Disponible,
+                    Orden = elementoEdit.Orden,
+                    MenuId = elementoEdit.MenuId,
+                    // Limpiar las disponibilidades para evitar referencias circulares
+                    Disponibilidades = elementoEdit.Disponibilidades.Select(d => new DisponibilidadElemento
+                    {
+                        Id = d.Id,
+                        Dia = d.Dia,
+                        DisponibleDesayuno = d.DisponibleDesayuno,
+                        DisponibleAlmuerzo = d.DisponibleAlmuerzo,
+                        DisponibleCena = d.DisponibleCena,
+                        CantidadDisponible = d.CantidadDisponible,
+                        ElementoMenuId = elementoEdit.Id,
+                        ElementoMenu = null
+                    }).ToList()
+                };
+
+            // Operaciones de datos que no requieren InvokeAsync
+            if (Id.HasValue)
+            {
+                if (elementoEdit.Id == 0)
+                {
+                    // Crear nuevo elemento - operación sin UI
+                    await ElementoMenuService.CreateElementoMenuAsync(elementoLimpio);
+                }
+                else
+                {
+                    // Actualizar elemento existente - operación sin UI
+                    await ElementoMenuService.UpdateElementoMenuAsync(elementoLimpio);
+                }
+
+                // Recargar menú - operación sin UI
+                menu = await MenuService.GetMenuByIdAsync(Id.Value, true);
+
+                // Operaciones UI en InvokeAsync
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Elemento guardado correctamente", Severity.Success);
+                    CloseElementoDialog();
+                    StateHasChanged();
+                });
+            }
+            else
+            {
+                // Si es un menú nuevo, solo agregar a la lista local
+                await InvokeAsync(() =>
+                {
+                    menu.Elementos.Add(elementoEdit);
+                    CloseElementoDialog();
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores en InvokeAsync
+            await InvokeAsync(() =>
+            {
+                elementoErrorMessage = "Error al guardar elemento: " + ex.Message;
+                Snackbar.Add(elementoErrorMessage, Severity.Error);
+                isElementoLoading = false;
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            // Asegurarse de que isElementoLoading se establece a false en el hilo correcto
+            if (isElementoLoading)
+            { // Solo si aún está en true
+                await InvokeAsync(() =>
+                {
+                    isElementoLoading = false;
+                    StateHasChanged();
+                });
+            }
+        }
+    }
+    private async Task DeleteElementoMenu(ElementoMenu elemento)
+    {
+        // Confirm es una operación de UI, pero este es el componente principal
+        // así que está bien usarlo directamente aquí
+        var confirm = await Snackbar.Confirm("¿Está seguro que desea eliminar este elemento?");
+
+        if (confirm)
+        {
+            try
+            {
+                isLoading = true;
+                errorMessage = "";
+
+                if (elemento.Id == 0)
+                {
+                    // Elemento no guardado, solo remover de la lista - operación sin UI
+                    menu.Elementos.Remove(elemento);
+
+                    // Actualizar UI
+                    await InvokeAsync(() =>
+                    {
+                        StateHasChanged();
+                    });
+                }
+                else
+                {
+                    try
+                    {
+                        // Elemento guardado, eliminar de BD - operación sin UI
+                        var result = await ElementoMenuService.DeleteElementoMenuAsync(elemento.Id);
+
+                        // Actualizar UI basado en resultado
+                        await InvokeAsync(() =>
+                        {
+                            if (result)
+                            {
+                                menu.Elementos.Remove(elemento);
+                                Snackbar.Add("Elemento eliminado correctamente", Severity.Success);
+                            }
+                            else
+                            {
+                                errorMessage = "No se pudo eliminar el elemento";
+                                Snackbar.Add(errorMessage, Severity.Error);
+                            }
+                            StateHasChanged();
+                        });
+                    }
+                    catch (Exception serviceEx)
+                    {
+                        // Manejar errores en el servicio
+                        await InvokeAsync(() =>
+                        {
+                            errorMessage = "Error al eliminar elemento: " + serviceEx.Message;
+                            Snackbar.Add(errorMessage, Severity.Error);
+                            StateHasChanged();
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejar errores generales
+                await InvokeAsync(() =>
+                {
+                    errorMessage = "Error inesperado: " + ex.Message;
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    StateHasChanged();
+                });
+            }
+            finally
+            {
+                // Finalizar en el hilo correcto
+                await InvokeAsync(() =>
+                {
+                    isLoading = false;
+                    StateHasChanged();
+                });
+            }
+        }
+    }
+    private async Task DeleteDisponibilidad(int elementoId, DiaSemana dia)
+    {
+        var confirm = await Snackbar.Confirm($"¿Eliminar disponibilidad para {dia}?");
+        if (confirm)
+        {
+            try
+            {
+                isLoading = true;
+                errorMessage = "";
+
+                await InvokeAsync(async () =>
+                {
+                    var (success, disponibilidadesRestantes) = await ElementoMenuService.DeleteElementoMenuDisponibilidadAsync(elementoId, dia);
+
+                    if (success)
+                    {
+                        // Si ya no quedan disponibilidades, preguntar si eliminar el elemento
+                        if (disponibilidadesRestantes == 0)
+                        {
+                            var confirmDelete = await Snackbar.Confirm(
+                                "Ya no quedan días disponibles para este elemento. ¿Desea eliminarlo completamente?");
+
+                            if (confirmDelete)
+                            {
+                                await ElementoMenuService.DeleteElementoMenuAsync(elementoId);
+                            }
+                        }
+
+                        // Recargar el menú para reflejar los cambios
+                        menu = await MenuService.GetMenuByIdAsync(Id.Value, true);
+                        Snackbar.Add("Disponibilidad eliminada correctamente", Severity.Success);
+                    }
+                    else
+                    {
+                        errorMessage = "No se pudo eliminar la disponibilidad";
+                        Snackbar.Add(errorMessage, Severity.Error);
+                    }
+
+                    StateHasChanged();
+                });
+            }
+            catch (Exception ex)
+            {
+                await InvokeAsync(() =>
+                {
+                    errorMessage = "Error al eliminar disponibilidad: " + ex.Message;
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    StateHasChanged();
+                });
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+    }
+    private async Task ToggleDiaDisponible(DiaSemana dia, bool isChecked)
+    {
+        await InvokeAsync(() =>
+        {
+            var disponibilidad = elementoEdit.Disponibilidades.FirstOrDefault(d => d.Dia == dia);
+
+            if (isChecked && disponibilidad == null)
+            {
+                // Agregar disponibilidad
+                elementoEdit.Disponibilidades.Add(new DisponibilidadElemento
+                    {
+                        ElementoMenuId = elementoEdit.Id,
+                        Dia = dia,
+                        DisponibleDesayuno = elementoEdit.TipoComida == TipoComida.Desayuno,
+                        DisponibleAlmuerzo = elementoEdit.TipoComida == TipoComida.Almuerzo,
+                        DisponibleCena = elementoEdit.TipoComida == TipoComida.Cena,
+                        CantidadDisponible = null
+                    });
+            }
+            else if (!isChecked && disponibilidad != null)
+            {
+                // Remover disponibilidad
+                elementoEdit.Disponibilidades.Remove(disponibilidad);
+            }
+
+            StateHasChanged();
+        });
+    }
+    // Método para obtener los elementos por día y tipo
+    private List<ElementoMenu> GetElementosByDiaYTipo(DiaSemana dia, TipoComida tipoComida)
+    {
+        return menu.Elementos
+            .Where(e => e.TipoComida == tipoComida &&
+                   e.Disponibilidades.Any(d => d.Dia == dia))
+            .OrderBy(e => e.Orden)
+            .ToList();
+    }
+    // Verificar si un día tiene elementos
+    private bool DiaHasElementos(DiaSemana dia)
+    {
+        return menu.Elementos.Any(e => e.Disponibilidades.Any(d => d.Dia == dia));
+    }
+    // Obtener el nombre del tipo de comida
+    private string GetTipoComidaNombre(TipoComida tipoComida)
+    {
+        return tipoComida.ToString();
+    }
+    private void CloseElementoDialog()
+    {
+        showElementoDialog = false;
+        elementoErrorMessage = "";
+    }
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/menus");
+    }
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/home");
+    }
+    private void FiltrarElementos(string filtro)
+    {
+        filtroActual = filtro;
+    }
+    private void ToggleTipoComida(TipoComida tipoComida)
+    {
+        if (tiposComidaExpandidos.Contains(tipoComida))
+        {
+            tiposComidaExpandidos.Remove(tipoComida);
+        }
+        else
+        {
+            tiposComidaExpandidos.Add(tipoComida);
+        }
+    }
+    private void ToggleVista(bool compacta)
+    {
+        vistaCompacta = compacta;
+        StateHasChanged();
+    }
+}

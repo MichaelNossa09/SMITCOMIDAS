@@ -1,0 +1,78 @@
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\shared\menus\menuCrear.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\perfil\PerfilWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\HomeWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\centroscosto\CentroCostoMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\pedidos\PedidoDetailMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\proveedores\ProveedorCrear.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\layouts\AppLayoutWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\perfil\PerfilMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\centroscosto\CentroCostoWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\perfil\PerfilCrearWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\shared\proveedores\Proveedores.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\app.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\proveedores\Proveedores.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\menus\MenuDetailWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\layouts\AppLayoutMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\shared\menus\MenuDetail.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\proveedores\Proveedores.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\AppMenuLayout.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\Login.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\bootstrap\bootstrap.min.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\AppMenuLayout.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\menus\MenuMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\pedidos\pedidoCrear.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\menus\MenuDetailMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\HomeMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\shared\layouts\AppLayout.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\Unauthorized.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\proveedores\ProveedorCrear.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\bootstrap\bootstrap.min.css.map
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\js\toast.js
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\pedidos\PedidoWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\pedidos\PedidoMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\shared\perfil\Perfil.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\shared\pedidos\pedido.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\menus\MenuWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\mobile\perfil\PerfilCrearMobile.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\web\pedidos\PedidoDetailWeb.css
+C:\Proyectos Michael\ProyectoComidas\src\SMITCOMIDAS\SMITCOMIDAS.Shared\wwwroot\assets\css\snackbar\snackbar.css
+wwwroot\app.css
+wwwroot\assets\css\mobile\AppMenuLayout.css
+wwwroot\assets\css\mobile\centroscosto\CentroCostoMobile.css
+wwwroot\assets\css\mobile\HomeMobile.css
+wwwroot\assets\css\mobile\layouts\AppLayoutMobile.css
+wwwroot\assets\css\mobile\menus\MenuDetailMobile.css
+wwwroot\assets\css\mobile\menus\MenuMobile.css
+wwwroot\assets\css\mobile\pedidos\PedidoDetailMobile.css
+wwwroot\assets\css\mobile\pedidos\PedidoMobile.css
+wwwroot\assets\css\mobile\perfil\PerfilCrearMobile.css
+wwwroot\assets\css\mobile\perfil\PerfilMobile.css
+wwwroot\assets\css\mobile\proveedores\ProveedorCrear.css
+wwwroot\assets\css\mobile\proveedores\Proveedores.css
+wwwroot\assets\css\shared\layouts\AppLayout.css
+wwwroot\assets\css\shared\menus\menuCrear.css
+wwwroot\assets\css\shared\menus\MenuDetail.css
+wwwroot\assets\css\shared\pedidos\pedido.css
+wwwroot\assets\css\shared\perfil\Perfil.css
+wwwroot\assets\css\shared\proveedores\Proveedores.css
+wwwroot\assets\css\snackbar\snackbar.css
+wwwroot\assets\css\web\AppMenuLayout.css
+wwwroot\assets\css\web\centroscosto\CentroCostoWeb.css
+wwwroot\assets\css\web\HomeWeb.css
+wwwroot\assets\css\web\layouts\AppLayoutWeb.css
+wwwroot\assets\css\web\menus\MenuDetailWeb.css
+wwwroot\assets\css\web\menus\MenuWeb.css
+wwwroot\assets\css\web\pedidos\pedidoCrear.css
+wwwroot\assets\css\web\pedidos\PedidoDetailWeb.css
+wwwroot\assets\css\web\pedidos\PedidoWeb.css
+wwwroot\assets\css\web\perfil\PerfilCrearWeb.css
+wwwroot\assets\css\web\perfil\PerfilWeb.css
+wwwroot\assets\css\web\proveedores\ProveedorCrear.css
+wwwroot\assets\css\web\proveedores\Proveedores.css
+wwwroot\assets\css\web\Unauthorized.css
+wwwroot\assets\imgs\LOGOSMITCO.png
+wwwroot\assets\js\toast.js
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\favicon.png
+wwwroot\Login.css

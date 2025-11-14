@@ -1,0 +1,135 @@
+﻿@using SMITCOMIDAS.Shared.Services.SnackBar
+@implements IDisposable
+@inject ISnackbar SnackbarService
+
+<div class="snackbar-container @(isVisible ? "visible" : "hidden")">
+    @foreach (var notification in notifications)
+    {
+        <div class="snackbar @GetSeverityClass(notification.Severity)">
+            <div class="message">@notification.Message</div>
+            @if (notification.IsConfirm)
+            {
+                <div class="actions">
+                    <button class="btn-cancel" @onclick="() => HandleConfirmResponse(notification, false)">Cancelar</button>
+                    <button class="btn-confirm" @onclick="() => HandleConfirmResponse(notification, true)">Confirmar</button>
+                </div>
+            }
+            else
+            {
+                <button class="close" @onclick="() => RemoveNotification(notification)">×</button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<SnackbarMessage> notifications = new();
+    private bool isVisible = false;
+    private System.Timers.Timer? autoHideTimer;
+
+    // Clase interna para usar en lugar de SnackbarNotification
+    private class SnackbarMessage
+    {
+        public string Message { get; set; } = string.Empty;
+        public Severity Severity { get; set; }
+        public bool IsConfirm { get; set; }
+        public Func<bool, Task>? ConfirmCallback { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        // Suscribirse al servicio mediante eventos creados en un intermediario
+        SnackbarEvents.OnMessage += HandleMessage;
+        SnackbarEvents.OnConfirmation += HandleConfirmation;
+    }
+
+    public void Dispose()
+    {
+        autoHideTimer?.Dispose();
+        SnackbarEvents.OnMessage -= HandleMessage;
+        SnackbarEvents.OnConfirmation -= HandleConfirmation;
+    }
+
+    // Métodos para manejar los eventos
+    private void HandleMessage(string message, Severity severity)
+    {
+        var notification = new SnackbarMessage
+            {
+                Message = message,
+                Severity = severity,
+                IsConfirm = false
+            };
+
+        notifications.Add(notification);
+        isVisible = true;
+        StateHasChanged();
+
+        // Iniciar temporizador para auto-ocultar
+        StartAutoHideTimer(notification);
+    }
+
+    private void HandleConfirmation(string message, TaskCompletionSource<bool> tcs)
+    {
+
+        var notification = new SnackbarMessage
+            {
+                Message = message,
+                Severity = Severity.Warning,
+                IsConfirm = true,
+                ConfirmCallback = async (result) =>
+                {
+                    tcs.SetResult(result);
+                }
+            };
+
+        notifications.Add(notification);
+        isVisible = true;
+        StateHasChanged();
+
+    }
+
+    private void StartAutoHideTimer(SnackbarMessage notification)
+    {
+        autoHideTimer?.Dispose();
+        autoHideTimer = new System.Timers.Timer(4000);
+        autoHideTimer.Elapsed += (sender, e) =>
+        {
+            InvokeAsync(() =>
+            {
+                RemoveNotification(notification);
+                StateHasChanged();
+            });
+        };
+        autoHideTimer.AutoReset = false;
+        autoHideTimer.Start();
+    }
+
+    private void RemoveNotification(SnackbarMessage notification)
+    {
+        notifications.Remove(notification);
+        isVisible = notifications.Count > 0;
+        StateHasChanged();
+    }
+
+    private async Task HandleConfirmResponse(SnackbarMessage notification, bool confirmed)
+    {
+            if (notification.ConfirmCallback != null)
+            {
+                await notification.ConfirmCallback(confirmed);
+            }
+            RemoveNotification(notification);
+            StateHasChanged();
+    }
+
+    private string GetSeverityClass(Severity severity)
+    {
+        return severity switch
+        {
+            Severity.Info => "snackbar-severity-info",
+            Severity.Success => "snackbar-severity-success",
+            Severity.Warning => "snackbar-severity-warning",
+            Severity.Error => "snackbar-severity-error",
+            _ => "snackbar-severity-info"
+        };
+    }
+}

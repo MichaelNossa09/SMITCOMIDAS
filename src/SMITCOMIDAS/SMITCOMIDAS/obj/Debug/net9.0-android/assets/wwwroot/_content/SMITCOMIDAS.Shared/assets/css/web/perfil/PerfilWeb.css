@@ -1,0 +1,206 @@
+﻿/* Perfil.web.css - Versión completa ajustada */
+
+/* Contenedor principal */
+.Perfil_Container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+}
+
+/* Vista de Usuario (Mi Perfil) */
+.Perfil_UserHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(to right, rgba(81, 161, 33, 0.04), rgba(81, 161, 33, 0.08));
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.Perfil_UserHeader h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+    position: relative;
+    padding-left: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.Perfil_UserHeader h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background-color: #51A121;
+    border-radius: 2px;
+}
+
+/* Contenedor de tarjeta de información */
+.Perfil_CardContainer {
+    padding: 24px;
+}
+
+.Perfil_InfoCard {
+    border-radius: 8px;
+}
+
+.Perfil_InfoCard h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 24px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #51A121;
+    font-weight: 600;
+    font-size: 18px;
+    position: relative;
+}
+
+/* Grid para información personal */
+.Perfil_InfoGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+@media (min-width: 768px) {
+    .Perfil_InfoGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .Perfil_InfoGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.Perfil_InfoItem {
+    margin-bottom: 12px;
+}
+
+.Perfil_InfoItem label {
+    display: block;
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.Perfil_InfoItem span {
+    display: block;
+    padding: 10px 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #51A121;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.Perfil_FullWidth {
+    grid-column: 1 / -1;
+}
+
+/* Grid mejorado para usuario individual */
+.Perfil_UserGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+@media (min-width: 768px) {
+    .Perfil_UserGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .Perfil_UserGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.Perfil_UserField, .Perfil_InfoItem {
+    margin-bottom: 12px;
+}
+
+.Perfil_UserField.full {
+    grid-column: 1 / -1;
+}
+
+.Perfil_FieldLabel, .Perfil_InfoItem label {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.Perfil_FieldValue {
+    padding: 10px 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #2c3e50;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    border-left: 3px solid #51A121;
+}
+
+.Perfil_FieldValue.estado {
+    background: transparent;
+    padding: 0;
+    border-left: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.Perfil_StatusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+    .Perfil_StatusDot.active {
+        background-color: #28a745;
+    }
+
+    .Perfil_StatusDot.inactive {
+        background-color: #6c757d;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .Perfil_UserGrid,
+    .Perfil_InfoGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .Perfil_CardContainer {
+        padding: 16px;
+    }
+}
+
+
+.Perfil_BtnEdit {
+    background-color: rgb(81,161,33);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.Perfil_BtnEdit:hover {
+    background-color: #3F7D1A;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1)
+}

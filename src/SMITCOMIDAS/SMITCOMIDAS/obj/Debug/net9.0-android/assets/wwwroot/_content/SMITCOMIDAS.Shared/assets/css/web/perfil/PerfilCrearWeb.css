@@ -1,0 +1,409 @@
+﻿/* PerfilCrear.web.css */
+
+/* Contenedor del formulario */
+.PerfilCrear_FormContainer {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Encabezado del formulario */
+.PerfilCrear_FormHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid #edf2f7;
+    background: linear-gradient(to right, rgba(81, 161, 33, 0.03), rgba(81, 161, 33, 0.06));
+}
+
+.PerfilCrear_FormHeader h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+    position: relative;
+    padding-left: 16px;
+}
+
+.PerfilCrear_FormHeader h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 18px;
+    background-color: #51A121;
+    border-radius: 2px;
+}
+
+/* Contenedor de tarjetas */
+.PerfilCrear_CardContainer {
+    padding: 10px 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 992px) {
+    .PerfilCrear_CardContainer {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Tarjetas individuales */
+.PerfilCrear_FormCard {
+    background-color: white;
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    height: fit-content;
+}
+
+.PerfilCrear_FormCard h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 15px; /* Aumentado para dar más espacio */
+    border-bottom: 1px solid #edf2f7;
+    font-weight: 600;
+    font-size: 18px;
+    position: relative;
+}
+.PerfilCrear_FormCard h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 50px;
+    height: 3px;
+    background-color: #51A121;
+    border-radius: 3px;
+    margin-top: 10px; /* Añadido para separar más */
+}
+/* Filas del formulario */
+.PerfilCrear_FormRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+/* Campos individuales */
+.PerfilCrear_FormField {
+    margin-bottom: 5px;
+}
+
+.PerfilCrear_FormField label {
+    display: block;
+    font-size: 13px;
+    color: #51A121;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.PerfilCrear_InputField {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 12px;
+    background-color: #f9fafb;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+    .PerfilCrear_InputField:focus {
+        border-color: #51A121;
+        box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.15);
+        outline: none;
+    }
+
+/* Campos de contraseña */
+.PerfilCrear_PasswordInputContainer {
+    position: relative;
+}
+
+.PerfilCrear_PasswordToggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.PerfilCrear_Eye::before {
+    content: '👁️';
+}
+
+.PerfilCrear_EyeOff::before {
+    content: '👁️‍🗨️';
+}
+
+/* Sección de cambio de contraseña */
+.PerfilCrear_PasswordHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    margin: 25px 0 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #edf2f7;
+}
+
+
+.PerfilCrear_PasswordHeader h3 {
+    font-size: 16px;
+    color: #2c3e50;
+    margin: 0;
+    border: none;
+    padding: 0 0 10px 0;
+}
+
+.PerfilCrear_ToggleMini {
+    width: 36px;
+    height: 20px;
+    background-color: #dee2e6;
+    border-radius: 10px;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+    .PerfilCrear_ToggleMini.active {
+        background-color: #51A121;
+    }
+
+.PerfilCrear_ToggleSliderMini {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.PerfilCrear_ToggleMini.active .PerfilCrear_ToggleSliderMini {
+    transform: translateX(16px);
+}
+
+.PerfilCrear_PasswordContent {
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+/* Indicador de fortaleza de contraseña */
+.PerfilCrear_PasswordStrength {
+    margin-top: 12px;
+}
+
+.PerfilCrear_StrengthMeter {
+    width: 100%;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.PerfilCrear_StrengthLevel {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.PerfilCrear_PasswordWeak {
+    background-color: #e74c3c;
+}
+
+.PerfilCrear_PasswordMedium {
+    background-color: #f39c12;
+}
+
+.PerfilCrear_PasswordStrong {
+    background-color: #51A121;
+}
+
+.PerfilCrear_StrengthText {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Errores de validación */
+.PerfilCrear_ValidationErrors {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid #e74c3c;
+    padding: 15px 20px;
+    margin: 0 20px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+    .PerfilCrear_ValidationErrors ul {
+        margin: 5px 0 0;
+        padding-left: 20px;
+        color: #c0392b;
+    }
+
+.PerfilCrear_ErrorMessage {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 4px solid #e74c3c;
+    padding: 15px 20px;
+    margin: 0 20px 20px;
+    border-radius: 6px;
+    color: #c0392b;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+    .PerfilCrear_ErrorMessage::before {
+        content: '⚠️';
+        margin-right: 10px;
+        font-size: 16px;
+    }
+
+/* Botones de acción */
+.PerfilCrear_FormActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 10px 20px;
+    border-top: 1px solid #edf2f7;
+    background-color: #f8f9fa;
+}
+
+.PerfilCrear_BtnSecondary {
+    background: white;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+    .PerfilCrear_BtnSecondary:hover {
+        background: #f8f9fa;
+        border-color: #c1c9d0;
+    }
+
+.PerfilCrear_BtnPrimary {
+    background: #51A121;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(81, 161, 33, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .PerfilCrear_BtnPrimary:hover {
+        background: #429019;
+        box-shadow: 0 2px 6px rgba(81, 161, 33, 0.3);
+    }
+
+    .PerfilCrear_BtnPrimary:disabled {
+        background: #94c283;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+/* Loading state */
+.PerfilCrear_LoadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+    .PerfilCrear_LoadingContainer p {
+        color: #6c757d;
+        font-size: 16px;
+        position: relative;
+        padding-left: 30px;
+    }
+
+        .PerfilCrear_LoadingContainer p::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(81, 161, 33, 0.2);
+            border-top-color: #51A121;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+@keyframes spin {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+
+
+
+.PerfilCrear_FieldHint {
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.PerfilCrear_InfoDisplay {
+    padding: 5px 20px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid rgb(81, 161, 33);
+}
+
+.PerfilCrear_InfoDisplay label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.PerfilCrear_InfoValue {
+    font-size: 28px;
+    font-weight: 700;
+    color: rgb(81, 161, 33);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.PerfilCrear_InfoDisplay small {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}

@@ -1,0 +1,41 @@
+﻿@using SMITCOMIDAS.Shared.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+@if (isChecking)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <p>Verificando sesión...</p>
+    </div>
+}
+else if (isAuthorized)
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private bool isAuthorized = false;
+    private bool isChecking = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var token = await AuthService.GetTokenAsync();
+            isAuthorized = !string.IsNullOrEmpty(token);
+            isChecking = false;
+
+            if (!isAuthorized)
+            {
+                Navigation.NavigateTo("/", true);
+            }
+            else
+            {
+                StateHasChanged();
+            }
+        }
+    }
+}

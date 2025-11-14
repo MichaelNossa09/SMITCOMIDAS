@@ -1,0 +1,1145 @@
+﻿/* Sistema de estilos para menú con prefijo MENU_ */
+:root {
+    --MENU_primary: #2C3E50;
+    --MENU_primary-light: #eff6ff;
+    --MENU_primary-dark: #34495E;
+    --MENU_success: #51A121;
+    --MENU_success-light: #ecfdf5;
+    --MENU_warning: #f59e0b;
+    --MENU_warning-light: #fffbeb;
+    --MENU_danger: #ef4444;
+    --MENU_danger-light: #fef2f2;
+    --MENU_gray-50: #f9fafb;
+    --MENU_gray-100: #f3f4f6;
+    --MENU_gray-200: #e5e7eb;
+    --MENU_gray-300: #d1d5db;
+    --MENU_gray-400: #9ca3af;
+    --MENU_gray-500: #6b7280;
+    --MENU_gray-600: #4b5563;
+    --MENU_gray-700: #374151;
+    --MENU_gray-800: #1f2937;
+    --MENU_text: #1f2937;
+}
+
+/* Utilidades */
+.MENU_hidden {
+    display: none !important;
+}
+
+/* Contenedor principal */
+.MENU_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* Cabecera */
+.MENU_header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.MENU_backButton {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--MENU_gray-100);
+    border: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.MENU_backButton span{
+    padding-bottom: 2px;
+}
+.MENU_backButton:hover {
+    background-color: var(--MENU_gray-200);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.MENU_title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--MENU_gray-800);
+    margin: 0;
+}
+
+/* Tarjeta principal */
+.MENU_card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+/* Secciones */
+.MENU_section {
+    margin-bottom: 30px;
+}
+
+.MENU_sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--MENU_gray-200);
+}
+
+.MENU_sectionTitle {
+    font-size: 1.2rem;
+    color: var(--MENU_gray-800);
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Layout horizontal */
+.MENU_horizontalLayout {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -8px;
+}
+
+.MENU_column {
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.MENU_columnFull {
+    width: 100%;
+}
+
+.MENU_columnHalf {
+    width: 50%;
+}
+
+.MENU_columnQuarter {
+    width: 25%;
+}
+
+/* Campos de formulario */
+.MENU_formGroup {
+    margin-bottom: 16px;
+}
+
+.MENU_label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--MENU_gray-700);
+}
+
+.MENU_control {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border: 1px solid var(--MENU_gray-300);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.MENU_formGroup textarea{
+    min-height: 60px;
+    max-height: 80px;
+}
+
+.MENU_control:focus {
+    border-color: var(--MENU_primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    outline: none;
+}
+
+/* Mensaje vacío */
+.MENU_emptyMessage {
+    background-color: var(--MENU_gray-50);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    color: var(--MENU_gray-600);
+}
+
+/* Controles de filtro */
+.MENU_filterControls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.MENU_filterButtons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.MENU_filterButton {
+    padding: 6px 12px;
+    background-color: var(--MENU_gray-100);
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--MENU_gray-700);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.MENU_filterActive {
+    background-color: var(--MENU_primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.MENU_viewToggle {
+    display: flex;
+    gap: 4px;
+}
+
+.MENU_viewButton {
+    padding: 6px 12px;
+    background-color: var(--MENU_gray-100);
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--MENU_gray-700);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.MENU_viewActive {
+    background-color: var(--MENU_primary);
+    color: white;
+}
+
+/* Vista de escritorio */
+.MENU_desktopView {
+    display: block;
+}
+
+/* Calendario */
+.MENU_calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.MENU_day {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    height: 100%;
+}
+    .MENU_day:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+.MENU_dayHeader {
+    background: linear-gradient(135deg, var(--MENU_primary), var(--MENU_primary-dark));
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.MENU_dayName {
+    flex: 1;
+}
+
+.MENU_dayCount {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 12px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.MENU_dayContent {
+    padding: 15px;
+    min-height: 150px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+/* Secciones de tipo */
+.MENU_typeSection {
+    border: 1px solid rgba(0,0,0,0.1);
+    margin-bottom: 12px;
+    border-radius: 6px;
+}
+
+.MENU_typeSection:last-child {
+    margin-bottom: 0;
+}
+
+.MENU_typeDesayuno {
+    border-left: 3px solid #22c55e;
+}
+
+.MENU_typeAlmuerzo {
+    border-left: 3px solid #3b82f6;
+}
+
+.MENU_typeCena {
+    border-left: 3px solid #8b5cf6;
+}
+
+.MENU_typeOtro {
+    border-left: 3px solid #f59e0b;
+}
+
+.MENU_typeHeader {
+    padding: 6px 10px;
+    background-color: var(--MENU_gray-50);
+    border-top-right-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--MENU_success);
+}
+
+/* Tarjetas de elementos */
+.MENU_item {
+    position: relative;
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+    .MENU_item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+.MENU_itemContent {
+    padding: 10px 12px;
+}
+
+.MENU_itemName {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--MENU_gray-800);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.MENU_itemPrice {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--MENU_success);
+    margin-bottom: 8px;
+}
+
+.MENU_itemActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.MENU_actionButton {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.MENU_editButton {
+    background-color: var(--MENU_primary-light);
+    color: var(--MENU_primary);
+}
+
+    .MENU_editButton:hover {
+        background-color: var(--MENU_primary);
+        color: white;
+        transform: scale(1.05);
+    }
+
+.MENU_deleteButton {
+    background-color: var(--MENU_danger-light);
+    color: var(--MENU_danger);
+}
+
+    .MENU_deleteButton:hover {
+        background-color: var(--MENU_danger);
+        color: white;
+        transform: scale(1.05);
+    }
+
+.MENU_emptyDay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+    background-color: var(--MENU_gray-50);
+    border-radius: 8px;
+    color: var(--MENU_gray-500);
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Vista compacta */
+.MENU_compactView {
+    margin-top: 16px;
+}
+
+.MENU_compactTable {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+    .MENU_compactTable th {
+        background-color: var(--MENU_primary);
+        color: white;
+        text-align: left;
+        padding: 12px 16px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .MENU_compactTable td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--MENU_gray-200);
+        font-size: 14px;
+    }
+
+.MENU_compactRow:hover {
+    background-color: var(--MENU_gray-50);
+}
+
+.MENU_compactRow:last-child td {
+    border-bottom: none;
+}
+
+.MENU_compactType {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.MENU_typeDesayunoBadge {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.MENU_typeAlmuerzoBadge {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.MENU_typeCenaBadge {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+}
+
+.MENU_typeOtroBadge {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+
+.MENU_dayBadge {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: var(--MENU_gray-100);
+    color: var(--MENU_gray-700);
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.MENU_compactActions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Vista móvil */
+.MENU_mobileView {
+    display: none;
+    margin-top: 16px;
+}
+
+.MENU_mobileSelector {
+    margin-bottom: 16px;
+}
+
+.MENU_mobileDropdown {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid var(--MENU_gray-300);
+    border-radius: 8px;
+}
+
+.MENU_mobileDay {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.MENU_mealSection {
+    border-bottom: 1px solid var(--MENU_gray-200);
+}
+
+    .MENU_mealSection:last-child {
+        border-bottom: none;
+    }
+
+.MENU_mealDesayuno .MENU_mealHeader {
+    border-left: 4px solid #22c55e;
+}
+
+.MENU_mealAlmuerzo .MENU_mealHeader {
+    border-left: 4px solid #3b82f6;
+}
+
+.MENU_mealCena .MENU_mealHeader {
+    border-left: 4px solid #8b5cf6;
+}
+
+.MENU_mealOtro .MENU_mealHeader {
+    border-left: 4px solid #f59e0b;
+}
+
+.MENU_mealHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background-color: var(--MENU_gray-50);
+    cursor: pointer;
+}
+
+.MENU_mealIcon {
+    font-size: 18px;
+}
+
+.MENU_mealTitle {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--MENU_gray-700);
+    margin-right: auto;
+}
+
+.MENU_mealCount {
+    font-size: 14px;
+    color: var(--MENU_gray-500);
+    margin-right: 8px;
+}
+
+.MENU_expandIcon {
+    font-size: 10px;
+    color: var(--MENU_gray-500);
+    transition: transform 0.3s;
+}
+
+.MENU_expanded {
+    transform: rotate(180deg);
+}
+
+.MENU_mealItems {
+    padding: 0 16px;
+}
+
+.MENU_mobileItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--MENU_gray-100);
+}
+
+    .MENU_mobileItem:last-child {
+        border-bottom: none;
+    }
+
+.MENU_itemInfo {
+    flex: 1;
+}
+
+/* Botón de agregar elemento */
+.MENU_addButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #51A121;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+    position: relative;
+}
+
+    .MENU_addButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .MENU_addButton::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+    }
+
+.MENU_formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--MENU_gray-200);
+}
+
+.MENU_primaryButton, .MENU_secondaryButton {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.MENU_primaryButton {
+    background-color: var(--MENU_success);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+    .MENU_primaryButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .MENU_primaryButton:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+.MENU_secondaryButton {
+    background-color: var(--MENU_gray-100);
+    color: var(--MENU_gray-700);
+    border: 1px solid var(--MENU_gray-300);
+}
+
+    .MENU_secondaryButton:hover {
+        background-color: var(--MENU_gray-200);
+        transform: translateY(-2px);
+    }
+
+
+/* Modal de diálogo - Solo las clases especificadas */
+.MENU_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(17, 24, 39, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.MENU_dialogContainer {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: MENU_slideDown 0.3s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes MENU_slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.MENU_dialogHeader {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, rgba(81, 161, 33, 0.03), rgba(81, 161, 33, 0.07));
+    position: relative;
+}
+
+    .MENU_dialogHeader::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 24px;
+        background-color: #51A121;
+        border-radius: 0 2px 2px 0;
+    }
+
+.MENU_dialogTitle {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #1f2937;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+.MENU_closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+    .MENU_closeButton:hover {
+        color: #374151;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .MENU_closeButton:active {
+        transform: translateY(1px);
+    }
+
+.MENU_dialogBody {
+    padding: 16px 20px;
+    overflow-y: auto;
+    max-height: calc(90vh - 130px);
+}
+
+/* Columnas del formulario modal */
+.MENU_dialogColumns {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -8px;
+}
+
+.MENU_dialogColumn {
+    padding: 2px 5px;
+    box-sizing: border-box;
+}
+
+.MENU_dialogColumnFull {
+    width: 100%;
+}
+
+.MENU_dialogColumnHalf {
+    width: 50%;
+}
+
+/* Selector de días */
+.MENU_daysGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.MENU_dayOption {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .MENU_dayOption:hover {
+        border-color: #51A121;
+        background-color: rgba(81, 161, 33, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(81, 161, 33, 0.15);
+    }
+
+    .MENU_dayOption.MENU_selected {
+        background-color: rgba(81, 161, 33, 0.1);
+        border-color: #51A121;
+        box-shadow: 0 2px 5px rgba(81, 161, 33, 0.1);
+    }
+
+        .MENU_dayOption.MENU_selected::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #51A121;
+        }
+
+.MENU_dayOptionLabel {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4b5563;
+    text-transform: uppercase;
+}
+
+.MENU_selected .MENU_dayOptionLabel {
+    color: #3F7D1A;
+}
+
+/* Mensaje de error */
+.MENU_errorMessage {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    border-left: 4px solid #dc3545;
+}
+
+    .MENU_errorMessage::before {
+        content: '⚠';
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+.MENU_dialogActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+}
+
+/* Mejora para los botones */
+.MENU_primaryButton {
+    background-color: #51A121;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(81, 161, 33, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .MENU_primaryButton:hover {
+        background-color: #3F7D1A;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(81, 161, 33, 0.3);
+    }
+
+    .MENU_primaryButton:active {
+        transform: translateY(1px);
+    }
+
+    .MENU_primaryButton:disabled {
+        background-color: #9ca3af;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+.MENU_secondaryButton {
+    background-color: white;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .MENU_secondaryButton:hover {
+        background-color: #f9fafb;
+        color: #1f2937;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    }
+
+    .MENU_secondaryButton:active {
+        transform: translateY(1px);
+    }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .MENU_calendar {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .MENU_columnQuarter {
+        width: 50%;
+    }
+
+    .MENU_daysGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .MENU_columnQuarter {
+        width: 100%;
+    }
+
+    .MENU_calendar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .MENU_dialogColumnHalf {
+        width: 100%;
+    }
+
+    .MENU_desktopView {
+        display: none;
+    }
+
+    .MENU_mobileView {
+        display: block;
+    }
+
+    .MENU_filterControls {
+        flex-direction: column;
+    }
+
+    .MENU_dialogActions {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .MENU_daysGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .MENU_dialogContainer {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .MENU_dialogBody {
+        max-height: calc(95vh - 130px);
+        padding: 12px 16px;
+    }
+
+    .MENU_dialogActions {
+        flex-direction: column;
+    }
+
+    .MENU_secondaryButton,
+    .MENU_primaryButton {
+        width: 100%;
+    }
+}
+
+.MENU_control.invalid,
+.MENU_control.modified.invalid {
+    border-color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.validation-message {
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Vista compacta para móvil */
+.MENU_mobileCompactView {
+    margin-top: 16px;
+}
+
+.MENU_mobileCompactTable {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.MENU_mobileTableHeader {
+    display: flex;
+    background-color: var(--MENU_primary);
+    color: white;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.MENU_mobileTableRow {
+    display: flex;
+    padding: 12px;
+    border-bottom: 1px solid var(--MENU_gray-200);
+    position: relative;
+}
+
+    .MENU_mobileTableRow:last-child {
+        border-bottom: none;
+    }
+
+.MENU_mobileHeaderCell,
+.MENU_mobileCell {
+    padding: 0 6px;
+}
+
+.MENU_cellPlato {
+    flex: 1;
+    min-width: 0; /* Permite truncar el texto */
+}
+
+.MENU_cellTipo {
+    width: 70px;
+    text-align: center;
+}
+
+.MENU_cellPrecio {
+    width: 100px;
+    text-align: right;
+}
+
+.MENU_cellDias {
+    flex: 1;
+    max-width: 150px;
+}
+
+.MENU_mobileCell.MENU_cellPlato {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.MENU_mobileCell.MENU_cellPrecio {
+    color: var(--MENU_success);
+    font-weight: 600;
+}
+
+.MENU_mobileDaysList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.MENU_mobileRowActions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    display: flex;
+    gap: 4px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.MENU_mobileTableRow:active .MENU_mobileRowActions {
+    opacity: 1;
+}
+
+/* Agregar un botón flotante para mostrar acciones en móvil */
+.MENU_mobileFloatingButton {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--MENU_primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    font-size: 24px;
+}
+
+/* Ajustes adicionales para la vista compacta */
+@media (max-width: 480px) {
+    .MENU_cellTipo {
+        width: 50px;
+    }
+
+    .MENU_cellPrecio {
+        width: 80px;
+    }
+
+    .MENU_cellDias {
+        max-width: 100px;
+    }
+}
+.MENU_infoMessage{
+    display: flex;
+    max-width: fit-content;
+    justify-content: center;
+    font-size: 12px;
+}

@@ -1,0 +1,63 @@
+﻿/* Estilos para la vista de no autorizado */
+.loading-container,
+.unauthorized-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: 40px;
+}
+
+.unauthorized-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.unauthorized-container h2 {
+    color: #2C3E50;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+}
+
+.unauthorized-container p {
+    color: #7F8C8D;
+    font-size: 16px;
+    margin: 0 0 30px 0;
+}
+
+.btn-back {
+    padding: 14px 32px;
+    background: #51A121;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .btn-back:hover {
+        background: #429019;
+        box-shadow: 0 4px 12px rgba(81, 161, 33, 0.3);
+    }
+
+/* Para la vista móvil */
+@media (max-width: 768px) {
+    .unauthorized-icon {
+        font-size: 60px;
+    }
+
+    .unauthorized-container h2 {
+        font-size: 24px;
+    }
+
+    .btn-back {
+        padding: 12px 28px;
+        font-size: 15px;
+    }
+}

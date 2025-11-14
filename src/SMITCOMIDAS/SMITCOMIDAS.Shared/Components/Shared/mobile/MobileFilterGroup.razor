@@ -1,0 +1,46 @@
+﻿<div class="MobileFilterGroup">
+    <label class="MobileFilterGroup_label">@Label</label>
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
+<style>
+    .MobileFilterGroup {
+        margin-bottom: 20px;
+    }
+
+    .MobileFilterGroup:last-child {
+        margin-bottom: 0;
+    }
+
+    .MobileFilterGroup_label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .MobileFilterGroup select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 15px;
+        color: #1e293b;
+        background-color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .MobileFilterGroup select:focus {
+        outline: none;
+        border-color: rgb(81, 161, 33);
+        box-shadow: 0 0 0 3px rgba(81, 161, 33, 0.1);
+    }
+</style>

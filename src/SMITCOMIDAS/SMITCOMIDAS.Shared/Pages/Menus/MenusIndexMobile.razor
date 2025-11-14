@@ -1,0 +1,186 @@
+﻿@using SMITCOMIDAS.Shared.Models
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@attribute [Authorize(Roles = "Admin,Proveedor")]
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<div class="page-container">
+    <div class="page-header">
+        <h1>Mis Menús</h1>
+        <button class="btn-primary" @onclick="@(() => Navigation.NavigateTo("/menus/nuevo"))">
+            <span>+</span> Crear Menú
+        </button>
+    </div>
+
+    @if (loading)
+    {
+        <div class="loading-container">
+            <div class="loader"></div>
+            <p>Cargando menús...</p>
+        </div>
+    }
+    else if (menus == null || !menus.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No hay menús</h3>
+            <p>Aún no has creado ningún menú. ¡Empieza creando uno!</p>
+            <button class="btn-primary" @onclick="@(() => Navigation.NavigateTo("/menus/nuevo"))">
+                Crear Primer Menú
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="menu-list">
+            @foreach (var menu in menus)
+            {
+                <div class="menu-card" @onclick="@(() => Navigation.NavigateTo($"/menus/{menu.Id}"))">
+                    <div class="menu-header">
+                        <h2>@menu.Nombre</h2>
+                        <span class="menu-badge @GetEstadoClass(menu.Estado)">@menu.Estado</span>
+                    </div>
+                    <p class="menu-desc">@menu.Descripcion</p>
+                    <div class="menu-footer">
+                        <div class="menu-dates">
+                            <div><span>Desde:</span> @menu.FechaInicio.ToString("dd/MM/yyyy")</div>
+                            <div><span>Hasta:</span> @menu.FechaFin.ToString("dd/MM/yyyy")</div>
+                        </div>
+                        <div class="menu-type">@menu.Tipo</div>
+                    </div>
+                    <div class="menu-actions">
+                        <button class="btn-icon" @onclick="@(() => EditMenu(menu.Id))" @onclick:stopPropagation="true">
+                            <span>✏️</span>
+                        </button>
+                        @if (menu.Estado == EstadoMenu.Borrador)
+                        {
+                            <button class="btn-icon btn-publish" @onclick="@(() => PublishMenu(menu.Id))" @onclick:stopPropagation="true">
+                                <span>📢</span>
+                            </button>
+                        }
+                        else if (menu.Estado == EstadoMenu.Publicado)
+                        {
+                            <button class="btn-icon btn-deactivate" @onclick="@(() => DeactivateMenu(menu.Id))" @onclick:stopPropagation="true">
+                                <span>🚫</span>
+                            </button>
+                        }
+                        <button class="btn-icon btn-delete" @onclick="@(() => DeleteMenu(menu.Id))" @onclick:stopPropagation="true">
+                            <span>🗑️</span>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+@code {
+    private List<Menu> menus;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMenus();
+    }
+
+    private async Task LoadMenus()
+    {
+        loading = true;
+        try
+        {
+            menus = await Http.GetFromJsonAsync<List<Menu>>("api/menus");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error al cargar menús: " + ex.Message, Severity.Error);
+        }
+        loading = false;
+    }
+
+    private string GetEstadoClass(EstadoMenu estado)
+    {
+        return estado switch
+        {
+            EstadoMenu.Borrador => "badge-borrador",
+            EstadoMenu.Publicado => "badge-publicado",
+            EstadoMenu.Inactivo => "badge-inactivo",
+            _ => ""
+        };
+    }
+
+    private void EditMenu(int menuId)
+    {
+        Navigation.NavigateTo($"/menus/editar/{menuId}");
+    }
+
+    private async Task PublishMenu(int menuId)
+    {
+        try
+        {
+            var response = await Http.PutAsync($"api/menus/{menuId}/publicar", null);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Menú publicado exitosamente", Severity.Success);
+                await LoadMenus();
+            }
+            else
+            {
+                Snackbar.Add("Error al publicar menú", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error: " + ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task DeactivateMenu(int menuId)
+    {
+        try
+        {
+            var response = await Http.PutAsync($"api/menus/{menuId}/desactivar", null);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Menú desactivado exitosamente", Severity.Success);
+                await LoadMenus();
+            }
+            else
+            {
+                Snackbar.Add("Error al desactivar menú", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error: " + ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task DeleteMenu(int menuId)
+    {
+        var confirm = await Snackbar.Confirm("¿Está seguro que desea eliminar este menú?");
+        if (confirm)
+        {
+            try
+            {
+                var response = await Http.DeleteAsync($"api/menus/{menuId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Menú eliminado exitosamente", Severity.Success);
+                    await LoadMenus();
+                }
+                else
+                {
+                    Snackbar.Add("Error al eliminar menú", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("Error: " + ex.Message, Severity.Error);
+            }
+        }
+    }
+}

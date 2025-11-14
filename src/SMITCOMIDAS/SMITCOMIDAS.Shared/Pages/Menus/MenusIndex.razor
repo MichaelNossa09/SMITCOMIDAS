@@ -1,0 +1,526 @@
+﻿@page "/menus"
+@using SMITCOMIDAS.Shared.Components.Shared
+@using SMITCOMIDAS.Shared.Models
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization
+@using SMITCOMIDAS.Shared.Services
+@using SMITCOMIDAS.Shared.Services.SnackBar
+@inject IMenuService MenuService
+@inject IProveedoresService ProveedorService
+@inject ISnackbar Snackbar
+@inject IPlatformService Platform
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Menús</PageTitle>
+
+@if (Platform.IsMobile)
+{
+    <div class="MENUMOBILE_container">
+        <div class="MENUMOBILE_header">
+            <h1 class="MENUMOBILE_title">Mis Menús</h1>
+            <button class="MENUMOBILE_addButton" @onclick="@(() => Navigation.NavigateTo("/menus/nuevo"))">
+                <span>+</span> Crear Menú
+            </button>
+        </div>
+        @if (isChecking)
+        {
+            <div class="MENUMOBILE_loadingContainer">
+                <div class="MENUMOBILE_loader"></div>
+                <p class="MENUMOBILE_loadingText">Cargando menús...</p>
+            </div>
+        }
+        else if (menus == null || !menus.Any())
+        {
+            <div class="MENUMOBILE_emptyState">
+                <div class="MENUMOBILE_emptyIcon">📋</div>
+                <h3 class="MENUMOBILE_emptyTitle">No hay menús</h3>
+                <p class="MENUMOBILE_emptyDesc">Aún no has creado ningún menú. ¡Empieza creando uno!</p>
+                <button class="MENUMOBILE_primaryButton" @onclick="@(() => Navigation.NavigateTo("/menus/nuevo"))">
+                    Crear Primer Menú
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="MENUMOBILE_menuGrid">
+                @foreach (var menu in menusFiltrados)
+                {
+                    <div class="MENUMOBILE_menuCard" @onclick="@(() => Navigation.NavigateTo($"/menus/{menu.Id}"))">
+                        <div class="MENUMOBILE_menuCardHeader">
+                            <h2 class="MENUMOBILE_menuTitle">@menu.Nombre</h2>
+                            <span class="MENUMOBILE_menuBadge MENUMOBILE_@GetEstadoClass(menu.Estado)">@menu.Estado</span>
+                        </div>
+                        <p class="MENUMOBILE_menuDesc">@menu.Descripcion</p>
+                        <div class="MENUMOBILE_menuFooter">
+                            <div class="MENUMOBILE_menuDates">
+                                <div class="MENUMOBILE_menuDate"><span>Desde:</span> @menu.FechaInicio.ToString("dd/MM/yyyy")</div>
+                                <div class="MENUMOBILE_menuDate"><span>Hasta:</span> @menu.FechaFin.ToString("dd/MM/yyyy")</div>
+                            </div>
+                            <div class="MENUMOBILE_menuType">@menu.Tipo</div>
+                        </div>
+                        <div class="MENUMOBILE_menuActions" @onclick:stopPropagation="true">
+                            <button class="MENUMOBILE_actionButton" @onclick="@(() => EditMenu(menu.Id))">
+                                <span>✏️</span>
+                            </button>
+                            @if (menu.Estado == EstadoMenu.Borrador)
+                            {
+                                <button class="MENUMOBILE_publishButton" @onclick="@(() => PublishMenu(menu.Id))">
+                                    <span>📢</span>
+                                </button>
+                            }
+                            else if (menu.Estado == EstadoMenu.Publicado)
+                            {
+                                <button class="MENUMOBILE_deactivateButton" @onclick="@(() => DeactivateMenu(menu.Id))">
+                                    <span>🚫</span>
+                                </button>
+                            }
+                            <button class="MENUMOBILE_deleteButton" @onclick="@(() => MostrarConfirmacionEliminar(menu.Id))">
+                                <span>🗑️</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+else
+{
+   @if (isChecking)
+{
+    <LoadingState Message="Verificando permisos..." />
+}
+else if (!isAuthorized)
+{
+    <UnauthorizedState OnGoBack="GoBack" />
+}
+else
+{
+    <div class="MENUWEB_container">
+        <AdminPageHeader Title="Gestión de Menús" 
+                         ButtonText="Crear Menú" 
+                         OnButtonClick="@(() => Navigation.NavigateTo("/menus/nuevo"))" />
+
+        <div class="MENUWEB_contentCard">
+            <FilterPanel>
+                <div class="MENUWEB_filterGroup">
+                    <label class="MENUWEB_filterLabel">Estado:</label>
+                        <select @bind="filtroEstado" class="MENUWEB_select">
+                        <option value="Todos">Todos los estados</option>
+                        <option value="Borrador">Borradores</option>
+                        <option value="Publicado">Publicados</option>
+                        <option value="Inactivo">Inactivos</option>
+                    </select>
+                </div>
+                    
+                <div class="MENUWEB_filterGroup">
+                    <label class="MENUWEB_filterLabel">Tipo:</label>
+                    <select @bind="filtroTipo" class="MENUWEB_select">
+                        <option value="Todos">Todos los tipos</option>
+                        <option value="Diario">Diario</option>
+                        <option value="Semanal">Semanal</option>
+                    </select>
+                </div>
+            </FilterPanel>
+
+            @if (isLoading)
+            {
+                <LoadingState Message="Cargando menús..." />
+            }
+            else if (menusFiltrados == null || !menusFiltrados.Any())
+            {
+                <EmptyState Title="No hay menús"
+                            Message="No se encontraron menús con los filtros seleccionados."
+                            ButtonText="Crear el primero"
+                            OnButtonClick="@(() => Navigation.NavigateTo("/menus/nuevo"))" />
+            }
+            else
+            {
+                <DataTable>
+                    <HeaderContent>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Tipo</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </HeaderContent>
+                    <BodyContent>
+                        @foreach (var menu in menusFiltrados)
+                        {
+                            <tr @onclick="@(() => Navigation.NavigateTo($"/menus/{menu.Id}"))">
+                                <td>@menu.Nombre</td>
+                                <td>@menu.Descripcion</td>
+                                <td>@menu.Tipo</td>
+                                <td>@menu.FechaInicio.ToString("dd/MM/yyyy")</td>
+                                <td>@menu.FechaFin.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="MENUWEB_statusBadge MENUWEB_@menu.Estado">
+                                        @menu.Estado
+                                    </span>
+                                </td>
+                                <td class="MENUWEB_actionsCell" @onclick:stopPropagation="true">
+                                    <ActionButtons OnEdit="() => EditMenu(menu.Id)"
+                                                   OnDelete="() => MostrarConfirmacionEliminar(menu.Id)">
+                                        <CustomActions>
+                                            @if (menu.Estado == EstadoMenu.Borrador)
+                                            {
+                                                <button class="ActionButtons_button ActionButtons_publish" 
+                                                        @onclick="() => PublishMenu(menu.Id)" 
+                                                        title="Publicar">
+                                                    <span>📢</span>
+                                                </button>
+                                            }
+                                            else if (menu.Estado == EstadoMenu.Publicado)
+                                            {
+                                                <button class="ActionButtons_button ActionButtons_deactivate" 
+                                                        @onclick="() => DeactivateMenu(menu.Id)" 
+                                                        title="Desactivar">
+                                                    <span>🚫</span>
+                                                </button>
+                                            }
+                                        </CustomActions>
+                                    </ActionButtons>
+                                </td>
+                            </tr>
+                        }
+                    </BodyContent>
+                </DataTable>
+            }
+        </div>
+    </div>
+}
+
+<ConfirmModal IsVisible="@mostrarConfirmacion"
+              Title="Confirmar eliminación"
+              Message="@($"¿Está seguro que desea eliminar el menú '{menuNombreEliminar}'?")"
+              WarningMessage="Esta acción no se puede deshacer y eliminará todos los elementos asociados."
+              IsProcessing="@isProcessing"
+              OnConfirm="ConfirmarEliminacion"
+              OnCancel="OcultarConfirmacion" />
+}
+
+@code {
+    private List<Menu> menus;
+    private string errorMessage = "";
+    private bool isLoading = false;
+    private bool isProcessing = false;
+    private bool isAuthorized = false;
+    private bool isChecking = true;
+    private bool initialized = false;
+    private string role = "";
+    private string filtroEstado = "Todos";
+    private string filtroTipo = "Todos";
+
+    // Modal
+    private bool mostrarConfirmacion = false;
+    private int menuIdEliminar = 0;
+    private string menuNombreEliminar = "";
+
+    private IEnumerable<Menu> menusFiltrados
+    {
+        get
+        {
+            if (menus == null) return Enumerable.Empty<Menu>();
+
+            var resultado = menus.AsEnumerable();
+
+            if (filtroEstado != "Todos")
+            {
+                var estado = Enum.Parse<EstadoMenu>(filtroEstado);
+                resultado = resultado.Where(m => m.Estado == estado);
+            }
+
+            if (filtroTipo != "Todos")
+            {
+                var tipo = Enum.Parse<TipoMenu>(filtroTipo);
+                resultado = resultado.Where(m => m.Tipo == tipo);
+            }
+
+            return resultado.OrderByDescending(m => m.FechaInicio);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            try
+            {
+                role = await AuthService.GetUserRoleAsync();
+                isAuthorized = role == "Admin" || role == "Proveedor";
+
+                if (!isAuthorized)
+                {
+                    errorMessage = "No tiene permisos para acceder a esta página.";
+                    isChecking = false;
+                    StateHasChanged();
+                    return;
+                }
+
+                await LoadMenus();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Error al inicializar: " + ex.Message;
+            }
+            finally
+            {
+                isChecking = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task LoadMenus()
+    {
+        await InvokeAsync(() =>
+        {
+            isLoading = true;
+            errorMessage = "";
+            StateHasChanged();
+        });
+
+        try
+        {
+            if (role == "Admin")
+            {
+                menus = await MenuService.GetMenusAsync();
+            }
+            else if (role == "Proveedor")
+            {
+                var userId = await AuthService.GetUserIdAsync();
+                var proveedor = await ProveedorService.GetProveedorByUsuarioIdAsync(userId);
+                if (proveedor != null)
+                {
+                    menus = await MenuService.GetMenusByProveedorAsync(proveedor.Id);
+                }
+                else
+                {
+                    await InvokeAsync(() =>
+                    {
+                        menus = new List<Menu>();
+                        errorMessage = "No se encontró información de proveedor asociada a tu usuario.";
+                        StateHasChanged();
+                    });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                errorMessage = "Error al cargar menús: " + ex.Message;
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isLoading = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private string GetEstadoClass(EstadoMenu estado)
+    {
+        return estado switch
+        {
+            EstadoMenu.Borrador => "badge-borrador",
+            EstadoMenu.Publicado => "badge-publicado",
+            EstadoMenu.Inactivo => "badge-inactivo",
+            _ => ""
+        };
+    }
+
+    private void EditMenu(int menuId)
+    {
+        Navigation.NavigateTo($"/menus/editar/{menuId}");
+    }
+
+    private async Task PublishMenu(int menuId)
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                errorMessage = "";
+                StateHasChanged();
+            });
+
+            bool result = await MenuService.PublicarMenuAsync(menuId);
+
+            if (result)
+            {
+                await LoadMenus();
+
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Menú publicado exitosamente", Severity.Success);
+                });
+            }
+            else
+            {
+                await InvokeAsync(() =>
+                {
+                    errorMessage = "Error al publicar menú";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                errorMessage = "Error: " + ex.Message;
+                Snackbar.Add(errorMessage, Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private async Task DeactivateMenu(int menuId)
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                errorMessage = "";
+                StateHasChanged();
+            });
+
+            bool result = await MenuService.DesactivarMenuAsync(menuId);
+
+            if (result)
+            {
+                await LoadMenus();
+
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Menú desactivado exitosamente", Severity.Success);
+                });
+            }
+            else
+            {
+                await InvokeAsync(() =>
+                {
+                    errorMessage = "Error al desactivar menú";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                errorMessage = "Error: " + ex.Message;
+                Snackbar.Add(errorMessage, Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void MostrarConfirmacionEliminar(int menuId)
+    {
+        var menu = menus.FirstOrDefault(m => m.Id == menuId);
+        if (menu != null)
+        {
+            menuIdEliminar = menuId;
+            menuNombreEliminar = menu.Nombre;
+            mostrarConfirmacion = true;
+        }
+    }
+
+    private void OcultarConfirmacion()
+    {
+        mostrarConfirmacion = false;
+        menuIdEliminar = 0;
+        menuNombreEliminar = "";
+    }
+
+    private async Task ConfirmarEliminacion()
+    {
+        if (menuIdEliminar <= 0) return;
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = true;
+                StateHasChanged();
+            });
+
+            bool result = await MenuService.DeleteMenuAsync(menuIdEliminar);
+
+            if (result)
+            {
+                await LoadMenus();
+
+                await InvokeAsync(() =>
+                {
+                    Snackbar.Add("Menú eliminado exitosamente", Severity.Success);
+                    mostrarConfirmacion = false;
+                    menuIdEliminar = 0;
+                    menuNombreEliminar = "";
+                });
+            }
+            else
+            {
+                await InvokeAsync(() =>
+                {
+                    errorMessage = "Error al eliminar menú";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                errorMessage = "Error: " + ex.Message;
+                Snackbar.Add(errorMessage, Severity.Error);
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            await InvokeAsync(() =>
+            {
+                isProcessing = false;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

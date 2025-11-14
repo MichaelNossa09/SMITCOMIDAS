@@ -1,0 +1,146 @@
+﻿<div class="ActionButtons">
+    @if (OnView.HasDelegate)
+    {
+        <button class="ActionButtons_button ActionButtons_view"
+                @onclick="OnView"
+                title="@ViewTitle">
+            <span>@ViewIcon</span>
+        </button>
+    }
+
+    @if (OnEdit.HasDelegate)
+    {
+        <button class="ActionButtons_button ActionButtons_edit"
+                @onclick="OnEdit"
+                title="@EditTitle">
+            <span>@EditIcon</span>
+        </button>
+    }
+
+    @if (OnDelete.HasDelegate)
+    {
+        <button class="ActionButtons_button ActionButtons_delete"
+                @onclick="OnDelete"
+                title="@DeleteTitle">
+            <span>@DeleteIcon</span>
+        </button>
+    }
+
+    @if (OnCancel.HasDelegate)
+    {
+        <button class="ActionButtons_button ActionButtons_cancel"
+                @onclick="OnCancel"
+                title="@CancelTitle">
+            <span>@CancelIcon</span>
+        </button>
+    }
+
+    @if (OnChangeStatus.HasDelegate)
+    {
+        <button class="ActionButtons_button ActionButtons_status"
+                @onclick="OnChangeStatus"
+                title="@ChangeStatusTitle">
+            <span>@ChangeStatusIcon</span>
+        </button>
+    }
+
+    @if (CustomActions != null)
+    {
+        @CustomActions
+    }
+</div>
+
+@code {
+    // View Action
+    [Parameter] public EventCallback OnView { get; set; }
+    [Parameter] public string ViewTitle { get; set; } = "Ver";
+    [Parameter] public string ViewIcon { get; set; } = "👁️";
+
+    // Edit Action
+    [Parameter] public EventCallback OnEdit { get; set; }
+    [Parameter] public string EditTitle { get; set; } = "Editar";
+    [Parameter] public string EditIcon { get; set; } = "✏️";
+
+    // Delete Action
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public string DeleteTitle { get; set; } = "Eliminar";
+    [Parameter] public string DeleteIcon { get; set; } = "🗑️";
+
+    // Cancel Action
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public string CancelTitle { get; set; } = "Cancelar";
+    [Parameter] public string CancelIcon { get; set; } = "🚫";
+
+    // Change Status Action
+    [Parameter] public EventCallback OnChangeStatus { get; set; }
+    [Parameter] public string ChangeStatusTitle { get; set; } = "Cambiar Estado";
+    [Parameter] public string ChangeStatusIcon { get; set; } = "🔄";
+
+    // Custom Actions
+    [Parameter] public RenderFragment? CustomActions { get; set; }
+}
+
+<style>
+    .ActionButtons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .ActionButtons_button {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    .ActionButtons_view {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .ActionButtons_view:hover {
+        background-color: #93c5fd;
+    }
+
+    .ActionButtons_edit {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .ActionButtons_edit:hover {
+        background-color: #fde047;
+    }
+
+    .ActionButtons_delete {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .ActionButtons_delete:hover {
+        background-color: #fca5a5;
+    }
+
+    .ActionButtons_cancel {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .ActionButtons_cancel:hover {
+        background-color: #fca5a5;
+    }
+
+    .ActionButtons_status {
+        background-color: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .ActionButtons_status:hover {
+        background-color: #c7d2fe;
+    }
+</style>
